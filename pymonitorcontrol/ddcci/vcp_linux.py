@@ -268,7 +268,7 @@ class LinuxVCP(VCP):
             raise VCPError("unable write to I2C bus") from e
 
 
-def enumerate_vcp() -> List[LinuxVCP]:
+def get_vcps() -> List[LinuxVCP]:
     """
     Interrogates I2C buses to determine if they are DDC-CI capable.
 

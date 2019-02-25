@@ -21,4 +21,5 @@
 ###############################################################################
 
 from . import ddcci                                                # noqa: F401
-from .monitor_control import Monitor, enumerate_vcp                # noqa: F401
+from .ddcci import VCPError                                        # noqa: F401
+from .monitor_control import Monitor, get_monitors                 # noqa: F401

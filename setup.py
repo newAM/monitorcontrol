@@ -24,7 +24,7 @@ from setuptools import find_packages
 from distutils.core import setup
 
 setup(
-    name="monitor control",
+    name="pymonitorcontrol",
     version="1.0",
     python_requires=">=3.7",
     description="Python monitor controls using DDC-CI.",

@@ -156,7 +156,7 @@ if sys.platform == "win32":
                 raise VCPError("failed to get VCP feature") from e
             return feature_current.value, feature_max.value
 
-    def enumerate_vcp() -> List[WindowsVCP]:
+    def get_vcps() -> List[WindowsVCP]:
         """
         Opens handles to all physical VCPs.
 

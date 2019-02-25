@@ -24,6 +24,6 @@ import sys
 from .vcp_codes import VCPCode, get_vcp_code_definition            # noqa: F401
 from .vcp_abc import VCP, VCPError                                 # noqa: F401
 if sys.platform == "win32":
-    from .vcp_windows import enumerate_vcp                         # noqa: F401
+    from .vcp_windows import get_vcps                              # noqa: F401
 elif sys.platform.startswith("linux"):
-    from .vcp_linux import enumerate_vcp                           # noqa: F401
+    from .vcp_linux import get_vcps                                # noqa: F401

@@ -25,23 +25,6 @@ import sys
 from typing import Type, List, Union
 
 
-def enumerate_vcp() -> List:
-    """
-    Platform-independent monitor enumeration.
-
-    Returns:
-        iterable list of monitors
-
-    Raises:
-        NotImplementedError: not implemented for this platform
-        VCPError: failed to enumerate VCP's
-    """
-    if sys.platform == "win32" or sys.platform.startswith("linux"):
-        return ddcci.enumerate_vcp()
-    else:
-        raise NotImplementedError(f"not implemented for {sys.platform}")
-
-
 class Monitor:
 
     POWER_MODES = {
@@ -222,3 +205,34 @@ class Monitor:
             raise ValueError(f"cannot set reserved mode value: {mode_value}")
         code = ddcci.get_vcp_code_definition("display_power_mode")
         self._set_vcp_feature(code, mode_value)
+
+
+def get_vcps() -> List:
+    """
+    Platform-independent virtual control panel discovery.
+
+    Returns:
+        List of VCP's
+
+    Raises:
+        NotImplementedError: not implemented for this platform
+        VCPError: failed to list VCP's
+    """
+    if sys.platform == "win32" or sys.platform.startswith("linux"):
+        return ddcci.get_vcps()
+    else:
+        raise NotImplementedError(f"not implemented for {sys.platform}")
+
+
+def get_monitors() -> List[Monitor]:
+    """
+    Creates a list of all monitors.
+
+    Returns:
+        List of monitors
+
+    Raises:
+        NotImplementedError: not implemented for this platform
+        VCPError: failed to list VCP's
+    """
+    return [Monitor(vcp) for vcp in get_vcps()]

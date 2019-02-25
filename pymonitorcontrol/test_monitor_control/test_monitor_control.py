@@ -22,15 +22,18 @@
 
 import pytest
 
-from typing import Tuple, Union, Type, List
+from typing import Tuple, Union, Type, List, Iterable
 from .. import ddcci
-from ..monitor_control import Monitor, enumerate_vcp
+from ..monitor_control import Monitor, get_vcps
 
 # set to true to run the unit test on your monitors
-USE_ATTACHED_MONITORS = True
+USE_ATTACHED_MONITORS = False
 
 
 class UnitTestVCP(ddcci.VCP):
+
+    def __init__(self, vcp_dict):
+        self.vcp = vcp_dict
 
     def open(self):
         pass
@@ -39,15 +42,15 @@ class UnitTestVCP(ddcci.VCP):
         pass
 
     def set_vcp_feature(self, code: int, value: int):
-        self.monitor[code]["current"] = value
+        self.vcp[code]["current"] = value
 
     def get_vcp_feature(self, code: int) -> Tuple[int, int]:
-        return self.monitor[code]["current"], self.monitor[code]["maximum"]
+        return self.vcp[code]["current"], self.vcp[code]["maximum"]
 
 
-def get_vcps() -> List[Type[ddcci.VCP]]:
+def get_test_vcps() -> List[Type[ddcci.VCP]]:
     if USE_ATTACHED_MONITORS:
-        return enumerate_vcp()
+        return get_vcps()
     else:
         unit_test_vcp_dict = {
             0x10: {
@@ -62,8 +65,8 @@ def get_vcps() -> List[Type[ddcci.VCP]]:
         return [UnitTestVCP(unit_test_vcp_dict)]
 
 
-@pytest.fixture(scope="module", params=get_vcps())
-def monitor(request) -> Type[Monitor]:
+@pytest.fixture(scope="module", params=get_test_vcps())
+def monitor(request) -> Iterable[Monitor]:
     monitor = Monitor(request.param)
     monitor.open()
     yield monitor
