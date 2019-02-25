@@ -82,7 +82,7 @@ def test_get_code_maximum_type_error(monitor: Monitor):
 def test_set_vcp_feature_type_error(monitor: Monitor):
     code = ddcci.get_vcp_code_definition("active_control")
     with pytest.raises(TypeError):
-        monitor._set_vcp_feature(code)
+        monitor._set_vcp_feature(code, 1)
 
 
 def test_get_vcp_feature_type_error(monitor: Monitor):
@@ -142,7 +142,7 @@ def test_get_power_mode(
     if isinstance(expected, (int, str)):
         monitor.power_mode = mode
         power_mode = monitor.power_mode
-        if USE_ATTACHED_MONITORS and expected != 0x01:
+        if expected != 0x01:
             # Acer XF270HU empirical testing: monitor reports zero when in any
             # power mode that is not on
             assert power_mode == expected or power_mode == 0x00

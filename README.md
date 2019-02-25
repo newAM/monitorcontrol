@@ -9,7 +9,7 @@ Python monitor control using the VESA Monitor Control Command Set (MCCS) over Di
 * Linux
 * Windows
 
-The Virtual Control Panel (VCP) is re-implemented once per platform.  The monitor class receives a VCP as an argument and uses that for all monitor adjustments.
+The Virtual Control Panel (VCP) is re-implemented once per platform.  The monitor class receives a VCP as an argument and uses the VCP for all monitor controls.
 
 ## Installation
 Clone (or download) and install the package.
@@ -53,5 +53,5 @@ for monitor in get_monitors():
 * VESA Monitor Control Command Set Standard Version 2.2a
 * Display Data Channel Command Interface Standard Version 1.1
 * [Informatic/python-ddcci](https://github.com/Informatic/python-ddcci)
-* [siemer/ddcci/](https://github.com/siemer/ddcci/)
+* [siemer/ddcci](https://github.com/siemer/ddcci/)
 * [https://stackoverflow.com/a/18065609](https://stackoverflow.com/a/18065609)
