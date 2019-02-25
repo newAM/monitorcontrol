@@ -1,7 +1,7 @@
 # pymonitorcontrol
 
 [![Build Status](https://travis-ci.org/newAM/pymonitorcontrol.svg?branch=master)](https://travis-ci.org/newAM/pymonitorcontrol)
-[![Coverage Status](https://coveralls.io/repos/github/newAM/pymonitorcontro/badge.svg?branch=master)](https://coveralls.io/github/newAM/pymonitorcontro?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/newAM/pymonitorcontrol/badge.svg?branch=master)](https://coveralls.io/github/newAM/pymonitorcontrol?branch=master)
 
 Python monitor control using the VESA Monitor Control Command Set (MCCS) over Display Data Channel Command Interface Standard (DDC-CI).
 
