@@ -1,6 +1,7 @@
 # pymonitorcontrol
 
 [![Build Status](https://travis-ci.org/newAM/pymonitorcontrol.svg?branch=master)](https://travis-ci.org/newAM/pymonitorcontrol)
+[![Coverage Status](https://coveralls.io/repos/github/newAM/pymonitorcontro/badge.svg?branch=master)](https://coveralls.io/github/newAM/pymonitorcontro?branch=master)
 
 Python monitor control using the VESA Monitor Control Command Set (MCCS) over Display Data Channel Command Interface Standard (DDC-CI).
 
@@ -20,9 +21,9 @@ python3 setup.py install
 # Usage
 Example using context manager:
 ```Python
-from pymonitorcontrol import enumerate_monitors
+from pymonitorcontrol import get_monitors
 
-for monitor in enumerate_monitors():
+for monitor in get_monitors():
     with monitor as m:
         # set backlight luminance to 100%
         m.luminance = 100
@@ -30,9 +31,9 @@ for monitor in enumerate_monitors():
 
 Example using open and close:
 ```Python
-from pymonitorcontrol import enumerate_monitors, VCPError
+from pymonitorcontrol import get_monitors, VCPError
 
-for monitor in enumerate_monitors():
+for monitor in get_monitors():
     try:
         monitor.open()
         # put monitor in standby mode
