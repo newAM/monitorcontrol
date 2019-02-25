@@ -206,8 +206,12 @@ class Monitor:
         code = ddcci.get_vcp_code_definition("display_power_mode")
         self._set_vcp_feature(code, mode_value)
 
+    @property
+    def active_mode(self):
+        return self._active_mode
 
-def get_vcps() -> List:
+
+def get_vcps() -> List[Type[ddcci.VCP]]:
     """
     Platform-independent virtual control panel discovery.
 

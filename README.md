@@ -5,20 +5,20 @@
 
 Python monitor control using the VESA Monitor Control Command Set (MCCS) over Display Data Channel Command Interface Standard (DDC-CI).
 
-# Supported Platforms
+## Supported Platforms
 * Linux
 * Windows
 
-The Virtual Control Panel (VCP) is re-implemented once per platform.
+The Virtual Control Panel (VCP) is re-implemented once per platform.  The monitor class receives a VCP as an argument and uses that for all monitor adjustments.
 
-# Installation
+## Installation
 Clone (or download) and install the package.
 ```
 git clone https://github.com/newAM/pymonitorcontrol.git
 python3 setup.py install
 ```
 
-# Usage
+## Usage
 Example using context manager:
 ```Python
 from pymonitorcontrol import get_monitors
@@ -45,6 +45,13 @@ for monitor in get_monitors():
         monitor.close()
 ```
 
-# Known Problems
+## Known Problems
 * Will not work on Windows if you have more than one physical monitor per handle.
 * Limited command MCCS command implemented, only back-light and power modes are available.  Please open an issue or pull request if you would like additional controls.
+
+## References
+* VESA Monitor Control Command Set Standard Version 2.2a
+* Display Data Channel Command Interface Standard Version 1.1
+* [Informatic/python-ddcci](https://github.com/Informatic/python-ddcci)
+* [siemer/ddcci/](https://github.com/siemer/ddcci/)
+* [https://stackoverflow.com/a/18065609](https://stackoverflow.com/a/18065609)

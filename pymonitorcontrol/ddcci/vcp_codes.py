@@ -28,18 +28,36 @@ class VCPCode:
 
     # incomplete list of VCP codes from the MCSS specification
     VCP_CODE_DEFINTIONS = {
+        "image_factory_default": {
+            "name": "restore factory default image",
+            "value": 0x04,
+            "type": "wo",
+            "function": "nc",
+        },
         "image_luminance": {
             "name": "image luminance",
             "value": 0x10,
             "type": "rw",
             "function": "c",
         },
+        "active_control": {
+            "name": "active control",
+            "value": 0x52,
+            "type": "ro",
+            "function": "nc",
+        },
+        "image_orientation": {
+            "name": "image orientation",
+            "value": 0xAA,
+            "type": "ro",
+            "function": "nc",
+        },
         "display_power_mode": {
             "name": "display power mode",
             "value": 0xD6,
             "type": "rw",
             "function": "nc",
-        }
+        },
     }
 
     VCP_CODE_SCHEMA = vol.Schema({

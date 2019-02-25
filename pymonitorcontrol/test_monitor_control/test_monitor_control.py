@@ -73,12 +73,30 @@ def monitor(request) -> Iterable[Monitor]:
     monitor.close()
 
 
+def test_get_code_maximum_type_error(monitor: Monitor):
+    code = ddcci.get_vcp_code_definition("image_factory_default")
+    with pytest.raises(TypeError):
+        monitor._get_code_maximum(code)
+
+
+def test_set_vcp_feature_type_error(monitor: Monitor):
+    code = ddcci.get_vcp_code_definition("active_control")
+    with pytest.raises(TypeError):
+        monitor._set_vcp_feature(code)
+
+
+def test_get_vcp_feature_type_error(monitor: Monitor):
+    code = ddcci.get_vcp_code_definition("image_factory_default")
+    with pytest.raises(TypeError):
+        monitor._get_vcp_feature(code)
+
+
 @pytest.mark.parametrize(
     "luminance, expected",
     [(100, 100), (0, 0), (50, 50), (101, ValueError)]
 )
 def test_luminance(
-        monitor: Type[Monitor],
+        monitor: Monitor,
         luminance: int,
         expected: Union[int, Type[Exception]]):
     original = monitor.luminance
@@ -89,8 +107,6 @@ def test_luminance(
         elif isinstance(expected, type(Exception)):
             with pytest.raises(expected):
                 monitor.luminance = luminance
-        else:
-            raise AssertionError("test script needs updating")
     finally:
         monitor.luminance = original
 
@@ -106,6 +122,7 @@ def test_luminance(
         ("on", 0x01),
         (0x01, 0x01),
         ("INVALID", KeyError),
+        (["on"], TypeError),
         (0x00, ValueError),
         (0x06, ValueError),
 
@@ -119,7 +136,7 @@ def test_luminance(
     ]
 )
 def test_get_power_mode(
-        monitor: Type[Monitor],
+        monitor: Monitor,
         mode: Union[str, int],
         expected: Union[int, Type[Exception]]):
     if isinstance(expected, (int, str)):
@@ -134,5 +151,3 @@ def test_get_power_mode(
     elif isinstance(expected, type(Exception)):
         with pytest.raises(expected):
             monitor.power_mode = mode
-    else:
-        raise AssertionError("test script needs updating")
