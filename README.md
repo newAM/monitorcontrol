@@ -47,7 +47,7 @@ for monitor in get_monitors():
 
 ## Known Problems
 * Will not work on Windows if you have more than one physical monitor per handle.
-* Limited command MCCS command implemented, only back-light and power modes are available.  Please open an issue or pull request if you would like additional controls.
+* Limited MCCS commands implemented, only back-light and power modes are available.  Please open an issue or pull request if you would like additional controls.
 
 ## References
 * VESA Monitor Control Command Set Standard Version 2.2a
