@@ -22,7 +22,7 @@
 
 from . import ddcci
 import sys
-from typing import Type, List, Union
+from typing import Type, List, Union, Iterable
 
 
 class Monitor:
@@ -237,3 +237,20 @@ def get_monitors() -> List[Monitor]:
         VCPError: failed to list VCP's
     """
     return [Monitor(vcp) for vcp in get_vcps()]
+
+
+def iterate_monitors() -> Iterable[Monitor]:
+    """
+    Iterates through all monitors.
+
+    Returns:
+        Iterable monitors.
+
+    Raises:
+        NotImplementedError: not implemented for this platform
+        VCPError: failed to list VCP's
+    """
+    for vcp in get_vcps():
+        monitor = Monitor(vcp)
+        with monitor:
+            yield monitor

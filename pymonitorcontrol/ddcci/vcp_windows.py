@@ -80,7 +80,9 @@ if sys.platform == "win32":
             except ctypes.WinError as e:
                 raise VCPError("Windows API call failed") from e
 
-            if num_physical.value > 1:
+            if num_physical.value == 0:
+                raise VCPError("no physical monitor found")
+            elif num_physical.value > 1:
                 # TODO: Figure out a clever way around the Windows API since
                 # it does not allow opening and closing of individual physical
                 # monitors without their hmonitors.
