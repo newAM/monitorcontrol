@@ -21,10 +21,10 @@
 ###############################################################################
 
 import pytest
-
+from unittest.mock import patch
 from typing import Tuple, Union, Type, List, Iterable
 from .. import ddcci
-from ..monitor_control import Monitor, get_vcps
+from ..monitor_control import Monitor, get_vcps, get_monitors, iterate_monitors
 
 # set to true to run the unit test on your monitors
 USE_ATTACHED_MONITORS = False
@@ -46,6 +46,22 @@ class UnitTestVCP(ddcci.VCP):
 
     def get_vcp_feature(self, code: int) -> Tuple[int, int]:
         return self.vcp[code]["current"], self.vcp[code]["maximum"]
+
+
+def test_get_vcps():
+    get_vcps()
+
+    with patch("sys.platform", "darwin"):
+        with pytest.raises(NotImplementedError):
+            get_vcps()
+
+
+def test_get_monitors():
+    get_monitors()
+
+
+def test_iterate_monitors():
+    iterate_monitors()
 
 
 def get_test_vcps() -> List[Type[ddcci.VCP]]:
