@@ -1,7 +1,7 @@
-# pymonitorcontrol
+# monitorcontrol
 
-[![Build Status](https://travis-ci.org/newAM/pymonitorcontrol.svg?branch=master)](https://travis-ci.org/newAM/pymonitorcontrol)
-[![Coverage Status](https://coveralls.io/repos/github/newAM/pymonitorcontrol/badge.svg?branch=master)](https://coveralls.io/github/newAM/pymonitorcontrol?branch=master)
+[![Build Status](https://travis-ci.org/newAM/monitorcontrol.svg?branch=master)](https://travis-ci.org/newAM/monitorcontrol)
+[![Coverage Status](https://coveralls.io/repos/github/newAM/monitorcontrol/badge.svg?branch=master)](https://coveralls.io/github/newAM/monitorcontrol?branch=master)
 
 Python monitor control using the VESA Monitor Control Command Set (MCCS) over Display Data Channel Command Interface Standard (DDC-CI).
 
@@ -14,14 +14,14 @@ The Virtual Control Panel (VCP) is re-implemented once per platform.  The monito
 ## Installation
 Clone (or download) and install the package.
 ```
-git clone https://github.com/newAM/pymonitorcontrol.git
+git clone https://github.com/newAM/monitorcontrol.git
 python3 setup.py install
 ```
 
 ## Usage
 Example using context manager:
 ```Python
-from pymonitorcontrol import get_monitors
+from monitorcontrol import get_monitors
 
 for monitor in get_monitors():
     with monitor as m:
@@ -31,7 +31,7 @@ for monitor in get_monitors():
 
 Example using open and close:
 ```Python
-from pymonitorcontrol import get_monitors, VCPError
+from monitorcontrol import get_monitors, VCPError
 
 for monitor in get_monitors():
     try:

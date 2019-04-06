@@ -23,13 +23,18 @@
 from setuptools import find_packages
 from distutils.core import setup
 
+with open("README.md", "r") as f:
+    readme = f.read()
+
 setup(
-    name="pymonitorcontrol",
-    version="1.0",
-    python_requires=">=3.7",
+    name="monitorcontrol",
     description="Python monitor controls using DDC-CI.",
+    long_description=readme,
+    version="1.0",
     author="Alex M.",
     author_email="7845120+newAM@users.noreply.github.com",
+    url="https://github.com/newAM/monitorcontrol",
+    license="MIT",
     packages=find_packages(
         exclude=["*.tests", "*.tests.*", "tests.*", "tests"],
     ),
