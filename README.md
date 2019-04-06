@@ -12,9 +12,16 @@ Python monitor control using the VESA Monitor Control Command Set (MCCS) over Di
 The Virtual Control Panel (VCP) is re-implemented once per platform.  The monitor class receives a VCP as an argument and uses the VCP for all monitor controls.
 
 ## Installation
+Simply install with pip.
+```
+pip3 install monitorcontrol
+```
+
+### Manual Installation
 Clone (or download) and install the package.
 ```
 git clone https://github.com/newAM/monitorcontrol.git
+cd monitorcontrol
 python3 setup.py install
 ```
 

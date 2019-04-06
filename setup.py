@@ -30,6 +30,7 @@ setup(
     name="monitorcontrol",
     description="Python monitor controls using DDC-CI.",
     long_description=readme,
+    long_description_content_type="test/markdown",
     version="1.0",
     author="Alex M.",
     author_email="7845120+newAM@users.noreply.github.com",
