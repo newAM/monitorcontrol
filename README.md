@@ -1,5 +1,6 @@
 # monitorcontrol
 
+[![PyPi Version](https://badge.fury.io/py/monitorcontrol.svg)](https://badge.fury.io/py/monitorcontrol)
 [![Build Status](https://travis-ci.org/newAM/monitorcontrol.svg?branch=master)](https://travis-ci.org/newAM/monitorcontrol)
 [![Coverage Status](https://coveralls.io/repos/github/newAM/monitorcontrol/badge.svg?branch=master)](https://coveralls.io/github/newAM/monitorcontrol?branch=master)
 
