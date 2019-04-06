@@ -167,3 +167,9 @@ def test_get_power_mode(
     elif isinstance(expected, type(Exception)):
         with pytest.raises(expected):
             monitor.power_mode = mode
+
+
+def test_context_manager(monitor: Monitor):
+    monitor.close()
+    with monitor:
+        pass
