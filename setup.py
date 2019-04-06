@@ -23,15 +23,22 @@
 from setuptools import find_packages
 from distutils.core import setup
 
-with open("README.md", "r") as f:
-    readme = f.read()
+try:
+    import pypandoc
+except (IOError, ImportError, OSError):
+    print("failed to import pypandoc")
+    with open("README.md", "r") as f:
+        long_description = f.read()
+else:
+    long_description = pypandoc.convert_file("README.md", "rst")
+    long_description = long_description.replace("\r", "")
+
 
 setup(
     name="monitorcontrol",
-    description="Python monitor controls using DDC-CI.",
-    long_description=readme,
-    long_description_content_type="test/markdown",
-    version="1.0",
+    description="Monitor controls using MCSS over DDC-CI.",
+    long_description=long_description,
+    version="1.2",
     author="Alex M.",
     author_email="7845120+newAM@users.noreply.github.com",
     url="https://github.com/newAM/monitorcontrol",
