@@ -38,7 +38,7 @@ setup(
     name="monitorcontrol",
     description="Monitor controls using MCSS over DDC-CI.",
     long_description=long_description,
-    version="1.3",
+    version="1.4",
     author="Alex M.",
     author_email="7845120+newAM@users.noreply.github.com",
     url="https://github.com/newAM/monitorcontrol",
