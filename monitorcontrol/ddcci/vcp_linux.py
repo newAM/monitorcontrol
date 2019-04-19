@@ -70,6 +70,8 @@ class LinuxVCP(VCP):
             bus_number: I2C bus number
         """
         self.bus_number = bus_number
+        self.fd = None
+        self.fp = None
 
     def __enter__(self):
         self.open()
@@ -99,9 +101,9 @@ class LinuxVCP(VCP):
         Closes the connection to the monitor.
 
         Raises:
-            VCPError: unable to open monitor
+            VCPError: unable to close monitor
         """
-        if self.fd:
+        if self.fd is not None:
             try:
                 os.close(self.fd)
             except OSError as e:
