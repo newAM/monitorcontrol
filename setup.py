@@ -44,6 +44,10 @@ setup(
     url="https://github.com/newAM/monitorcontrol",
     license="MIT",
     python_requires=">=3.6",
+    install_requires=[
+        'voluptuous',
+        'pyudev;platform_system!="Windows"',
+    ],
     packages=find_packages(
         exclude=["*.tests", "*.tests.*", "tests.*", "tests"],
     ),
