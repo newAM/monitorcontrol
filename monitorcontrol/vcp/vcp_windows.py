@@ -166,7 +166,7 @@ if sys.platform == "win32":
             List of all VCPs detected.
 
         Raises:
-            VCPError: failed to enumerate VCP's
+            VCPError: failed to enumerate VCPs
         """
         vcps = []
         hmonitors = []
@@ -183,7 +183,7 @@ if sys.platform == "win32":
             callback = MONITORENUMPROC(_callback)
             ctypes.windll.user32.EnumDisplayMonitors(0, 0, callback, 0)
         except ctypes.WinError as e:
-            raise VCPError("failed to enumerate VCP's") from e
+            raise VCPError("failed to enumerate VCPs") from e
 
         for logical in hmonitors:
             vcps.append(WindowsVCP(logical))

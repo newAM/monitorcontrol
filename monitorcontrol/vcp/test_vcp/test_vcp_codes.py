@@ -21,16 +21,25 @@
 ###############################################################################
 
 import pytest
+import voluptuous as vol
 from ..vcp_codes import VCPCode, get_vcp_code_definition
 
 
-@pytest.fixture(scope="module", params=VCPCode.VCP_CODE_DEFINTIONS.keys())
+VCP_CODE_SCHEMA = vol.Schema({
+    vol.Required("name"): str,
+    vol.Required("value"): int,
+    vol.Required("type"): vol.Any("rw", "ro", "wo"),
+    vol.Required("function"): vol.Any("c", "nc", "t"),
+})
+
+
+@pytest.fixture(scope="module", params=VCPCode._VCP_CODE_DEFINTIONS.keys())
 def vcp_definition(request):
     return get_vcp_code_definition(request.param)
 
 
 def test_vcp_code_schema(vcp_definition):
-    vcp_definition.validate()
+    VCP_CODE_SCHEMA(vcp_definition.definition)
 
 
 @pytest.mark.parametrize("property", ["name", "value", "type", "function"])

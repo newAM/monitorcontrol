@@ -23,14 +23,14 @@
 import pytest
 from unittest.mock import patch
 from typing import Tuple, Union, Type, List, Iterable
-from .. import ddcci
+from .. import vcp
 from ..monitor_control import Monitor, get_vcps, get_monitors, iterate_monitors
 
 # set to true to run the unit test on your monitors
 USE_ATTACHED_MONITORS = False
 
 
-class UnitTestVCP(ddcci.VCP):
+class UnitTestVCP(vcp.VCP):
 
     def __init__(self, vcp_dict):
         self.vcp = vcp_dict
@@ -64,7 +64,7 @@ def test_iterate_monitors():
     iterate_monitors()
 
 
-def get_test_vcps() -> List[Type[ddcci.VCP]]:
+def get_test_vcps() -> List[Type[vcp.VCP]]:
     if USE_ATTACHED_MONITORS:
         return get_vcps()
     else:
@@ -90,19 +90,19 @@ def monitor(request) -> Iterable[Monitor]:
 
 
 def test_get_code_maximum_type_error(monitor: Monitor):
-    code = ddcci.get_vcp_code_definition("image_factory_default")
+    code = vcp.get_vcp_code_definition("image_factory_default")
     with pytest.raises(TypeError):
         monitor._get_code_maximum(code)
 
 
 def test_set_vcp_feature_type_error(monitor: Monitor):
-    code = ddcci.get_vcp_code_definition("active_control")
+    code = vcp.get_vcp_code_definition("active_control")
     with pytest.raises(TypeError):
         monitor._set_vcp_feature(code, 1)
 
 
 def test_get_vcp_feature_type_error(monitor: Monitor):
-    code = ddcci.get_vcp_code_definition("image_factory_default")
+    code = vcp.get_vcp_code_definition("image_factory_default")
     with pytest.raises(TypeError):
         monitor._get_vcp_feature(code)
 

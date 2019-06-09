@@ -23,30 +23,22 @@
 from setuptools import find_packages
 from distutils.core import setup
 
-try:
-    import pypandoc
-except (IOError, ImportError, OSError):
-    print("failed to import pypandoc")
-    with open("README.md", "r") as f:
-        long_description = f.read()
-else:
-    long_description = pypandoc.convert_file("README.md", "rst")
-    long_description = long_description.replace("\r", "")
-
+with open("README.rst", "r") as f:
+    long_description = f.read()
 
 setup(
     name="monitorcontrol",
     description="Monitor controls using MCSS over DDC-CI.",
     long_description=long_description,
-    version="1.5",
+    version="1.6",
     author="Alex M.",
     author_email="7845120+newAM@users.noreply.github.com",
     url="https://github.com/newAM/monitorcontrol",
     license="MIT",
     python_requires=">=3.6",
     install_requires=[
-        'voluptuous',
-        'pyudev;platform_system!="Windows"',
+        "voluptuous",
+        "pyudev;platform_system!='Windows'",
     ],
     packages=find_packages(
         exclude=["*.tests", "*.tests.*", "tests.*", "tests"],

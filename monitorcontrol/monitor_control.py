@@ -20,13 +20,23 @@
 # SOFTWARE.
 ###############################################################################
 
-from . import ddcci
+from . import vcp
 import sys
 from typing import Type, List, Union, Iterable
 
 
 class Monitor:
+    """
+    A physical monitor attached to a Virtual Control Panel (VCP).
 
+    Generated with :py:meth:`get_monitors()` or
+    :py:meth:`iterate_monitors()`.
+
+    Args:
+        vcp: virtual control panel for the monitor
+    """
+
+    #: Power modes and their integer values.
     POWER_MODES = {
         "on": 0x01,
         "standby": 0x02,
@@ -35,11 +45,7 @@ class Monitor:
         "off_hard": 0x05,
     }
 
-    def __init__(self, vcp: Type[ddcci.VCP]):
-        """
-        Args:
-            vcp: virtual control panel for the monitor
-        """
+    def __init__(self, vcp: Type[vcp.VCP]):
         self.vcp = vcp
         self.code_maximum = {}
 
@@ -68,7 +74,7 @@ class Monitor:
         """
         self.vcp.close()
 
-    def _get_code_maximum(self, code: Type[ddcci.VCPCode]) -> int:
+    def _get_code_maximum(self, code: Type[vcp.VCPCode]) -> int:
         """
         Gets the maximum values for a given code, and caches in the
         class dictionary if not already found.
@@ -92,7 +98,7 @@ class Monitor:
             self.code_maximum[code.value] = maximum
             return maximum
 
-    def _set_vcp_feature(self, code: Type[ddcci.VCPCode], value: int):
+    def _set_vcp_feature(self, code: Type[vcp.VCPCode], value: int):
         """
         Sets the value of a feature on the virtual control panel.
 
@@ -116,7 +122,7 @@ class Monitor:
 
         self.vcp.set_vcp_feature(code.value, value)
 
-    def _get_vcp_feature(self, code: Type[ddcci.VCPCode]) -> int:
+    def _get_vcp_feature(self, code: Type[vcp.VCPCode]) -> int:
         """
         Gets the value of a feature from the virtual control panel.
 
@@ -147,7 +153,7 @@ class Monitor:
         Raises:
             VCPError: failed to get luminance from the VCP
         """
-        code = ddcci.get_vcp_code_definition("image_luminance")
+        code = vcp.get_vcp_code_definition("image_luminance")
         return self._get_vcp_feature(code)
 
     @luminance.setter
@@ -162,65 +168,59 @@ class Monitor:
             ValueError: luminance outside of valid range
             VCPError: failed to set luminance in the VCP
         """
-        code = ddcci.get_vcp_code_definition("image_luminance")
+        code = vcp.get_vcp_code_definition("image_luminance")
         self._set_vcp_feature(code, value)
 
     @property
     def power_mode(self) -> int:
         """
-        Gets the monitors power mode.
+        The monitor power mode.
 
-        Returns:
-            current power mode
+        When used as a getter this returns the integer value of the
+        monitor power mode.
+
+        When used as a setter an integer value or a power mode
+        string from :py:attr:`Monitor.POWER_MODES` may be used.
 
         Raises:
-            VCPError: failed to get power mode from the VCP
+            VCPError: failed to get or set the power mode
+            ValueError: set power state outside of valid range
+            KeyError: set power mode string is invalid
         """
-        code = ddcci.get_vcp_code_definition("display_power_mode")
+        code = vcp.get_vcp_code_definition("display_power_mode")
         return self._get_vcp_feature(code)
 
     @power_mode.setter
     def power_mode(self, value: Union[int, str]):
-        """
-        Sets the monitors power mode.
-
-        Args:
-            value: new power mode, as a string or integer value
-
-        Returns:
-            current power state
-
-        Raises:
-            TypeError: mode is not a valid type
-            ValueError: power state outside of valid range
-            KeyError: mode string is not found in POWER_MODES
-            VCPError: failed to set power state in the VCP
-        """
         if isinstance(value, str):
-            mode_value = self.POWER_MODES[value]
+            mode_value = Monitor.POWER_MODES[value]
         elif isinstance(value, int):
             mode_value = value
         else:
             raise TypeError("unsupported mode type: " + repr(type(value)))
-        if mode_value == 0x0 or mode_value > 0x05:
+        if mode_value not in Monitor.POWER_MODES.values():
             raise ValueError(f"cannot set reserved mode value: {mode_value}")
-        code = ddcci.get_vcp_code_definition("display_power_mode")
+        code = vcp.get_vcp_code_definition("display_power_mode")
         self._set_vcp_feature(code, mode_value)
 
 
-def get_vcps() -> List[Type[ddcci.VCP]]:
+def get_vcps() -> List[Type[vcp.VCP]]:
     """
-    Platform-independent virtual control panel discovery.
+    Discovers virtual control panels.
+
+    This function should not be used directly in most cases, use
+    :py:meth:`get_monitors()` or :py:meth:`iterate_monitors()` to
+    get monitors with VCPs.
 
     Returns:
-        List of VCP's
+        List of VCPs in a closed state.
 
     Raises:
-        NotImplementedError: not implemented for this platform
-        VCPError: failed to list VCP's
+        NotImplementedError: not implemented for your operating system
+        VCPError: failed to list VCPs
     """
     if sys.platform == "win32" or sys.platform.startswith("linux"):
-        return ddcci.get_vcps()
+        return vcp.get_vcps()
     else:
         raise NotImplementedError(f"not implemented for {sys.platform}")
 
@@ -230,27 +230,56 @@ def get_monitors() -> List[Monitor]:
     Creates a list of all monitors.
 
     Returns:
-        List of monitors
+        List of monitors in a closed state.
 
     Raises:
-        NotImplementedError: not implemented for this platform
-        VCPError: failed to list VCP's
+        NotImplementedError: not implemented for your operating system
+        VCPError: failed to list VCPs
+
+    Example:
+        Setting the power mode of all monitors to standby::
+
+            for monitor in get_monitors():
+                try:
+                    monitor.open()
+                    # put monitor in standby mode
+                    monitor.power_mode = "standby"
+                except VCPError:
+                    print("uh-oh")
+                    raise
+                finally:
+                    monitor.close()
+
+        Setting all monitors to the maximum brightness using the
+        context manager::
+
+            for monitor in get_monitors():
+                with monitor as m:
+                    # set back-light luminance to 100%
+                    m.luminance = 100
     """
-    return [Monitor(vcp) for vcp in get_vcps()]
+    return [Monitor(v) for v in get_vcps()]
 
 
 def iterate_monitors() -> Iterable[Monitor]:
     """
-    Iterates through all monitors.
+    Iterates through all monitors, opening and closing the VCP for
+    each monitor.
 
-    Returns:
-        Iterable monitors.
+    Yields:
+        Monitor in an open state.
 
     Raises:
         NotImplementedError: not implemented for this platform
-        VCPError: failed to list VCP's
+        VCPError: failed to list VCPs
+
+    Example:
+        Setting all monitors to the maximum brightness::
+
+            for monitor in iterate_monitors():
+                monitor.luminance = 100
     """
-    for vcp in get_vcps():
-        monitor = Monitor(vcp)
+    for v in get_vcps():
+        monitor = Monitor(v)
         with monitor:
             yield monitor

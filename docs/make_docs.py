@@ -1,3 +1,5 @@
+#!/usr/bin/env python3.7
+
 ###############################################################################
 # Copyright 2019 Alex M.
 #
@@ -20,10 +22,21 @@
 # SOFTWARE.
 ###############################################################################
 
-from . import vcp                                                  # noqa: F401
-from .vcp import VCPError                                          # noqa: F401
-from .monitor_control import (                                     # noqa: F401
-    Monitor,
-    get_monitors,
-    iterate_monitors,
-)
+import os
+import shutil
+import functools
+import subprocess as sp
+
+
+if __name__ == "__main__":
+
+    this_directory = os.path.dirname(os.path.abspath(__file__))
+    doc_output = os.path.join(this_directory, "_build")
+    root_directory = os.path.normpath(os.path.join(this_directory, ".."))
+
+    # force clean
+    if os.path.exists(doc_output):
+        shutil.rmtree(doc_output)
+
+    run = functools.partial(sp.run, check=True)
+    run(["sphinx-build", this_directory, doc_output])

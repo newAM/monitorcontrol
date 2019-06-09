@@ -20,14 +20,23 @@
 # SOFTWARE.
 ###############################################################################
 
-import voluptuous as vol
-from typing import Dict, Type
+from typing import Type
 
 
 class VCPCode:
+    """
+    Virtual Control Panel code.  Simple container for the control
+    codes defined by the VESA Monitor Control Command Set (MCSS).
+
+    This should be used by getting the code from
+    :py:meth:`get_vcp_code_definition()`
+
+    Args:
+        definition: code definition dictionary
+    """
 
     # incomplete list of VCP codes from the MCSS specification
-    VCP_CODE_DEFINTIONS = {
+    _VCP_CODE_DEFINTIONS = {
         "image_factory_default": {
             "name": "restore factory default image",
             "value": 0x04,
@@ -60,21 +69,10 @@ class VCPCode:
         },
     }
 
-    VCP_CODE_SCHEMA = vol.Schema({
-        vol.Required("name"): str,
-        vol.Required("value"): int,
-        vol.Required("type"): vol.Any("rw", "ro", "wo"),
-        vol.Required("function"): vol.Any("c", "nc", "t"),
-    })
-
-    def __init__(self, definition: Dict):
-        """
-        Args:
-            definition: code definition dictionary
-        """
+    def __init__(self, definition: dict):
         self.definition = definition
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             "virtual control panel code definition. "
             f"value: {self.value} "
@@ -82,22 +80,13 @@ class VCPCode:
             f"function: {self.function}"
         )
 
-    def validate(self):
-        """
-        Validates the definition schema.
-
-        Raises:
-            voluptuous.Error: code does not match the schema
-        """
-        self.VCP_CODE_SCHEMA(self.definition)
-
     @property
-    def name(self)-> int:
+    def name(self) -> int:
         """ Friendly name of the code. """
         return self.definition["name"]
 
     @property
-    def value(self)-> int:
+    def value(self) -> int:
         """ Value of the code. """
         return self.definition["value"]
 
@@ -107,7 +96,7 @@ class VCPCode:
         return self.definition["type"]
 
     @property
-    def function(self)-> str:
+    def function(self) -> str:
         """ Function of the code. """
         return self.definition["function"]
 
@@ -136,9 +125,9 @@ def get_vcp_code_definition(name: str) -> Type[VCPCode]:
         name: name of the VCP code definition
 
     Returns:
-        VCPCode class
+        Associated :py:meth:`VCPCode`
 
     Raises:
         KeyError: unable to locate VCP code
     """
-    return VCPCode(VCPCode.VCP_CODE_DEFINTIONS[name])
+    return VCPCode(VCPCode._VCP_CODE_DEFINTIONS[name])
