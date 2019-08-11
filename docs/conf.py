@@ -4,13 +4,15 @@
 import os
 import sys
 import datetime
+
 this_directory = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(this_directory, ".."))
 
 # Sphinx extensions
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.napoleon",       # google style docstrings
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.napoleon",  # google style docstrings
     "sphinx_autodoc_typehints",  # must be after napoleon
 ]
 
@@ -32,15 +34,15 @@ language = None
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", ".tox"]
 pygments_style = "sphinx"
 todo_include_todos = True
+nitpicky = True
+
+intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
+
+# HTML Options
+
 html_theme = "sphinx_rtd_theme"
-
-# Output file base name for HTML help builder.
 htmlhelp_basename = "monitorcontroldoc"
-
-html_theme_options = {
-    "display_version": False
-}
-
+html_theme_options = {"display_version": False}
 html_context = {
     "display_github": True,
     "github_user": "newAM",

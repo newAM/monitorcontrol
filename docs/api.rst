@@ -1,8 +1,16 @@
 API
 ***
 
+Monitor
+#######
 .. automodule:: monitorcontrol.monitor_control
    :members:
+
+Virtual Control Panel
+#####################
+.. autoexception:: monitorcontrol.vcp.VCPError
+
+.. autoclass:: monitorcontrol.vcp.vcp_abc.VCP
 
 Examples
 ########
