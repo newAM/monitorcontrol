@@ -49,6 +49,12 @@ class VCPCode:
             "type": "rw",
             "function": "c",
         },
+        "image_contrast": {
+            "name": "image contrast",
+            "value": 0x12,
+            "type": "rw",
+            "function": "c",
+        },
         "active_control": {
             "name": "active control",
             "value": 0x52,
