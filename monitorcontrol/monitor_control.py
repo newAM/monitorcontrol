@@ -171,7 +171,6 @@ class Monitor:
         code = vcp.get_vcp_code_definition("image_luminance")
         self._set_vcp_feature(code, value)
 
-
     @property
     def contrast(self) -> int:
         """
@@ -180,7 +179,7 @@ class Monitor:
         Returns:
             current contrast value
 
-        Raises: ##### have not implemented or checked
+        Raises:
             VCPError: failed to get contrast from the VCP
         """
         code = vcp.get_vcp_code_definition("image_contrast")
