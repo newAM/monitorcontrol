@@ -164,11 +164,40 @@ class Monitor:
         Args:
             value: new luminance value (typically 0-100)
 
-        Raises:
+        Raises:##### have not implemented or checked
             ValueError: luminance outside of valid range
             VCPError: failed to set luminance in the VCP
         """
         code = vcp.get_vcp_code_definition("image_luminance")
+        self._set_vcp_feature(code, value)
+
+    @property
+    def contrast(self) -> int:
+        """
+        Gets the monitors contrast.
+
+        Returns:
+            current contrast value
+
+        Raises:
+            VCPError: failed to get contrast from the VCP
+        """
+        code = vcp.get_vcp_code_definition("image_contrast")
+        return self._get_vcp_feature(code)
+
+    @contrast.setter
+    def contrast(self, value: int):
+        """
+        Sets the monitors back-light contrast.
+
+        Args:
+            value: new contrast value (typically 0-100)
+
+        Raises:
+            ValueError: contrast outside of valid range
+            VCPError: failed to set contrast in the VCP
+        """
+        code = vcp.get_vcp_code_definition("image_contrast")
         self._set_vcp_feature(code, value)
 
     @property
