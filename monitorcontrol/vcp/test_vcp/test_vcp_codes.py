@@ -25,12 +25,14 @@ import voluptuous as vol
 from ..vcp_codes import VCPCode, get_vcp_code_definition
 
 
-VCP_CODE_SCHEMA = vol.Schema({
-    vol.Required("name"): str,
-    vol.Required("value"): int,
-    vol.Required("type"): vol.Any("rw", "ro", "wo"),
-    vol.Required("function"): vol.Any("c", "nc", "t"),
-})
+VCP_CODE_SCHEMA = vol.Schema(
+    {
+        vol.Required("name"): str,
+        vol.Required("value"): int,
+        vol.Required("type"): vol.Any("rw", "ro", "wo"),
+        vol.Required("function"): vol.Any("c", "nc", "t"),
+    }
+)
 
 
 @pytest.fixture(scope="module", params=VCPCode._VCP_CODE_DEFINTIONS.keys())
@@ -52,8 +54,7 @@ def test_repr(vcp_definition):
 
 
 @pytest.mark.parametrize(
-    "test_type, readable",
-    [("ro", True), ("wo", False), ("rw", True)]
+    "test_type, readable", [("ro", True), ("wo", False), ("rw", True)]
 )
 def test_readable(test_type, readable):
     code = VCPCode({"type": test_type})
@@ -61,8 +62,7 @@ def test_readable(test_type, readable):
 
 
 @pytest.mark.parametrize(
-    "test_type, writeable",
-    [("ro", False), ("wo", True), ("rw", True)]
+    "test_type, writeable", [("ro", False), ("wo", True), ("rw", True)]
 )
 def test_writeable(test_type, writeable):
     code = VCPCode({"type": test_type})

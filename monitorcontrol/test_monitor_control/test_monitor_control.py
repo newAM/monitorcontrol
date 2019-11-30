@@ -31,7 +31,6 @@ USE_ATTACHED_MONITORS = False
 
 
 class UnitTestVCP(vcp.VCP):
-
     def __init__(self, vcp_dict):
         self.vcp = vcp_dict
 
@@ -69,14 +68,8 @@ def get_test_vcps() -> List[Type[vcp.VCP]]:
         return get_vcps()
     else:
         unit_test_vcp_dict = {
-            0x10: {
-                "current": 50,
-                "maximum": 100,
-            },
-            0xD6: {
-                "current": 1,
-                "maximum": 5,
-            },
+            0x10: {"current": 50, "maximum": 100},
+            0xD6: {"current": 1, "maximum": 5},
         }
         return [UnitTestVCP(unit_test_vcp_dict)]
 
@@ -108,13 +101,11 @@ def test_get_vcp_feature_type_error(monitor: Monitor):
 
 
 @pytest.mark.parametrize(
-    "luminance, expected",
-    [(100, 100), (0, 0), (50, 50), (101, ValueError)]
+    "luminance, expected", [(100, 100), (0, 0), (50, 50), (101, ValueError)]
 )
 def test_luminance(
-        monitor: Monitor,
-        luminance: int,
-        expected: Union[int, Type[Exception]]):
+    monitor: Monitor, luminance: int, expected: Union[int, Type[Exception]]
+):
     original = monitor.luminance
     try:
         if isinstance(expected, int):
@@ -128,8 +119,7 @@ def test_luminance(
 
 
 @pytest.mark.skipif(
-    USE_ATTACHED_MONITORS,
-    reason="not going to turn off your monitors"
+    USE_ATTACHED_MONITORS, reason="not going to turn off your monitors"
 )
 @pytest.mark.parametrize(
     "mode, expected",
@@ -141,20 +131,19 @@ def test_luminance(
         (["on"], TypeError),
         (0x00, ValueError),
         (0x06, ValueError),
-
         # sometimes recoverable for real monitors
         ("standby", 0x02),
         ("suspend", 0x03),
         ("off_soft", 0x04),
-
         # rarely recoverable for real monitors
         ("off_hard", 0x05),
-    ]
+    ],
 )
 def test_get_power_mode(
-        monitor: Monitor,
-        mode: Union[str, int],
-        expected: Union[int, Type[Exception]]):
+    monitor: Monitor,
+    mode: Union[str, int],
+    expected: Union[int, Type[Exception]],
+):
     if isinstance(expected, (int, str)):
         monitor.power_mode = mode
         power_mode = monitor.power_mode

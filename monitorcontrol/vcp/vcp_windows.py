@@ -36,7 +36,7 @@ if sys.platform == "win32":
         LPARAM,
         HANDLE,
         BYTE,
-        WCHAR
+        WCHAR,
     )
 
     # structure type for a physical monitor
@@ -74,8 +74,7 @@ if sys.platform == "win32":
             num_physical = DWORD()
             try:
                 ctypes.windll.dxva2.GetNumberOfPhysicalMonitorsFromHMONITOR(
-                    self.hmonitor,
-                    ctypes.byref(num_physical)
+                    self.hmonitor, ctypes.byref(num_physical)
                 )
             except ctypes.WinError as e:
                 raise VCPError("Windows API call failed") from e
@@ -91,9 +90,7 @@ if sys.platform == "win32":
             physical_monitors = (PhysicalMonitor * num_physical.value)()
             try:
                 ctypes.windll.dxva2.GetPhysicalMonitorsFromHMONITOR(
-                    self.hmonitor,
-                    num_physical.value,
-                    physical_monitors
+                    self.hmonitor, num_physical.value, physical_monitors
                 )
             except ctypes.WinError as e:
                 raise VCPError("failed to open physical monitor handle") from e
@@ -124,9 +121,7 @@ if sys.platform == "win32":
             """
             try:
                 ctypes.windll.dxva2.SetVCPFeature(
-                    HANDLE(self.handle),
-                    BYTE(code),
-                    DWORD(value)
+                    HANDLE(self.handle), BYTE(code), DWORD(value)
                 )
             except ctypes.WinError as e:
                 raise VCPError("failed to close handle") from e
@@ -172,6 +167,7 @@ if sys.platform == "win32":
         hmonitors = []
 
         try:
+
             def _callback(hmonitor, hdc, lprect, lparam):
                 hmonitors.append(HMONITOR(hmonitor))
                 del hmonitor, hdc, lprect, lparam

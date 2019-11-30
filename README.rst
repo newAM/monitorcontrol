@@ -1,7 +1,7 @@
 monitorcontrol
 **************
 
-|PyPi Version| |Build Status| |Documentation Status| |Coverage Status|
+|PyPi Version| |Build Status| |Documentation Status| |Coverage Status| |Black|
 
 Python monitor control using the VESA Monitor Control Command Set (MCCS)
 over Display Data Channel Command Interface Standard (DDC-CI).
@@ -20,3 +20,5 @@ Full documentation including examples is available on readthedocs `here <https:/
    :target: https://coveralls.io/github/newAM/monitorcontrol?branch=master
 .. |Documentation Status| image:: https://readthedocs.org/projects/monitorcontrol/badge/?version=latest
    :target: https://monitorcontrol.readthedocs.io/en/latest/?badge=latest
+.. |Black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
+	:target: https://github.com/psf/black

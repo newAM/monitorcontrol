@@ -20,9 +20,9 @@
 # SOFTWARE.
 ###############################################################################
 
-from . import vcp                                                  # noqa: F401
-from .vcp import VCPError                                          # noqa: F401
-from .monitor_control import (                                     # noqa: F401
+from . import vcp  # noqa: F401
+from .vcp import VCPError  # noqa: F401
+from .monitor_control import (  # noqa: F401
     Monitor,
     get_monitors,
     iterate_monitors,

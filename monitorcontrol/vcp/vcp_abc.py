@@ -26,11 +26,11 @@ from typing import Tuple
 
 class VCPError(IOError):
     """ Raised upon an error reading or writing the VCP. """
+
     pass
 
 
 class VCP(abc.ABC):
-
     @abc.abstractmethod
     def open(self):
         """

@@ -43,21 +43,21 @@ class LinuxVCP(VCP):
     """
 
     GET_VCP_HEADER_LENGTH = 2  # header packet length
-    PROTOCOL_FLAG = 0x80       # protocol flag is bit 7 of the length byte
+    PROTOCOL_FLAG = 0x80  # protocol flag is bit 7 of the length byte
 
     # VCP commands
-    GET_VCP_CMD = 0x01    # get VCP feature command
+    GET_VCP_CMD = 0x01  # get VCP feature command
     GET_VCP_REPLY = 0x02  # get VCP feature reply code
-    SET_VCP_CMD = 0x03    # set VCP feature command
+    SET_VCP_CMD = 0x03  # set VCP feature command
 
     # timeouts
     GET_VCP_TIMEOUT = 0.04  # at least 40ms per the DDCCI specification
-    CMD_RATE = 0.05         # at least 50ms between messages
+    CMD_RATE = 0.05  # at least 50ms between messages
 
     # addresses
-    DDCCI_ADDR = 0x37    # DDC-CI command address on the I2C bus
+    DDCCI_ADDR = 0x37  # DDC-CI command address on the I2C bus
     HOST_ADDRESS = 0x50  # virtual I2C slave address of the host
-    I2C_SLAVE = 0x0703   # I2C bus slave address
+    I2C_SLAVE = 0x0703  # I2C bus slave address
 
     GET_VCP_RESULT_CODES = {
         0: "No Error",
