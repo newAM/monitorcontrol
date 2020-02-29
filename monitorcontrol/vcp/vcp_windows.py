@@ -173,7 +173,7 @@ if sys.platform == "win32":
                 del hmonitor, hdc, lprect, lparam
                 return True  # continue enumeration
 
-            MONITORENUMPROC = ctypes.WINFUNCTYPE(
+            MONITORENUMPROC = ctypes.WINFUNCTYPE(  # noqa: N806
                 BOOL, HMONITOR, HDC, ctypes.POINTER(RECT), LPARAM
             )
             callback = MONITORENUMPROC(_callback)

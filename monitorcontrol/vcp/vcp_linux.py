@@ -285,7 +285,7 @@ def get_vcps() -> List[LinuxVCP]:
             vcp = LinuxVCP(device.sys_number)
             vcp.open()
             vcps.append(vcp)
-        except (PermissionError, OSError, VCPError):
+        except (OSError, VCPError):
             pass
         finally:
             vcp.close()

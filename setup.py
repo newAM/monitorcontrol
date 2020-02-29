@@ -22,24 +22,24 @@
 
 from setuptools import find_packages
 from setuptools import setup
+import os
 
-with open("README.rst", "r") as f:
+this_dir = os.path.dirname(os.path.abspath(__file__))
+
+with open(os.path.join(this_dir, "README.rst"), "r") as f:
     long_description = f.read()
-
-with open("requirements.txt", "r") as f:
-    requirements = f.read().splitlines()
 
 setup(
     name="monitorcontrol",
     description="Monitor controls using MCSS over DDC-CI.",
     long_description=long_description,
-    version="1.7.1",
+    version="1.7.2",
     author="Alex M.",
     author_email="7845120+newAM@users.noreply.github.com",
     url="https://github.com/newAM/monitorcontrol",
     license="MIT",
     python_requires=">=3.6",
-    install_requires=requirements,
+    install_requires=["voluptuous", "pyudev; sys_platform != 'win32'"],
     packages=find_packages(
         exclude=["*.tests", "*.tests.*", "tests.*", "tests"],
     ),
