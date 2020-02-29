@@ -21,22 +21,25 @@
 ###############################################################################
 
 from setuptools import find_packages
-from distutils.core import setup
+from setuptools import setup
 
 with open("README.rst", "r") as f:
     long_description = f.read()
+
+with open("requirements.txt", "r") as f:
+    requirements = f.read().splitlines()
 
 setup(
     name="monitorcontrol",
     description="Monitor controls using MCSS over DDC-CI.",
     long_description=long_description,
-    version="1.7",
+    version="1.7.1",
     author="Alex M.",
     author_email="7845120+newAM@users.noreply.github.com",
     url="https://github.com/newAM/monitorcontrol",
     license="MIT",
     python_requires=">=3.6",
-    install_requires=["voluptuous", "pyudev;platform_system!='Windows'"],
+    install_requires=requirements,
     packages=find_packages(
         exclude=["*.tests", "*.tests.*", "tests.*", "tests"],
     ),
