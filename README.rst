@@ -1,14 +1,32 @@
 monitorcontrol
-**************
+##############
 
 |PyPi Version| |Build Status| |Documentation Status| |Coverage Status| |Black|
 
 Python monitor control using the VESA Monitor Control Command Set (MCCS)
-over Display Data Channel Command Interface Standard (DDC-CI).
+over the Display Data Channel Command Interface Standard (DDC-CI).
 
+Supported Platforms
+*******************
+-  Linux (tested with Ubuntu desktop 20.04 LTS)
+-  Windows (tested with Windows 10)
+
+Windows Install
+***************
+
+.. code-block:: bash
+
+   py -3.8 -m pip install monitorcontrol
+
+Linux Install
+*************
+
+.. code-block:: bash
+
+   python3.8 -m pip install monitorcontrol
 
 Documentation
-#############
+*************
 
 Full documentation including examples is available on readthedocs `here <https://monitorcontrol.readthedocs.io/en/latest/>`__.
 

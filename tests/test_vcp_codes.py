@@ -22,7 +22,7 @@
 
 import pytest
 import voluptuous as vol
-from ..vcp_codes import VCPCode, get_vcp_code_definition
+from monitorcontrol.vcp.vcp_codes import VCPCode, _VCP_CODE_DEFINTIONS
 
 
 VCP_CODE_SCHEMA = vol.Schema(
@@ -35,37 +35,39 @@ VCP_CODE_SCHEMA = vol.Schema(
 )
 
 
-@pytest.fixture(scope="module", params=VCPCode._VCP_CODE_DEFINTIONS.keys())
-def vcp_definition(request):
-    return get_vcp_code_definition(request.param)
+@pytest.fixture(scope="module", params=_VCP_CODE_DEFINTIONS.keys())
+def vcp_code(request):
+    return VCPCode(request.param)
 
 
-def test_vcp_code_schema(vcp_definition):
-    VCP_CODE_SCHEMA(vcp_definition.definition)
+def test_vcp_code_schema(vcp_code: VCPCode):
+    VCP_CODE_SCHEMA(vcp_code.definition)
 
 
 @pytest.mark.parametrize("property", ["name", "value", "type", "function"])
-def test_properties(vcp_definition, property):
-    getattr(vcp_definition, property)
+def test_properties(vcp_code: VCPCode, property: str):
+    getattr(vcp_code, property)
 
 
-def test_repr(vcp_definition):
-    repr(vcp_definition)
+def test_repr(vcp_code: VCPCode):
+    repr(vcp_code)
 
 
 @pytest.mark.parametrize(
     "test_type, readable", [("ro", True), ("wo", False), ("rw", True)]
 )
-def test_readable(test_type, readable):
-    code = VCPCode({"type": test_type})
+def test_readable(test_type: str, readable: bool):
+    code = VCPCode("image_luminance")
+    code.definition["type"] = test_type
     assert code.readable == readable
 
 
 @pytest.mark.parametrize(
     "test_type, writeable", [("ro", False), ("wo", True), ("rw", True)]
 )
-def test_writeable(test_type, writeable):
-    code = VCPCode({"type": test_type})
+def test_writeable(test_type: str, writeable: bool):
+    code = VCPCode("image_luminance")
+    code.definition["type"] = test_type
     assert code.writeable == writeable
 
 
@@ -81,7 +83,8 @@ def test_properties_value():
         "type": test_type,
         "function": test_function,
     }
-    code = VCPCode(test_definition)
+    code = VCPCode("image_luminance")
+    code.definition = test_definition
     assert code.name == test_name
     assert code.value == test_value
     assert code.type == test_type

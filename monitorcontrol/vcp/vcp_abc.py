@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019 Alex M.
+# Copyright 2019-present Alex M.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -21,34 +21,40 @@
 ###############################################################################
 
 import abc
-from typing import Tuple
+from types import TracebackType
+from typing import Optional, Tuple, Type
 
 
-class VCPError(IOError):
-    """ Raised upon an error reading or writing the VCP. """
+class VCPError(Exception):
+    """ Base class for all VCP related errors. """
+
+    pass
+
+
+class VCPIOError(VCPError):
+    """ Raised on VCP IO errors. """
+
+    pass
+
+
+class VCPPermissionError(VCPError):
+    """ Raised on VCP permission errors. """
 
     pass
 
 
 class VCP(abc.ABC):
     @abc.abstractmethod
-    def open(self):
-        """
-        Opens the connection to the monitor.
-
-        Raises:
-            VCPError: unable to open monitor
-        """
+    def __enter__(self):
         pass
 
     @abc.abstractmethod
-    def close(self):
-        """
-        Closes the connection to the monitor.
-
-        Raises:
-            VCPError: unable to open monitor
-        """
+    def __exit__(
+        self,
+        exception_type: Optional[Type[BaseException]],
+        exception_value: Optional[BaseException],
+        exception_traceback: Optional[TracebackType],
+    ) -> Optional[bool]:
         pass
 
     @abc.abstractmethod
@@ -57,11 +63,11 @@ class VCP(abc.ABC):
         Sets the value of a feature on the virtual control panel.
 
         Args:
-            code: feature code
-            value: feature value
+            code: Feature code.
+            value: Feature value.
 
         Raises:
-            VCPError: failed to set VCP feature
+            VCPError: Failed to set VCP feature.
         """
         pass
 
@@ -71,12 +77,12 @@ class VCP(abc.ABC):
         Gets the value of a feature from the virtual control panel.
 
         Args:
-            code: feature code
+            code: Feature code.
 
         Returns:
-            current feature value, maximum feature value
+            Current feature value, maximum feature value.
 
         Raises:
-            VCPError: failed to get VCP feature
+            VCPError: Failed to get VCP feature.
         """
         pass

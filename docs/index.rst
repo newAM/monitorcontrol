@@ -4,8 +4,9 @@
    :maxdepth: 2
    :caption: Contents
 
-   installation
    api
+   cli
+   linux_setup
    issues
    references
    license

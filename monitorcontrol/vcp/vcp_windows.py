@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019 Alex M.
+# Copyright 2019-present Alex M.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,10 +20,11 @@
 # SOFTWARE.
 ###############################################################################
 
-from typing import List, Tuple
-import sys
-import ctypes
 from .vcp_abc import VCP, VCPError
+from types import TracebackType
+from typing import List, Optional, Tuple, Type
+import ctypes
+import sys
 
 # hide the Windows code from Linux CI coverage
 if sys.platform == "win32":
@@ -59,18 +60,6 @@ if sys.platform == "win32":
             self.hmonitor = hmonitor
 
         def __enter__(self):
-            self.open()
-
-        def __exit__(self, exc_type, exc_val, exc_tb):
-            self.close()
-
-        def open(self):
-            """
-            Opens the connection to the monitor.
-
-            Raises:
-                VCPError: unable to open monitor
-            """
             num_physical = DWORD()
             try:
                 ctypes.windll.dxva2.GetNumberOfPhysicalMonitorsFromHMONITOR(
@@ -95,29 +84,30 @@ if sys.platform == "win32":
             except ctypes.WinError as e:
                 raise VCPError("failed to open physical monitor handle") from e
             self.handle = physical_monitors[0].handle
+            return self
 
-        def close(self):
-            """
-            Closes the connection to the monitor.
-
-            Raises:
-                VCPError: unable to open monitor
-            """
+        def __exit__(
+            self,
+            exception_type: Optional[Type[BaseException]],
+            exception_value: Optional[BaseException],
+            exception_traceback: Optional[TracebackType],
+        ) -> Optional[bool]:
             try:
                 ctypes.windll.dxva2.DestroyPhysicalMonitor(self.handle)
             except ctypes.WinError as e:
                 raise VCPError("failed to close handle") from e
+            return False
 
         def set_vcp_feature(self, code: int, value: int):
             """
             Sets the value of a feature on the virtual control panel.
 
             Args:
-                code: feature code
-                value: feature value
+                code: Feature code.
+                value: Feature value.
 
             Raises:
-                VCPError: failed to set VCP feature
+                VCPError: Failed to set VCP feature.
             """
             try:
                 ctypes.windll.dxva2.SetVCPFeature(
@@ -131,13 +121,13 @@ if sys.platform == "win32":
             Gets the value of a feature from the virtual control panel.
 
             Args:
-                code: feature code
+                code: Feature code.
 
             Returns:
-                current feature value, maximum feature value
+                Current feature value, maximum feature value.
 
             Raises:
-                VCPError: failed to get VCP feature
+                VCPError: Failed to get VCP feature.
             """
             feature_current = DWORD()
             feature_max = DWORD()
@@ -161,7 +151,7 @@ if sys.platform == "win32":
             List of all VCPs detected.
 
         Raises:
-            VCPError: failed to enumerate VCPs
+            VCPError: Failed to enumerate VCPs.
         """
         vcps = []
         hmonitors = []

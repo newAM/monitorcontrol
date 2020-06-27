@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019 Alex M.
+# Copyright 2019-present Alex M.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,17 +20,18 @@
 # SOFTWARE.
 ###############################################################################
 
-from typing import List, Tuple
+from .vcp_abc import VCP, VCPIOError, VCPPermissionError
+from types import TracebackType
+from typing import List, Optional, Tuple, Type
 import os
+import struct
 import sys
 import time
-import struct
-from .vcp_abc import VCP, VCPError
 
 # hide the Linux code from Windows CI coverage
 if sys.platform.startswith("linux"):
-    import pyudev
     import fcntl
+    import pyudev
 
 
 class LinuxVCP(VCP):
@@ -67,48 +68,39 @@ class LinuxVCP(VCP):
     def __init__(self, bus_number: int):
         """
         Args:
-            bus_number: I2C bus number
+            bus_number: I2C bus number.
         """
         self.bus_number = bus_number
-        self.fd = None
+        self.fd: Optional[str] = None
         self.fp = None
+        # time of last feature set call
+        self.last_set: Optional[float] = None
 
     def __enter__(self):
-        self.open()
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()
-
-    def open(self):
-        """
-        Opens the connection to the monitor.
-
-        Raises:
-            VCPError: unable to open monitor
-        """
         try:
             self.fp = f"/dev/i2c-{self.bus_number}"
             self.fd = os.open(self.fp, os.O_RDWR)
             fcntl.ioctl(self.fd, self.I2C_SLAVE, self.DDCCI_ADDR)
             self.read_bytes(1)
         except PermissionError as e:
-            raise VCPError(f"permission error for {self.fp}") from e
+            raise VCPPermissionError(f"permission error for {self.fp}") from e
         except OSError as e:
-            raise VCPError(f"unable to open VCP at {self.fp}") from e
+            raise VCPIOError(f"unable to open VCP at {self.fp}") from e
+        return self
 
-    def close(self):
-        """
-        Closes the connection to the monitor.
+    def __exit__(
+        self,
+        exception_type: Optional[Type[BaseException]],
+        exception_value: Optional[BaseException],
+        exception_traceback: Optional[TracebackType],
+    ) -> Optional[bool]:
+        try:
+            os.close(self.fd)
+        except OSError as e:
+            raise VCPIOError("unable to close descriptor") from e
+        self.fd = None
 
-        Raises:
-            VCPError: unable to close monitor
-        """
-        if self.fd is not None:
-            try:
-                os.close(self.fd)
-            except OSError as e:
-                raise VCPError("unable to close descriptor") from e
-            self.fd = None
+        return False
 
     def set_vcp_feature(self, code: int, value: int):
         """
@@ -119,7 +111,7 @@ class LinuxVCP(VCP):
             value: feature value
 
         Raises:
-            VCPError: failed to set VCP feature
+            VCPIOError: failed to set VCP feature
         """
         self.rate_limt()
 
@@ -147,13 +139,13 @@ class LinuxVCP(VCP):
         Gets the value of a feature from the virtual control panel.
 
         Args:
-            code: feature code
+            code: Feature code.
 
         Returns:
-            current feature value, maximum feature value
+            Current feature value, maximum feature value.
 
         Raises:
-            VCPError: failed to get VCP feature
+            VCPIOError: Failed to get VCP feature.
         """
         self.rate_limt()
 
@@ -170,7 +162,6 @@ class LinuxVCP(VCP):
         # write data
         self.write_bytes(data)
 
-        # mandated delay per the specification
         time.sleep(self.GET_VCP_TIMEOUT)
 
         # read the data
@@ -184,7 +175,7 @@ class LinuxVCP(VCP):
         calculated_checksum = self.get_checksum(header + payload)
         checksum_xor = checksum ^ calculated_checksum
         if checksum_xor:
-            raise VCPError(f"checksum does not match: {checksum_xor}")
+            raise VCPIOError(f"checksum does not match: {checksum_xor}")
 
         # unpack the payload
         (
@@ -197,17 +188,19 @@ class LinuxVCP(VCP):
         ) = struct.unpack(">BBBBHH", payload)
 
         if reply_code != self.GET_VCP_REPLY:
-            raise VCPError(f"received unexpected response code: {reply_code}")
+            raise VCPIOError(
+                f"received unexpected response code: {reply_code}"
+            )
 
         if vcp_opcode != code:
-            raise VCPError(f"received unexpected opcode: {vcp_opcode}")
+            raise VCPIOError(f"received unexpected opcode: {vcp_opcode}")
 
         if result_code > 0:
             try:
                 message = self.GET_VCP_RESULT_CODES[result_code]
             except KeyError:
                 message = f"received result with unknown code: {result_code}"
-            raise VCPError(message)
+            raise VCPIOError(message)
 
         return feature_current, feature_max
 
@@ -230,12 +223,10 @@ class LinuxVCP(VCP):
 
     def rate_limt(self):
         """ Rate limits messages to the VCP. """
-        try:
-            self.last_set
-        except AttributeError:  # self.last_set doesn't exist
+        if self.last_set is None:
             return
 
-        rate_delay = self.CMD_RATE - (time.time() - self.last_set)
+        rate_delay = self.CMD_RATE - time.time() - self.last_set
         if rate_delay > 0:
             time.sleep(rate_delay)
 
@@ -247,12 +238,12 @@ class LinuxVCP(VCP):
             num_bytes: number of bytes to read
 
         Raises:
-            VCPError: unable to read data
+            VCPIOError: unable to read data
         """
         try:
             return os.read(self.fd, num_bytes)
         except OSError as e:
-            raise VCPError("unable to read from I2C bus") from e
+            raise VCPIOError("unable to read from I2C bus") from e
 
     def write_bytes(self, data: bytes):
         """
@@ -262,12 +253,12 @@ class LinuxVCP(VCP):
             data: data to write to the I2C bus
 
         Raises:
-            VCPError: unable to write data
+            VCPIOError: unable to write data
         """
         try:
             os.write(self.fd, data)
         except OSError as e:
-            raise VCPError("unable write to I2C bus") from e
+            raise VCPIOError("unable write to I2C bus") from e
 
 
 def get_vcps() -> List[LinuxVCP]:
@@ -281,13 +272,13 @@ def get_vcps() -> List[LinuxVCP]:
 
     # iterate I2C devices
     for device in pyudev.Context().list_devices(subsystem="i2c"):
+        vcp = LinuxVCP(device.sys_number)
         try:
-            vcp = LinuxVCP(device.sys_number)
-            vcp.open()
-            vcps.append(vcp)
-        except (OSError, VCPError):
+            with vcp:
+                pass
+        except (OSError, VCPIOError):
             pass
-        finally:
-            vcp.close()
+        else:
+            vcps.append(vcp)
 
     return vcps

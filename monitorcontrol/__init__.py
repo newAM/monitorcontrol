@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019 Alex M.
+# Copyright 2019-present Alex M.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -21,9 +21,9 @@
 ###############################################################################
 
 from . import vcp  # noqa: F401
-from .vcp import VCPError  # noqa: F401
-from .monitor_control import (  # noqa: F401
-    Monitor,
+from .vcp import VCPError, VCPIOError, VCPPermissionError  # noqa: F401
+from .monitorcontrol import (  # noqa: F401
     get_monitors,
-    iterate_monitors,
+    Monitor,
+    PowerMode,
 )

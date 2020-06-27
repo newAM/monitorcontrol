@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019 Alex M.
+# Copyright 2019-present Alex M.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -21,8 +21,13 @@
 ###############################################################################
 
 import sys
-from .vcp_codes import VCPCode, get_vcp_code_definition  # noqa: F401
-from .vcp_abc import VCP, VCPError  # noqa: F401
+from .vcp_codes import VCPCode  # noqa: F401
+from .vcp_abc import (  # noqa: F401
+    VCP,
+    VCPError,
+    VCPIOError,
+    VCPPermissionError,
+)
 
 if sys.platform == "win32":
     from .vcp_windows import get_vcps  # noqa: F401

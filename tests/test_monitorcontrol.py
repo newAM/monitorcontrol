@@ -20,25 +20,24 @@
 # SOFTWARE.
 ###############################################################################
 
+from monitorcontrol import vcp
+from monitorcontrol.monitorcontrol import (
+    get_monitors,
+    get_vcps,
+    Monitor,
+)
+from types import TracebackType
+from typing import Iterable, List, Optional, Tuple, Type, Union
 import pytest
-from unittest.mock import patch
-from typing import Tuple, Union, Type, List, Iterable
-from .. import vcp
-from ..monitor_control import Monitor, get_vcps, get_monitors, iterate_monitors
+
 
 # set to true to run the unit test on your monitors
 USE_ATTACHED_MONITORS = False
 
 
 class UnitTestVCP(vcp.VCP):
-    def __init__(self, vcp_dict):
+    def __init__(self, vcp_dict: dict):
         self.vcp = vcp_dict
-
-    def open(self):
-        pass
-
-    def close(self):
-        pass
 
     def set_vcp_feature(self, code: int, value: int):
         self.vcp[code]["current"] = value
@@ -46,21 +45,24 @@ class UnitTestVCP(vcp.VCP):
     def get_vcp_feature(self, code: int) -> Tuple[int, int]:
         return self.vcp[code]["current"], self.vcp[code]["maximum"]
 
+    def __enter__(self):
+        pass
+
+    def __exit__(
+        self,
+        exception_type: Optional[Type[BaseException]],
+        exception_value: Optional[BaseException],
+        exception_traceback: Optional[TracebackType],
+    ) -> Optional[bool]:
+        pass
+
 
 def test_get_vcps():
     get_vcps()
 
-    with patch("sys.platform", "darwin"):
-        with pytest.raises(NotImplementedError):
-            get_vcps()
-
 
 def test_get_monitors():
     get_monitors()
-
-
-def test_iterate_monitors():
-    iterate_monitors()
 
 
 def get_test_vcps() -> List[Type[vcp.VCP]]:
@@ -77,25 +79,24 @@ def get_test_vcps() -> List[Type[vcp.VCP]]:
 @pytest.fixture(scope="module", params=get_test_vcps())
 def monitor(request) -> Iterable[Monitor]:
     monitor = Monitor(request.param)
-    monitor.open()
-    yield monitor
-    monitor.close()
+    with monitor:
+        yield monitor
 
 
 def test_get_code_maximum_type_error(monitor: Monitor):
-    code = vcp.get_vcp_code_definition("image_factory_default")
+    code = vcp.VCPCode("image_factory_default")
     with pytest.raises(TypeError):
         monitor._get_code_maximum(code)
 
 
 def test_set_vcp_feature_type_error(monitor: Monitor):
-    code = vcp.get_vcp_code_definition("active_control")
+    code = vcp.VCPCode("active_control")
     with pytest.raises(TypeError):
         monitor._set_vcp_feature(code, 1)
 
 
 def test_get_vcp_feature_type_error(monitor: Monitor):
-    code = vcp.get_vcp_code_definition("image_factory_default")
+    code = vcp.VCPCode("image_factory_default")
     with pytest.raises(TypeError):
         monitor._get_vcp_feature(code)
 
@@ -106,16 +107,16 @@ def test_get_vcp_feature_type_error(monitor: Monitor):
 def test_luminance(
     monitor: Monitor, luminance: int, expected: Union[int, Type[Exception]]
 ):
-    original = monitor.luminance
+    original = monitor.get_luminance()
     try:
         if isinstance(expected, int):
-            monitor.luminance = luminance
-            assert monitor.luminance == expected
+            monitor.set_luminance(luminance)
+            assert monitor.get_luminance() == expected
         elif isinstance(expected, type(Exception)):
             with pytest.raises(expected):
-                monitor.luminance = luminance
+                monitor.set_luminance(luminance)
     finally:
-        monitor.luminance = original
+        monitor.set_luminance(original)
 
 
 @pytest.mark.skipif(
@@ -127,7 +128,7 @@ def test_luminance(
         # always recoverable for real monitors
         ("on", 0x01),
         (0x01, 0x01),
-        ("INVALID", KeyError),
+        ("INVALID", AttributeError),
         (["on"], TypeError),
         (0x00, ValueError),
         (0x06, ValueError),
@@ -139,26 +140,20 @@ def test_luminance(
         ("off_hard", 0x05),
     ],
 )
-def test_get_power_mode(
+def test_power_mode(
     monitor: Monitor,
     mode: Union[str, int],
     expected: Union[int, Type[Exception]],
 ):
     if isinstance(expected, (int, str)):
-        monitor.power_mode = mode
-        power_mode = monitor.power_mode
+        monitor.set_power_mode(mode)
+        power_mode = monitor.get_power_mode().value
         if expected != 0x01:
             # Acer XF270HU empirical testing: monitor reports zero when in any
             # power mode that is not on
             assert power_mode == expected or power_mode == 0x00
         else:
-            assert monitor.power_mode == expected
+            assert monitor.get_power_mode().value == expected
     elif isinstance(expected, type(Exception)):
         with pytest.raises(expected):
-            monitor.power_mode = mode
-
-
-def test_context_manager(monitor: Monitor):
-    monitor.close()
-    with monitor:
-        pass
+            monitor.set_power_mode(mode)

@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019 Alex M.
+# Copyright 2019-present Alex M.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,46 @@
 # SOFTWARE.
 ###############################################################################
 
-from typing import Type
+
+# incomplete list of VCP codes from the MCSS specification
+_VCP_CODE_DEFINTIONS = {
+    "image_factory_default": {
+        "name": "restore factory default image",
+        "value": 0x04,
+        "type": "wo",
+        "function": "nc",
+    },
+    "image_luminance": {
+        "name": "image luminance",
+        "value": 0x10,
+        "type": "rw",
+        "function": "c",
+    },
+    "image_contrast": {
+        "name": "image contrast",
+        "value": 0x12,
+        "type": "rw",
+        "function": "c",
+    },
+    "active_control": {
+        "name": "active control",
+        "value": 0x52,
+        "type": "ro",
+        "function": "nc",
+    },
+    "image_orientation": {
+        "name": "image orientation",
+        "value": 0xAA,
+        "type": "ro",
+        "function": "nc",
+    },
+    "display_power_mode": {
+        "name": "display power mode",
+        "value": 0xD6,
+        "type": "rw",
+        "function": "nc",
+    },
+}
 
 
 class VCPCode:
@@ -32,51 +71,14 @@ class VCPCode:
     :py:meth:`get_vcp_code_definition()`
 
     Args:
-        definition: code definition dictionary
+        name: VCP code name.
+
+    Raises:
+        KeyError: VCP code not found.
     """
 
-    # incomplete list of VCP codes from the MCSS specification
-    _VCP_CODE_DEFINTIONS = {
-        "image_factory_default": {
-            "name": "restore factory default image",
-            "value": 0x04,
-            "type": "wo",
-            "function": "nc",
-        },
-        "image_luminance": {
-            "name": "image luminance",
-            "value": 0x10,
-            "type": "rw",
-            "function": "c",
-        },
-        "image_contrast": {
-            "name": "image contrast",
-            "value": 0x12,
-            "type": "rw",
-            "function": "c",
-        },
-        "active_control": {
-            "name": "active control",
-            "value": 0x52,
-            "type": "ro",
-            "function": "nc",
-        },
-        "image_orientation": {
-            "name": "image orientation",
-            "value": 0xAA,
-            "type": "ro",
-            "function": "nc",
-        },
-        "display_power_mode": {
-            "name": "display power mode",
-            "value": 0xD6,
-            "type": "rw",
-            "function": "nc",
-        },
-    }
-
-    def __init__(self, definition: dict):
-        self.definition = definition
+    def __init__(self, name: str):
+        self.definition = _VCP_CODE_DEFINTIONS[name]
 
     def __repr__(self) -> str:
         return (
@@ -121,19 +123,3 @@ class VCPCode:
             return False
         else:
             return True
-
-
-def get_vcp_code_definition(name: str) -> Type[VCPCode]:
-    """
-    Gets a code from the dictionary.
-
-    Args:
-        name: name of the VCP code definition
-
-    Returns:
-        Associated :py:meth:`VCPCode`
-
-    Raises:
-        KeyError: unable to locate VCP code
-    """
-    return VCPCode(VCPCode._VCP_CODE_DEFINTIONS[name])
