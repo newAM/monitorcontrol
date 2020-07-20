@@ -32,8 +32,8 @@ Full documentation including examples is available on readthedocs `here <https:/
 
 .. |PyPi Version| image:: https://badge.fury.io/py/monitorcontrol.svg
    :target: https://badge.fury.io/py/monitorcontrol
-.. |Build Status| image:: https://travis-ci.org/newAM/monitorcontrol.svg?branch=master
-   :target: https://travis-ci.org/newAM/monitorcontrol
+.. |Build Status| image:: https://travis-ci.com/newAM/monitorcontrol.svg?branch=master
+   :target: https://travis-ci.com/newAM/monitorcontrol
 .. |Coverage Status| image:: https://coveralls.io/repos/github/newAM/monitorcontrol/badge.svg?branch=master
    :target: https://coveralls.io/github/newAM/monitorcontrol?branch=master
 .. |Documentation Status| image:: https://readthedocs.org/projects/monitorcontrol/badge/?version=latest
