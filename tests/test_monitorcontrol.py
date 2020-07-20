@@ -57,6 +57,12 @@ class UnitTestVCP(vcp.VCP):
         pass
 
 
+def test_context_manager_assert():
+    m = Monitor(None)
+    with pytest.raises(AssertionError):
+        m.get_power_mode()
+
+
 def test_get_vcps():
     get_vcps()
 

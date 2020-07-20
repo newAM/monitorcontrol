@@ -31,10 +31,15 @@ import sys
 class PowerMode(enum.Enum):
     """ Monitor power modes. """
 
+    #: On.
     on = 0x01
+    #: Standby.
     standby = 0x02
+    #: Suspend.
     suspend = 0x03
+    #: Software power off.
     off_soft = 0x04
+    #: Hardware power off.
     off_hard = 0x05
 
 
@@ -45,6 +50,9 @@ class Monitor:
     Typically you do not use this class directly and instead use
     :py:meth:`get_monitors` to get a list of initialized monitors.
 
+    All class methods must be called from within a context manager unless
+    otherwise stated.
+
     Args:
         vcp: Virtual control panel for the monitor.
     """
@@ -52,9 +60,11 @@ class Monitor:
     def __init__(self, vcp: vcp.VCP):
         self.vcp = vcp
         self.code_maximum = {}
+        self._in_ctx = False
 
     def __enter__(self):
         self.vcp.__enter__()
+        self._in_ctx = True
         return self
 
     def __exit__(
@@ -63,9 +73,12 @@ class Monitor:
         exception_value: Optional[BaseException],
         exception_traceback: Optional[TracebackType],
     ) -> Optional[bool]:
-        return self.vcp.__exit__(
-            exception_type, exception_value, exception_traceback
-        )
+        try:
+            return self.vcp.__exit__(
+                exception_type, exception_value, exception_traceback
+            )
+        finally:
+            self._in_ctx = False
 
     def _get_code_maximum(self, code: Type[vcp.VCPCode]) -> int:
         """
@@ -81,6 +94,9 @@ class Monitor:
         Raises:
             TypeError: Code is write only.
         """
+        assert (
+            self._in_ctx
+        ), "This function must be run within the context manager"
         if not code.readable:
             raise TypeError(f"code is not readable: {code.name}")
 
@@ -104,6 +120,9 @@ class Monitor:
             ValueError: Value is greater than the maximum allowable.
             VCPError: Failed to get VCP feature.
         """
+        assert (
+            self._in_ctx
+        ), "This function must be run within the context manager"
         if code.type == "ro":
             raise TypeError(f"cannot write read-only code: {code.name}")
         elif code.type == "rw":
@@ -129,6 +148,9 @@ class Monitor:
             TypeError: Code is write only.
             VCPError: Failed to get VCP feature.
         """
+        assert (
+            self._in_ctx
+        ), "This function must be run within the context manager"
         if code.type == "wo":
             raise TypeError(f"cannot read write-only code: {code.name}")
 
@@ -142,6 +164,15 @@ class Monitor:
         Returns:
             Current luminance value.
 
+        Example:
+            Basic Usage::
+
+                from monitorcontrol import get_monitors
+
+                for monitor in get_monitors():
+                    with monitor:
+                        print(monitor.get_luminance())
+
         Raises:
             VCPError: Failed to get luminance from the VCP.
         """
@@ -154,6 +185,15 @@ class Monitor:
 
         Args:
             value: New luminance value (typically 0-100).
+
+        Example:
+            Basic Usage::
+
+                from monitorcontrol import get_monitors
+
+                for monitor in get_monitors():
+                    with monitor:
+                        monitor.set_luminance(50)
 
         Raises:
             ValueError: Luminance outside of valid range.
@@ -169,6 +209,15 @@ class Monitor:
         Returns:
             Current contrast value.
 
+        Example:
+            Basic Usage::
+
+                from monitorcontrol import get_monitors
+
+                for monitor in get_monitors():
+                    with monitor:
+                        print(monitor.get_constrast())
+
         Raises:
             VCPError: Failed to get contrast from the VCP.
         """
@@ -181,6 +230,15 @@ class Monitor:
 
         Args:
             value: New contrast value (typically 0-100).
+
+        Example:
+            Basic Usage::
+
+                from monitorcontrol import get_monitors
+
+                for monitor in get_monitors():
+                    with monitor:
+                        print(monitor.set_contrast(50))
 
         Raises:
             ValueError: Contrast outside of valid range.
@@ -195,6 +253,15 @@ class Monitor:
 
         Returns:
             Value from the :py:class:`PowerMode` enumeration.
+
+        Example:
+            Basic Usage::
+
+                from monitorcontrol import get_monitors
+
+                for monitor in get_monitors():
+                    with monitor:
+                        print(monitor.get_power_mode())
 
         Raises:
             VCPError: Failed to get the power mode.
@@ -214,6 +281,15 @@ class Monitor:
                 An integer power mode,
                 or a string represeting the power mode,
                 or a value from :py:class:`PowerMode`.
+
+        Example:
+            Basic Usage::
+
+                from monitorcontrol import get_monitors
+
+                for monitor in get_monitors():
+                    with monitor:
+                        monitor.set_power_mode("standby")
 
         Raises:
             VCPError: Failed to get or set the power mode
