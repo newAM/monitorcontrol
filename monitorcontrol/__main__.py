@@ -31,7 +31,7 @@ from . import get_monitors, PowerMode
 def get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="monitorcontrol",
-        description="Monitor controls using MCSS over DDC-CI.",
+        description="Monitor controls using MCCS over DDC-CI.",
     )
 
     group = parser.add_mutually_exclusive_group(required=True)
