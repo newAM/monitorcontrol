@@ -21,7 +21,7 @@
 ###############################################################################
 
 
-# incomplete list of VCP codes from the MCSS specification
+# incomplete list of VCP codes from the MCCS specification
 _VCP_CODE_DEFINTIONS = {
     "image_factory_default": {
         "name": "restore factory default image",
@@ -65,7 +65,7 @@ _VCP_CODE_DEFINTIONS = {
 class VCPCode:
     """
     Virtual Control Panel code.  Simple container for the control
-    codes defined by the VESA Monitor Control Command Set (MCSS).
+    codes defined by the VESA Monitor Control Command Set (MCCS).
 
     This should be used by getting the code from
     :py:meth:`get_vcp_code_definition()`
