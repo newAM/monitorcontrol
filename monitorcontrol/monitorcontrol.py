@@ -216,7 +216,7 @@ class Monitor:
 
                 for monitor in get_monitors():
                     with monitor:
-                        print(monitor.get_constrast())
+                        print(monitor.get_contrast())
 
         Raises:
             VCPError: Failed to get contrast from the VCP.
