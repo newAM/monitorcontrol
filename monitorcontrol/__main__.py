@@ -20,12 +20,10 @@
 # SOFTWARE.
 ###############################################################################
 
+from . import get_monitors, PowerMode
+from typing import List, Optional
 import argparse
 import sys
-import os
-import toml
-from typing import List, Optional
-from . import get_monitors, PowerMode
 
 
 def get_parser() -> argparse.ArgumentParser:
@@ -64,13 +62,7 @@ def main(argv: Optional[List[str]] = None):
     args = parser.parse_args(argv)
 
     if args.version:
-        toml_path = os.path.join(
-            os.path.dirname(__file__), "..", "pyproject.toml"
-        )
-        with open(toml_path, "r") as f:
-            pyproject = toml.load(f)
-        version = pyproject["tool"]["poetry"]["version"]
-        sys.stdout.write(version + "\n")
+        sys.stdout.write("2.1.1\n")
         return
     elif args.get_luminance:
         for monitor in get_monitors():

@@ -5,7 +5,7 @@ target-version = ["py36", "py37", "py38"]
 [tool.poetry]
 name = "monitorcontrol"
 description = "Monitor controls using MCCS over DDC-CI."
-version = "2.1.0"
+version = "2.1.1"  # update --version command
 authors = ["Alex M. <alexmgit@protonmail.com>"]
 license = "MIT"
 readme = "README.rst"
@@ -15,7 +15,6 @@ documentation = "https://monitorcontrol.readthedocs.io/en/latest/"
 [tool.poetry.dependencies]
 python = "^3.6"
 pyudev = { version = "^0.22.0", markers = "sys_platform != 'win32'" }
-toml = "^0.10.1"
 
 [tool.poetry.dev-dependencies]
 black = { version = "19.10b0", allow-prereleases = true }

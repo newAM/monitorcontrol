@@ -5,11 +5,12 @@
    :caption: Contents
 
    api
+   changelog
    cli
-   linux_setup
    issues
-   references
    license
+   linux_setup
+   references
 
 
 Indices and Tables
