@@ -39,4 +39,4 @@ Full documentation including examples is available on readthedocs `here <https:/
 .. |Documentation Status| image:: https://readthedocs.org/projects/monitorcontrol/badge/?version=latest
    :target: https://monitorcontrol.readthedocs.io/en/latest/?badge=latest
 .. |Black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
-	:target: https://github.com/psf/black
+   :target: https://github.com/psf/black

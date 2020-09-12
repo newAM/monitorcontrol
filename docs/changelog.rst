@@ -1,6 +1,13 @@
 Change Log
 ##########
 
+unreleased
+**********
+
+Added
+=====
+- Added python 3.9 support.
+
 `2.1.1`_
 ********
 
