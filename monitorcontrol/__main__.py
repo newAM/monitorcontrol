@@ -62,7 +62,7 @@ def main(argv: Optional[List[str]] = None):
     args = parser.parse_args(argv)
 
     if args.version:
-        sys.stdout.write("2.1.1\n")
+        sys.stdout.write("2.2.0\n")
         return
     elif args.get_luminance:
         for monitor in get_monitors():

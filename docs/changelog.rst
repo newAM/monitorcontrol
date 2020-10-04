@@ -1,8 +1,8 @@
 Change Log
 ##########
 
-unreleased
-**********
+`2.2.0`_ 2020-10-04
+*******************
 
 Added
 =====
@@ -12,8 +12,8 @@ Fixed
 =====
 - Disabled ``VCPIOErrors`` by default on Linux.
 
-`2.1.1`_
-********
+`2.1.1`_ 2020-09-12
+*******************
 
 Fixed
 =====
@@ -23,4 +23,5 @@ Added
 =====
 - Added a changelog.
 
+.. _2.2.0: https://github.com/newAM/monitorcontrol/releases/tag/2.2.0
 .. _2.1.1: https://github.com/newAM/monitorcontrol/releases/tag/2.1.1
