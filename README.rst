@@ -28,7 +28,8 @@ Linux Install
 Documentation
 *************
 
-Full documentation including examples is available on readthedocs `here <https://monitorcontrol.readthedocs.io/en/latest/>`__.
+Full documentation including examples is available on readthedocs
+`here <https://monitorcontrol.readthedocs.io/en/latest/>`__.
 
 .. |PyPi Version| image:: https://badge.fury.io/py/monitorcontrol.svg
    :target: https://badge.fury.io/py/monitorcontrol

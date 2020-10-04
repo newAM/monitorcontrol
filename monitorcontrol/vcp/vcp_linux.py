@@ -65,6 +65,8 @@ class LinuxVCP(VCP):
         1: "Unsupported VCP code",
     }
 
+    CHECKSUM_ERRORS: str = "ignore"
+
     def __init__(self, bus_number: int):
         """
         Args:
@@ -175,7 +177,12 @@ class LinuxVCP(VCP):
         calculated_checksum = self.get_checksum(header + payload)
         checksum_xor = checksum ^ calculated_checksum
         if checksum_xor:
-            raise VCPIOError(f"checksum does not match: {checksum_xor}")
+            message = f"checksum does not match: {checksum_xor}"
+            if self.CHECKSUM_ERRORS.lower() == "strict":
+                raise VCPIOError(message)
+            elif self.CHECKSUM_ERRORS.lower() == "warning":
+                self.logger.warning(message)
+            # else ignore
 
         # unpack the payload
         (

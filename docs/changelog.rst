@@ -8,6 +8,10 @@ Added
 =====
 - Added python 3.9 support.
 
+Fixed
+=====
+- Disabled ``VCPIOErrors`` by default on Linux.
+
 `2.1.1`_
 ********
 
