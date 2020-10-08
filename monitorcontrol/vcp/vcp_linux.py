@@ -27,6 +27,7 @@ import os
 import struct
 import sys
 import time
+import logging
 
 # hide the Linux code from Windows CI coverage
 if sys.platform.startswith("linux"):
@@ -72,6 +73,7 @@ class LinuxVCP(VCP):
         Args:
             bus_number: I2C bus number.
         """
+        self.logger = logging.getLogger(__name__)
         self.bus_number = bus_number
         self.fd: Optional[str] = None
         self.fp = None
@@ -168,9 +170,11 @@ class LinuxVCP(VCP):
 
         # read the data
         header = self.read_bytes(self.GET_VCP_HEADER_LENGTH)
+        self.logger.debug(f"header={header}")
         source, length = struct.unpack("BB", header)
         length &= ~self.PROTOCOL_FLAG  # clear protocol flag
         payload = self.read_bytes(length + 1)
+        self.logger.debug(f"payload={payload}")
 
         # check checksum
         payload, checksum = struct.unpack(f"{length}sB", payload)
