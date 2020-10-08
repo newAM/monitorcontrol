@@ -6,7 +6,7 @@ Change Log
 
 Added
 =====
-- Added `-v` / `--verbose` argument to the CLI.
+- Added ``-v`` / ``--verbose`` argument to the CLI.
 
 Fixed
 =====
