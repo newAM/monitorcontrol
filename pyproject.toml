@@ -23,10 +23,10 @@ flake8-bugbear = "^20.1.4"
 flake8 = "^3.8.3"
 pep8-naming = "^0.11.1"
 pytest-cov = "^2.10.0"
-pytest = "^5.4.3"
+pytest = "^6.1.1"
 sphinx = "^3.1.1"
 sphinx-rtd-theme = "^0.5.0"
-voluptuous = "^0.11.7"
+voluptuous = "^0.12.0"
 
 [tool.poetry.scripts]
 monitorcontrol = "monitorcontrol.__main__:main"
