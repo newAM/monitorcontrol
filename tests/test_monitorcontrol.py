@@ -23,6 +23,18 @@ class UnitTestVCP(vcp.VCP):
     def get_vcp_feature(self, code: int) -> Tuple[int, int]:
         return self.vcp[code]["current"], self.vcp[code]["maximum"]
 
+    def get_vcp_capabilities(self):
+        # example string from Acer VG271U
+        # does not necessarily align with other test code.
+        # Reported capabilities could be different.
+        return (
+            "(prot(monitor)type(LCD)model(ACER VG271U)cmds(01 02 03 07 0C"
+            " E3 F3)vcp(04 10 12 14(05 06 08 0B) 16 18 1A 59 5A 5B 5C 5D"
+            " 5E 60(0F 11 12)62 9B 9C 9D 9E 9F A0 D6 E0(00 04 05 06) E1(00"
+            " 01 02)E2(00 01 02 03 05 06 07 0B 10 11 12)E3 E4 E5 E7(00 01"
+            " 02) E8(00 01 02 03 04)) mswhql(1)asset_eep(40)mccs_ver(2.2))"
+        )
+
     def __enter__(self):
         pass
 
@@ -57,6 +69,7 @@ def get_test_vcps() -> List[Type[vcp.VCP]]:
             0x10: {"current": 50, "maximum": 100},
             0xD6: {"current": 1, "maximum": 5},
             0x12: {"current": 50, "maximum": 100},
+            0x60: {"current": "HDMI1", "maximum": 3},
         }
         return [UnitTestVCP(unit_test_vcp_dict)]
 
@@ -152,3 +165,41 @@ def test_power_mode(
     elif isinstance(expected, type(Exception)):
         with pytest.raises(expected):
             monitor.set_power_mode(mode)
+
+
+# ASUS VG27A when set to a mode that doesnt exist returnd analog1 (0x1)
+@pytest.mark.skipif(
+    USE_ATTACHED_MONITORS, reason="Real monitors dont support all input types"
+)
+@pytest.mark.parametrize(
+    "mode, expected",
+    [
+        ("ANALOG1", 0x01),
+        ("ANALOG2", 0x02),
+        ("DVI1", 0x03),
+        ("DVI2", 0x04),
+        ("COMPOSITE1", 0x05),
+        ("COMPOSITE2", 0x06),
+        ("SVIDEO1", 0x07),
+        ("SVIDEO2", 0x08),
+        ("TUNER1", 0x09),
+        ("TUNER2", 0x0A),
+        ("TUNER3", 0x0B),
+        ("CMPONENT1", 0x0C),
+        ("CMPONENT2", 0x0D),
+        ("CMPONENT3", 0x0E),
+        ("DP1", 0x0F),
+        ("DP2", 0x10),
+        ("HDMI1", 0x11),
+        ("HDMI2", 0x12),
+    ],
+)
+def test_input_source(
+    monitor: Monitor,
+    mode: Union[str, int],
+    expected: Union[int, Type[Exception]],
+):
+    if isinstance(expected, (int, str)):
+        monitor.set_input_source(mode)
+        read_source = monitor.get_input_source()
+        assert read_source == mode

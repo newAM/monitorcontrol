@@ -121,6 +121,35 @@ if sys.platform == "win32":
                 raise VCPError("failed to get VCP feature") from e
             return feature_current.value, feature_max.value
 
+        def get_vcp_capabilities(self):
+            """
+            Gets capabilities string from the virtual control panel
+
+            Returns:
+                One long capabilities string in the format:
+                "(prot(monitor)type(LCD)model(ACER VG271U)cmds(01 02 03 07 0C)"
+
+                No error checking for the string being valid. String can have
+                bit errors or dropped characters.
+
+            Raises:
+                VCPError: Failed to get VCP feature.
+            """
+
+            cap_length = DWORD()
+
+            try:
+                ctypes.windll.dxva2.GetCapabilitiesStringLength(
+                    HANDLE(self.handle), ctypes.byref(cap_length)
+                )
+                cap_string = (ctypes.c_char * cap_length.value)()
+                ctypes.windll.dxva2.CapabilitiesRequestAndCapabilitiesReply(
+                    HANDLE(self.handle), cap_string, cap_length
+                )
+            except ctypes.WinError as e:
+                raise VCPError("failed to get VCP feature") from e
+            return cap_string.value.decode("ascii")
+
     def get_vcps() -> List[WindowsVCP]:
         """
         Opens handles to all physical VCPs.

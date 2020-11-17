@@ -29,6 +29,7 @@ class LinuxVCP(VCP):
     GET_VCP_CMD = 0x01  # get VCP feature command
     GET_VCP_REPLY = 0x02  # get VCP feature reply code
     SET_VCP_CMD = 0x03  # set VCP feature command
+    GET_VCP_CAPS_CMD = 0xF3  # Capabilities Request command
 
     # timeouts
     GET_VCP_TIMEOUT = 0.04  # at least 40ms per the DDCCI specification
@@ -193,6 +194,91 @@ class LinuxVCP(VCP):
 
         return feature_current, feature_max
 
+        def get_vcp_capabilities(self):
+            """
+            Gets capabilities string from the virtual control panel
+
+            Returns:
+                One long capabilities string in the format:
+                "(prot(monitor)type(LCD)model(ACER VG271U)cmds(01 02 03 07 0C)"
+
+                No error checking for the string being valid. String can have
+                bit errors or dropped characters.
+
+            Raises:
+                VCPError: Failed to get VCP feature.
+            """
+
+            self.rate_limt()
+
+            # Get the first 32B of capabilities string
+            offset = 0
+
+            # transmission data
+            data = bytearray()
+            data.append(self.GET_VCP_CAPS_CMD)
+            data.append(code)
+            low_byte, high_byte = struct.pack("H", offset)
+            data.append(high_byte)
+            data.append(low_byte)
+
+            # add headers and footers
+            data.insert(0, (len(data) | self.GET_VCP_CAPS_CMD))
+            data.insert(0, self.HOST_ADDRESS)
+            data.append(self.get_checksum(data))
+
+            # write data
+            self.write_bytes(data)
+
+            time.sleep(self.GET_VCP_TIMEOUT)
+
+            # read the data
+            header = self.read_bytes(self.GET_VCP_HEADER_LENGTH)
+            self.logger.debug(f"header={header}")
+            source, length = struct.unpack("BB", header)
+            length &= ~self.PROTOCOL_FLAG  # clear protocol flag
+            payload = self.read_bytes(length + 1)
+            self.logger.debug(f"payload={payload}")
+
+            # check checksum
+            payload, checksum = struct.unpack(f"{length}sB", payload)
+            calculated_checksum = self.get_checksum(header + payload)
+            checksum_xor = checksum ^ calculated_checksum
+            if checksum_xor:
+                message = f"checksum does not match: {checksum_xor}"
+                if self.CHECKSUM_ERRORS.lower() == "strict":
+                    raise VCPIOError(message)
+                elif self.CHECKSUM_ERRORS.lower() == "warning":
+                    self.logger.warning(message)
+                # else ignore
+
+            sys.stdout.write(f"\n\n{payload}\n\n")
+            sys.stdout.write("YOLO")
+
+            # unpack the payload
+            (
+                reply_code,
+                reply_offset,
+                data,
+            ) = struct.unpack(">BHB", payload)
+
+            if reply_code != self.GET_VCP_REPLY:
+                raise VCPIOError(
+                    f"received unexpected response code: {reply_code}"
+                )
+
+            if vcp_opcode != code:
+                raise VCPIOError(f"received unexpected opcode: {vcp_opcode}")
+
+            if result_code > 0:
+                try:
+                    message = self.GET_VCP_RESULT_CODES[result_code]
+                except KeyError:
+                    message = f"received result with unknown code: {result_code}"
+                raise VCPIOError(message)
+
+            return feature_current, feature_max
+
     def get_checksum(self, data: List, prime: bool = False) -> int:
         """
         Computes the checksum for a set of data, with the option to
@@ -258,6 +344,9 @@ def get_vcps() -> List[LinuxVCP]:
         List of all VCPs detected.
     """
     vcps = []
+    
+    devices = pyudev.Context().list_devices(subsystem="i2c")
+    sys.stdout.write(f"{devices}")
 
     # iterate I2C devices
     for device in pyudev.Context().list_devices(subsystem="i2c"):

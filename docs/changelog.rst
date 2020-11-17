@@ -1,6 +1,14 @@
 Change Log
 ##########
 
+Unreleased
+**********
+
+Added
+=====
+- Added ``--monitor`` optional argument to select a specific monitor for the command
+- Added ``--set-input-source`` and ``--get-input-source`` to change monitor input source
+
 `2.3.0`_ 2020-10-07
 *******************
 
