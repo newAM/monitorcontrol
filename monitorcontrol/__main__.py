@@ -4,6 +4,15 @@ import argparse
 import logging
 import sys
 
+if sys.version_info >= (3, 8):
+    import importlib.metadata
+
+    version = importlib.metadata.version("monitorcontrol")
+else:
+    import importlib_metadata
+
+    version = importlib_metadata.version("monitorcontrol")
+
 
 def get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -71,7 +80,7 @@ def main(argv: Optional[List[str]] = None):
     root_logger.addHandler(handler)
 
     if args.version:
-        sys.stdout.write("2.3.0\n")
+        sys.stdout.write(version + "\n")
         return
     elif args.get_luminance:
         for monitor in get_monitors():

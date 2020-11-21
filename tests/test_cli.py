@@ -2,11 +2,9 @@ from .test_monitorcontrol import UnitTestVCP
 from monitorcontrol import Monitor
 from monitorcontrol.__main__ import main
 from unittest import mock
-import monitorcontrol
-import os
-import pytest
 import sys
-import toml
+import monitorcontrol
+import pytest
 
 get_monitors_mock = mock.patch.object(
     monitorcontrol.__main__,
@@ -16,17 +14,9 @@ get_monitors_mock = mock.patch.object(
 
 
 def test_version():
-    toml_path = os.path.join(
-        os.path.abspath(os.path.dirname(__file__)), "..", "pyproject.toml"
-    )
-    with open(toml_path, "r") as f:
-        pyproject = toml.load(f)
-
-    toml_version = pyproject["tool"]["poetry"]["version"]
-
     with mock.patch.object(sys.stdout, "write") as stdout_mock:
         main(["--version"])
-        stdout_mock.assert_called_once_with(f"{toml_version}\n")
+        stdout_mock.assert_called_once()
 
 
 def test_get_luminance():
