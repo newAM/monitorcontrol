@@ -19,7 +19,7 @@ jobs:
       - name: Run flake8
         run: poetry run flake8
       - name: Run black
-        run: poetry run black --check .
+        run: poetry run black --verbose --check .
 
   docs:
     runs-on: ubuntu-latest
