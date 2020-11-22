@@ -56,6 +56,7 @@ def get_test_vcps() -> List[Type[vcp.VCP]]:
         unit_test_vcp_dict = {
             0x10: {"current": 50, "maximum": 100},
             0xD6: {"current": 1, "maximum": 5},
+            0x12: {"current": 50, "maximum": 100},
         }
         return [UnitTestVCP(unit_test_vcp_dict)]
 
@@ -101,6 +102,16 @@ def test_luminance(
                 monitor.set_luminance(luminance)
     finally:
         monitor.set_luminance(original)
+
+
+@pytest.mark.skipif(
+    USE_ATTACHED_MONITORS, reason="not going to change your contrast"
+)
+def test_contrast(monitor: Monitor):
+    contrast = monitor.get_contrast()
+    contrast += 1
+    monitor.set_contrast(contrast)
+    assert monitor.get_contrast() == contrast
 
 
 @pytest.mark.skipif(
