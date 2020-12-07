@@ -27,7 +27,7 @@ pytest-cov = "^2.10.0"
 pytest = "^6.1.2"
 sphinx = "^3.3.1"
 sphinx-rtd-theme = "^0.5.0"
-voluptuous = "^0.12.0"
+voluptuous = "^0.12.1"
 
 [tool.poetry.scripts]
 monitorcontrol = "monitorcontrol.__main__:main"
