@@ -30,6 +30,7 @@ class LinuxVCP(VCP):
     GET_VCP_REPLY = 0x02  # get VCP feature reply code
     SET_VCP_CMD = 0x03  # set VCP feature command
     GET_VCP_CAPS_CMD = 0xF3  # Capabilities Request command
+    GET_VCP_CAPS_REPLY = 0xE3  # Capabilities Request reply
 
     # timeouts
     GET_VCP_TIMEOUT = 0.04  # at least 40ms per the DDCCI specification
@@ -141,6 +142,7 @@ class LinuxVCP(VCP):
         data.insert(0, (len(data) | self.PROTOCOL_FLAG))
         data.insert(0, self.HOST_ADDRESS)
         data.append(self.get_checksum(data))
+        self.logger.debug(f"data={data}")
 
         # write data
         self.write_bytes(data)
@@ -194,36 +196,45 @@ class LinuxVCP(VCP):
 
         return feature_current, feature_max
 
-        def get_vcp_capabilities(self):
-            """
-            Gets capabilities string from the virtual control panel
+    def get_vcp_capabilities(self):
+        """
+        Gets capabilities string from the virtual control panel
 
-            Returns:
-                One long capabilities string in the format:
-                "(prot(monitor)type(LCD)model(ACER VG271U)cmds(01 02 03 07 0C)"
+        Returns:
+            One long capabilities string in the format:
+            "(prot(monitor)type(LCD)model(ACER VG271U)cmds(01 02 03 07 0C)"
 
-                No error checking for the string being valid. String can have
-                bit errors or dropped characters.
+            No error checking for the string being valid. String can have
+            bit errors or dropped characters.
 
-            Raises:
-                VCPError: Failed to get VCP feature.
-            """
+        Raises:
+            VCPError: Failed to get VCP feature.
+        """
 
-            self.rate_limt()
+        # Create an empty capabilities string to be filled with the data
+        caps_str = ""
 
-            # Get the first 32B of capabilities string
-            offset = 0
+        self.rate_limt()
+
+        # Get the first 32B of capabilities string
+        offset = 0
+
+        # Keep a count going to keep things sane
+        loop_count = 0
+        LOOP_COUNT_LIMIT = 20
+
+        while(loop_count < LOOP_COUNT_LIMIT):
+            loop_count += 1
 
             # transmission data
             data = bytearray()
             data.append(self.GET_VCP_CAPS_CMD)
-            data.append(code)
             low_byte, high_byte = struct.pack("H", offset)
             data.append(high_byte)
             data.append(low_byte)
 
             # add headers and footers
-            data.insert(0, (len(data) | self.GET_VCP_CAPS_CMD))
+            data.insert(0, (len(data) | self.PROTOCOL_FLAG))
             data.insert(0, self.HOST_ADDRESS)
             data.append(self.get_checksum(data))
 
@@ -234,11 +245,17 @@ class LinuxVCP(VCP):
 
             # read the data
             header = self.read_bytes(self.GET_VCP_HEADER_LENGTH)
-            self.logger.debug(f"header={header}")
+            self.logger.debug(f"response header={header}")
             source, length = struct.unpack("BB", header)
             length &= ~self.PROTOCOL_FLAG  # clear protocol flag
             payload = self.read_bytes(length + 1)
             self.logger.debug(f"payload={payload}")
+
+            # check if length is valid
+            if length < 3 or length > 35:
+                raise VCPIOError(
+                    f"received unexpected response length: {length}"
+                )
 
             # check checksum
             payload, checksum = struct.unpack(f"{length}sB", payload)
@@ -251,33 +268,37 @@ class LinuxVCP(VCP):
                 elif self.CHECKSUM_ERRORS.lower() == "warning":
                     self.logger.warning(message)
                 # else ignore
-
-            sys.stdout.write(f"\n\n{payload}\n\n")
-            sys.stdout.write("YOLO")
+            #remove cheksum from length
 
             # unpack the payload
-            (
-                reply_code,
-                reply_offset,
-                data,
-            ) = struct.unpack(">BHB", payload)
+            reply_code, payload = struct.unpack(f">B{length-1}s", payload)
+            length -= 1
 
-            if reply_code != self.GET_VCP_REPLY:
+            if reply_code != self.GET_VCP_CAPS_REPLY:
                 raise VCPIOError(
                     f"received unexpected response code: {reply_code}"
                 )
 
-            if vcp_opcode != code:
-                raise VCPIOError(f"received unexpected opcode: {vcp_opcode}")
+            # unpack the payload
+            offset, payload = struct.unpack(f">H{length-2}s", payload)
+            length -= 2
 
-            if result_code > 0:
-                try:
-                    message = self.GET_VCP_RESULT_CODES[result_code]
-                except KeyError:
-                    message = f"received result with unknown code: {result_code}"
-                raise VCPIOError(message)
+            if length > 0:
+                caps_str += payload.decode("ASCII")
+            else:
+                break
 
-            return feature_current, feature_max
+            # update the offset and go again
+            offset += length
+
+        self.logger.debug(f"\n\ncaps str={caps_str}\n")
+
+        if loop_count >= LOOP_COUNT_LIMIT:
+            raise VCPIOError(
+                f"Capabilities string incomplete or too long"
+            )
+
+        return caps_str
 
     def get_checksum(self, data: List, prime: bool = False) -> int:
         """
@@ -344,9 +365,8 @@ def get_vcps() -> List[LinuxVCP]:
         List of all VCPs detected.
     """
     vcps = []
-    
+
     devices = pyudev.Context().list_devices(subsystem="i2c")
-    sys.stdout.write(f"{devices}")
 
     # iterate I2C devices
     for device in pyudev.Context().list_devices(subsystem="i2c"):
