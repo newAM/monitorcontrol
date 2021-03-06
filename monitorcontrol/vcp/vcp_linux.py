@@ -221,9 +221,9 @@ class LinuxVCP(VCP):
 
         # Keep a count going to keep things sane
         loop_count = 0
-        LOOP_COUNT_LIMIT = 20
+        loop_count_limit = 20
 
-        while(loop_count < LOOP_COUNT_LIMIT):
+        while loop_count < loop_count_limit:
             loop_count += 1
 
             # transmission data
@@ -268,7 +268,7 @@ class LinuxVCP(VCP):
                 elif self.CHECKSUM_ERRORS.lower() == "warning":
                     self.logger.warning(message)
                 # else ignore
-            #remove cheksum from length
+            # remove cheksum from length
 
             # unpack the payload
             reply_code, payload = struct.unpack(f">B{length-1}s", payload)
@@ -293,10 +293,8 @@ class LinuxVCP(VCP):
 
         self.logger.debug(f"\n\ncaps str={caps_str}\n")
 
-        if loop_count >= LOOP_COUNT_LIMIT:
-            raise VCPIOError(
-                f"Capabilities string incomplete or too long"
-            )
+        if loop_count >= loop_count_limit:
+            raise VCPIOError("Capabilities string incomplete or too long")
 
         return caps_str
 
@@ -365,8 +363,6 @@ def get_vcps() -> List[LinuxVCP]:
         List of all VCPs detected.
     """
     vcps = []
-
-    devices = pyudev.Context().list_devices(subsystem="i2c")
 
     # iterate I2C devices
     for device in pyudev.Context().list_devices(subsystem="i2c"):
