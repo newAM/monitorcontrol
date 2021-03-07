@@ -203,3 +203,14 @@ def test_input_source(
         monitor.set_input_source(mode)
         read_source = monitor.get_input_source()
         assert read_source == mode
+
+
+def test_get_vcp_capabilities(monitor: Monitor):
+    monitors_dict = monitor.get_vcp_capabilities()
+    model = monitors_dict["model"]
+    inputs = monitors_dict["inputs"]
+    print(inputs)
+    if model != "ACER VG271U":
+        raise AssertionError("Could not parse model")
+    if set(inputs) ^ set(["DP1", "HDMI1", "HDMI2"]) != set():
+        raise AssertionError("Could not parse input sources")
