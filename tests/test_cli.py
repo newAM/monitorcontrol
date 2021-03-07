@@ -51,3 +51,31 @@ def test_set_power(value: int):
     ) as api_mock:
         main(["--set-power", str(value)])
         api_mock.assert_called_once_with(value)
+
+
+def test_get_input_source():
+    with get_monitors_mock, mock.patch.object(
+        Monitor, "get_input_source"
+    ) as api_mock:
+        main(["--get-input-source"])
+        api_mock.assert_called_once()
+
+
+@pytest.mark.parametrize("value", ["DP1", "HDMI1"])
+def test_set_input_source(value: str):
+    with get_monitors_mock, mock.patch.object(
+        Monitor, "set_input_source"
+    ) as api_mock:
+        main(["--set-input-source", str(value)])
+        api_mock.assert_called_once_with(value)
+
+
+def test_get_monitors():
+    with get_monitors_mock, mock.patch.object(
+        Monitor, "get_input_source"
+    ) as input_source_api_mock, mock.patch.object(
+        Monitor, "get_vcp_capabilities"
+    ) as vcp_capabilities_api_mock:
+        main(["--get-monitors"])
+        input_source_api_mock.assert_called()
+        vcp_capabilities_api_mock.assert_called()

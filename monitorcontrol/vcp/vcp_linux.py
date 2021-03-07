@@ -198,7 +198,7 @@ class LinuxVCP(VCP):
 
     def get_vcp_capabilities(self):
         """
-        Gets capabilities string from the virtual control panel
+        Gets capabilities string from the virtual control panel.
 
         Returns:
             One long capabilities string in the format:

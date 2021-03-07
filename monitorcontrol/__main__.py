@@ -145,7 +145,7 @@ def main(argv: Optional[List[str]] = None):
         monitor_obj = get_monitors()[monitor_index]
         with monitor_obj:
             input_source = monitor_obj.get_input_source()
-        sys.stdout.write(input_source + "\n")
+        sys.stdout.write(str(input_source) + "\n")
         return
     elif args.set_input_source is not None:
         if args.monitor is None:

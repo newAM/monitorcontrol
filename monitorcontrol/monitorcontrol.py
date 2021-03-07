@@ -164,17 +164,18 @@ class Monitor:
         Gets the capabilities of the monitor
 
         Returns:
-            See _parse_capabilities() for complete dict defintion
-            Dictionary of capabilities in the following example format:
-            {'prot': 'monitor',
-             'type': 'LCD',
-             'cmds': {
-                        1: [],
-                        2: [],
-                        96: [15, 17, 18],
-                     }
-             'inputs': ['DP1', 'HDMI1', 'HDMI2']
-            }
+            Dictionary of capabilities in the following example format::
+
+                {
+                    "prot": "monitor",
+                    "type": "LCD",
+                    "cmds": {
+                            1: [],
+                            2: [],
+                            96: [15, 17, 18],
+                    },
+                    "inputs": ["DP1", "HDMI1", "HDMI2"],
+                }
         """
         assert (
             self._in_ctx
