@@ -1,6 +1,7 @@
 docs/cli.txt
 .vscode/
 public/
+*.orig
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

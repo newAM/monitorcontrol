@@ -1,3 +1,7 @@
+import sys
+
+# f strings require python 3.6
+assert sys.version_info >= (3, 6), "f strings require python 3.6"
 # incomplete list of VCP codes from the MCCS specification
 _VCP_CODE_DEFINTIONS = {
     "image_factory_default": {
@@ -22,6 +26,12 @@ _VCP_CODE_DEFINTIONS = {
         "name": "active control",
         "value": 0x52,
         "type": "ro",
+        "function": "nc",
+    },
+    "input_select": {
+        "name": "input select",
+        "value": 0x60,
+        "type": "rw",
         "function": "nc",
     },
     "image_orientation": {

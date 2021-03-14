@@ -21,6 +21,30 @@ class PowerMode(enum.Enum):
     off_hard = 0x05
 
 
+@enum.unique
+class InputSource(enum.Enum):
+    """ Monitor input sources. """
+
+    ANALOG1 = 0x01
+    ANALOG2 = 0x02
+    DVI1 = 0x03
+    DVI2 = 0x04
+    COMPOSITE1 = 0x05
+    COMPOSITE2 = 0x06
+    SVIDEO1 = 0x07
+    SVIDEO2 = 0x08
+    TUNER1 = 0x09
+    TUNER2 = 0x0A
+    TUNER3 = 0x0B
+    CMPONENT1 = 0x0C
+    CMPONENT2 = 0x0D
+    CMPONENT3 = 0x0E
+    DP1 = 0x0F
+    DP2 = 0x10
+    HDMI1 = 0x11
+    HDMI2 = 0x12
+
+
 class Monitor:
     """
     A physical monitor attached to a Virtual Control Panel (VCP).
@@ -103,7 +127,7 @@ class Monitor:
         ), "This function must be run within the context manager"
         if code.type == "ro":
             raise TypeError(f"cannot write read-only code: {code.name}")
-        elif code.type == "rw":
+        elif code.type == "rw" and code.function == "c":
             maximum = self._get_code_maximum(code)
             if value > maximum:
                 raise ValueError(
@@ -134,6 +158,33 @@ class Monitor:
 
         current, maximum = self.vcp.get_vcp_feature(code.value)
         return current
+
+    def get_vcp_capabilities(self) -> dict:
+        """
+        Gets the capabilities of the monitor
+
+        Returns:
+            Dictionary of capabilities in the following example format::
+
+                {
+                    "prot": "monitor",
+                    "type": "LCD",
+                    "cmds": {
+                            1: [],
+                            2: [],
+                            96: [15, 17, 18],
+                    },
+                    "inputs": ["DP1", "HDMI1", "HDMI2"],
+                }
+        """
+        assert (
+            self._in_ctx
+        ), "This function must be run within the context manager"
+
+        cap_str = self.vcp.get_vcp_capabilities()
+
+        res = _parse_capabilities(cap_str)
+        return res
 
     def get_luminance(self) -> int:
         """
@@ -278,10 +329,68 @@ class Monitor:
             mode_value = getattr(PowerMode, value).value
         elif isinstance(value, int):
             mode_value = PowerMode(value).value
+        elif isinstance(value, PowerMode):
+            mode_value = value.value
         else:
             raise TypeError("unsupported mode type: " + repr(type(value)))
 
         code = vcp.VCPCode("display_power_mode")
+        self._set_vcp_feature(code, mode_value)
+
+    def get_input_source(self) -> InputSource:
+        """
+        Gets the monitors input source
+
+        Returns:
+            Current input source.
+
+        Example:
+            Basic Usage::
+
+                from monitorcontrol import get_monitors
+
+                for monitor in get_monitors():
+                    with monitor:
+                        print(monitor.get_input_source())
+
+        Raises:
+            VCPError: Failed to get input source from the VCP.
+        """
+        code = vcp.VCPCode("input_select")
+        value = self._get_vcp_feature(code)
+        return InputSource(value).name
+
+    def set_input_source(self, value: Union[int, str, InputSource]):
+        """
+        Sets the monitors input source.
+
+        Args:
+            value: New input source
+
+        Example:
+            Basic Usage::
+
+                from monitorcontrol import get_monitors
+
+                for monitor in get_monitors():
+                    with monitor:
+                        print(monitor.set_input_source("DP1"))
+
+        Raises:
+            VCPError: Failed to get the input source.
+            KeyError: Set input source string is invalid.
+        """
+
+        if isinstance(value, str):
+            mode_value = getattr(InputSource, value.upper()).value
+        elif isinstance(value, int):
+            mode_value = InputSource(value).value
+        elif isinstance(value, InputSource):
+            mode_value = value.value
+        else:
+            raise TypeError("unsupported input type: " + repr(type(value)))
+
+        code = vcp.VCPCode("input_select")
         self._set_vcp_feature(code, mode_value)
 
 
@@ -330,3 +439,145 @@ def get_monitors() -> List[Monitor]:
                     monitor.set_luminance(100)
     """
     return [Monitor(v) for v in vcp.get_vcps()]
+
+
+def _extract_a_cap(caps_str: str, key: str) -> str:
+    """
+    Splits the capabilities string into individual sets.
+
+    Returns:
+        Dict of all values for the capability
+    """
+    start_of_filter = caps_str.upper().find(key.upper())
+
+    if start_of_filter == -1:
+        # not all keys are returned by monitor.
+        # Also sometimes the string has errors.
+        return ""
+
+    start_of_filter += len(key)
+    filtered_caps_str = caps_str[start_of_filter:]
+    end_of_filter = 0
+    for i in range(len(filtered_caps_str)):
+        if filtered_caps_str[i] == "(":
+            end_of_filter += 1
+        if filtered_caps_str[i] == ")":
+            end_of_filter -= 1
+        if end_of_filter == 0:
+            # dont change end_of_filter to remove the closing ")"
+            break
+
+    # 1:i to remove the first character "("
+    return filtered_caps_str[1:i]
+
+
+def _convert_to_dict(caps_str: str) -> dict:
+    """
+    Parses the VCP capabilities string to a dictionary.
+    Non continuous capabilities will include an array of
+    all supported values.
+
+    Returns:
+        Dict with all capabilities in hex
+
+    Example:
+        Expected string "04 14(05 06) 16" is converted to
+        {
+            0x04: [],
+            0x14: [0x05, 0x06],
+            0x16: [],
+        }
+    """
+
+    if len(caps_str) == 0:
+        # Sometimes the keys arent found and the extracting of
+        # capabilities returns an empty string.
+        return {}
+
+    start = 0
+    result_dict = {}
+    sub_key = None
+
+    for i in range(len(caps_str)):
+        if caps_str[i] in " ":
+            val = caps_str[start:i]
+
+            # sub arrays can end in ") " which is detected as
+            # an empty value. Filter those out.
+            if val == "":
+                continue
+
+            val = int(val, 16)
+            if sub_key is None:
+                result_dict[val] = []
+            else:
+                result_dict[sub_key].append(val)
+
+            start = i + 1  # +1 to skip the space
+        if caps_str[i] in "(":
+            sub_key = int(caps_str[start:i], 16)
+            result_dict[sub_key] = []
+            start = i + 1  # +1 to skip the (
+        if caps_str[i] in ")":
+            val = caps_str[start:i]
+
+            if val == "":
+                continue
+
+            val = int(val, 16)
+            result_dict[sub_key].append(val)
+
+            sub_key = None
+            start = i + 1  # +1 to skip the )
+    return result_dict
+
+
+def _parse_capabilities(caps_str: str) -> dict:
+    """
+    Converts the capabilities string into a nice dict
+    """
+    caps_dict = {
+        # Used to specify the protocol class
+        "prot": "",
+        # Identifies the type of display
+        "type": "",
+        # The display model number
+        "model": "",
+        # A list of supported VCP codes. Somehow not the same as "vcp"
+        "cmds": "",
+        # A list of supported VCP codes with a list of supported values
+        # for each nc code
+        "vcp": "",
+        # undocumented
+        "mswhql": "",
+        # undocumented
+        "asset_eep": "",
+        # MCCS version implemented
+        "mccs_ver": "",
+        # Specifies the window, window type (PIP or Zone) safe area size
+        # (bounded safe area) maximum size of the window, minimum size of
+        # the window, and window supports VCP codes for control/adjustment.
+        "window": "",
+        # Alternate name to be used for control
+        "vcpname": "",
+        # Parsed input sources into text. Not part of capabilities string.
+        "inputs": "",
+    }
+
+    for key in caps_dict:
+        if key in ["cmds", "vcp"]:
+            caps_dict[key] = _convert_to_dict(_extract_a_cap(caps_str, key))
+        else:
+            caps_dict[key] = _extract_a_cap(caps_str, key)
+
+    # Parse the input sources into a text list for readability
+    input_source_cap = vcp.VCPCode("input_select").value
+    if input_source_cap in caps_dict["vcp"]:
+        caps_dict["inputs"] = []
+        input_val_list = caps_dict["vcp"][input_source_cap]
+        input_val_list.sort()
+
+        for val in input_val_list:
+            caps_dict["inputs"].append(InputSource(val).name)
+
+    return caps_dict
