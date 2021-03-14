@@ -212,5 +212,5 @@ def test_get_vcp_capabilities(monitor: Monitor):
     print(inputs)
     if model != "ACER VG271U":
         raise AssertionError("Could not parse model")
-    if set(inputs) ^ set(["DP1", "HDMI1", "HDMI2"]) != set():
+    if set(inputs) != {"DP1", "HDMI1", "HDMI2"}:
         raise AssertionError("Could not parse input sources")

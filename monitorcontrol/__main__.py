@@ -107,7 +107,7 @@ def main(argv: Optional[List[str]] = None):
         monitor_index = args.monitor - 1
 
     if args.version:
-        sys.stdout.write("2.3.0\n")
+        sys.stdout.write(version + "\n")
         return
     elif args.get_luminance:
         monitor_obj = get_monitors()[monitor_index]

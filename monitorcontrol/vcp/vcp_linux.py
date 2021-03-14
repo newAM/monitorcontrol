@@ -291,7 +291,7 @@ class LinuxVCP(VCP):
             # update the offset and go again
             offset += length
 
-        self.logger.debug(f"\n\ncaps str={caps_str}\n")
+        self.logger.debug(f"caps str={caps_str}")
 
         if loop_count >= loop_count_limit:
             raise VCPIOError("Capabilities string incomplete or too long")
