@@ -1,8 +1,8 @@
 Change Log
 ##########
 
-Unreleased
-**********
+`2.4.0`_ 2021-03-14
+*******************
 
 Added
 =====
@@ -42,6 +42,7 @@ Added
 =====
 - Added a changelog.
 
+.. _2.4.0: https://github.com/newAM/monitorcontrol/releases/tag/2.4.0
 .. _2.3.0: https://github.com/newAM/monitorcontrol/releases/tag/2.3.0
 .. _2.2.0: https://github.com/newAM/monitorcontrol/releases/tag/2.2.0
 .. _2.1.1: https://github.com/newAM/monitorcontrol/releases/tag/2.1.1
