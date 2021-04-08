@@ -26,7 +26,7 @@ pep8-naming = "^0.11.1"
 pytest-cov = "^2.11.1"
 pytest = "^6.2.2"
 sphinx = "^3.5.3"
-sphinx-rtd-theme = "^0.5.1"
+sphinx-rtd-theme = "^0.5.2"
 voluptuous = "^0.12.1"
 
 [tool.poetry.scripts]
