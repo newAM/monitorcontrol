@@ -5,7 +5,7 @@ target-version = ["py36", "py37", "py38"]
 [tool.poetry]
 name = "monitorcontrol"
 description = "Monitor controls using MCCS over DDC-CI."
-version = "2.4.0"
+version = "2.4.1"
 authors = ["Alex M. <alexmgit@protonmail.com>"]
 license = "MIT"
 readme = "README.rst"
@@ -19,15 +19,15 @@ importlib_metadata = { version = ">=2,<4", markers = "python_version <= '3.7'"}
 
 [tool.poetry.dev-dependencies]
 black = { version = "20.8b1", allow-prereleases = true }
-coveralls = "^2.2.0"
-flake8-bugbear = "^21.4.3"
-flake8 = "^3.9.0"
-pep8-naming = "^0.11.1"
-pytest-cov = "^2.11.1"
-pytest = "^6.2.2"
-sphinx = "^3.5.3"
-sphinx-rtd-theme = "^0.5.1"
-voluptuous = "^0.12.1"
+coveralls = "^2"
+flake8-bugbear = "^21"
+flake8 = "^3"
+pep8-naming = "~0.11"
+pytest-cov = "^2"
+pytest = "^6"
+sphinx = "^3"
+sphinx-rtd-theme = "~0.5"
+voluptuous = "~0.12"
 
 [tool.poetry.scripts]
 monitorcontrol = "monitorcontrol.__main__:main"
