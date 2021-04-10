@@ -357,8 +357,8 @@ class Monitor:
             VCPError: Failed to get input source from the VCP.
         """
         code = vcp.VCPCode("input_select")
-        value = self._get_vcp_feature(code)
-        return InputSource(value).name
+        value = self._get_vcp_feature(code) & 0xFF
+        return InputSource(value)
 
     def set_input_source(self, value: Union[int, str, InputSource]):
         """

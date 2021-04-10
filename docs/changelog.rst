@@ -1,6 +1,15 @@
 Change Log
 ##########
 
+`2.4.1`_ 2021-04-10
+*******************
+
+Fixed
+=====
+- Fixed ``get_input_source`` failing for monitors that set the reserved byte.
+- Fixed ``get_input_source`` returning a ``str`` instead of a ``InputSource`` as
+  the type hint indicated.
+
 `2.4.0`_ 2021-03-14
 *******************
 
@@ -42,6 +51,7 @@ Added
 =====
 - Added a changelog.
 
+.. _2.4.1: https://github.com/newAM/monitorcontrol/releases/tag/2.4.1
 .. _2.4.0: https://github.com/newAM/monitorcontrol/releases/tag/2.4.0
 .. _2.3.0: https://github.com/newAM/monitorcontrol/releases/tag/2.3.0
 .. _2.2.0: https://github.com/newAM/monitorcontrol/releases/tag/2.2.0
