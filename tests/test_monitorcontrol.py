@@ -1,5 +1,6 @@
 from monitorcontrol import vcp
 from monitorcontrol.monitorcontrol import (
+    InputSource,
     get_monitors,
     get_vcps,
     Monitor,
@@ -7,6 +8,7 @@ from monitorcontrol.monitorcontrol import (
 from types import TracebackType
 from typing import Iterable, List, Optional, Tuple, Type, Union
 import pytest
+from unittest import mock
 
 
 # set to true to run the unit test on your monitors
@@ -174,35 +176,48 @@ def test_power_mode(
 @pytest.mark.parametrize(
     "mode, expected",
     [
-        ("ANALOG1", 0x01),
-        ("ANALOG2", 0x02),
-        ("DVI1", 0x03),
-        ("DVI2", 0x04),
-        ("COMPOSITE1", 0x05),
-        ("COMPOSITE2", 0x06),
-        ("SVIDEO1", 0x07),
-        ("SVIDEO2", 0x08),
-        ("TUNER1", 0x09),
-        ("TUNER2", 0x0A),
-        ("TUNER3", 0x0B),
-        ("CMPONENT1", 0x0C),
-        ("CMPONENT2", 0x0D),
-        ("CMPONENT3", 0x0E),
-        ("DP1", 0x0F),
-        ("DP2", 0x10),
-        ("HDMI1", 0x11),
-        ("HDMI2", 0x12),
+        (InputSource.ANALOG1, 0x01),
+        (InputSource.ANALOG2, 0x02),
+        (InputSource.DVI1, 0x03),
+        (InputSource.DVI2, 0x04),
+        (InputSource.COMPOSITE1, 0x05),
+        (InputSource.COMPOSITE2, 0x06),
+        (InputSource.SVIDEO1, 0x07),
+        (InputSource.SVIDEO2, 0x08),
+        (InputSource.TUNER1, 0x09),
+        (InputSource.TUNER2, 0x0A),
+        (InputSource.TUNER3, 0x0B),
+        (InputSource.CMPONENT1, 0x0C),
+        (InputSource.CMPONENT2, 0x0D),
+        (InputSource.CMPONENT3, 0x0E),
+        (InputSource.DP1, 0x0F),
+        (InputSource.DP2, 0x10),
+        (InputSource.HDMI1, 0x11),
+        (InputSource.HDMI2, 0x12),
     ],
 )
 def test_input_source(
     monitor: Monitor,
     mode: Union[str, int],
-    expected: Union[int, Type[Exception]],
+    expected: Tuple[InputSource, int],
 ):
-    if isinstance(expected, (int, str)):
-        monitor.set_input_source(mode)
-        read_source = monitor.get_input_source()
-        assert read_source == mode
+    monitor.set_input_source(mode)
+    read_source = monitor.get_input_source()
+    assert read_source == mode
+
+
+@pytest.mark.skipif(
+    USE_ATTACHED_MONITORS, reason="No value in testing this with real monitors"
+)
+def test_input_source_issue_59(monitor: Monitor):
+    """
+    Some monitors seem to duplicate the low byte (input source)
+    to the high byte (reserved).
+    See https://github.com/newAM/monitorcontrol/issues/59
+    """
+    with mock.patch.object(monitor, "_get_vcp_feature", return_value=0x1010):
+        input_source = monitor.get_input_source()
+        assert input_source == InputSource.DP2
 
 
 def test_get_vcp_capabilities(monitor: Monitor):
