@@ -24,6 +24,7 @@ class PowerMode(enum.Enum):
 @enum.unique
 class InputSource(enum.Enum):
     """ Monitor input sources. """
+
     OFF = 0x00
     ANALOG1 = 0x01
     ANALOG2 = 0x02
