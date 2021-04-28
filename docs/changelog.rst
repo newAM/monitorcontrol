@@ -1,6 +1,15 @@
 Change Log
 ##########
 
+`2.4.2`_ 2021-04-27
+*******************
+
+Fixed
+=====
+- Fixed an exception that occured when getting the input source from a
+  powered off monitor.
+
+
 `2.4.1`_ 2021-04-10
 *******************
 
@@ -51,6 +60,7 @@ Added
 =====
 - Added a changelog.
 
+.. _2.4.2: https://github.com/newAM/monitorcontrol/releases/tag/2.4.2
 .. _2.4.1: https://github.com/newAM/monitorcontrol/releases/tag/2.4.1
 .. _2.4.0: https://github.com/newAM/monitorcontrol/releases/tag/2.4.0
 .. _2.3.0: https://github.com/newAM/monitorcontrol/releases/tag/2.3.0
