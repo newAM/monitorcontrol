@@ -6,9 +6,8 @@ Change Log
 
 Fixed
 =====
-- Fixed an exception that occured when getting the input source from a
+- Fixed an exception that occurred when getting the input source from a
   powered off monitor.
-
 
 `2.4.1`_ 2021-04-10
 *******************
