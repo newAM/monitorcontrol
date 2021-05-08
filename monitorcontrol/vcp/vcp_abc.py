@@ -4,19 +4,19 @@ from typing import Optional, Tuple, Type
 
 
 class VCPError(Exception):
-    """ Base class for all VCP related errors. """
+    """Base class for all VCP related errors."""
 
     pass
 
 
 class VCPIOError(VCPError):
-    """ Raised on VCP IO errors. """
+    """Raised on VCP IO errors."""
 
     pass
 
 
 class VCPPermissionError(VCPError):
-    """ Raised on VCP permission errors. """
+    """Raised on VCP permission errors."""
 
     pass
 

@@ -50,7 +50,7 @@ def test_writeable(test_type: str, writeable: bool):
 
 
 def test_properties_value():
-    """ Test that dictionary values propagate to properties. """
+    """Test that dictionary values propagate to properties."""
     test_name = "unit test"
     test_value = 0x123456789
     test_type = "unit test type"

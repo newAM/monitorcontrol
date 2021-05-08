@@ -77,27 +77,27 @@ class VCPCode:
 
     @property
     def name(self) -> int:
-        """ Friendly name of the code. """
+        """Friendly name of the code."""
         return self.definition["name"]
 
     @property
     def value(self) -> int:
-        """ Value of the code. """
+        """Value of the code."""
         return self.definition["value"]
 
     @property
     def type(self) -> str:
-        """ Type of the code. """
+        """Type of the code."""
         return self.definition["type"]
 
     @property
     def function(self) -> str:
-        """ Function of the code. """
+        """Function of the code."""
         return self.definition["function"]
 
     @property
     def readable(self) -> bool:
-        """ Returns true if the code can be read. """
+        """Returns true if the code can be read."""
         if self.type == "wo":
             return False
         else:
@@ -105,7 +105,7 @@ class VCPCode:
 
     @property
     def writeable(self) -> bool:
-        """ Returns true if the code can be written. """
+        """Returns true if the code can be written."""
         if self.type == "ro":
             return False
         else:

@@ -316,7 +316,7 @@ class LinuxVCP(VCP):
         return checksum
 
     def rate_limt(self):
-        """ Rate limits messages to the VCP. """
+        """Rate limits messages to the VCP."""
         if self.last_set is None:
             return
 

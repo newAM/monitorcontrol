@@ -1,6 +1,12 @@
 name: Tests
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+    tags:
+  pull_request:
+
 
 jobs:
   style:
@@ -13,7 +19,7 @@ jobs:
       - name: Install Poetry
         uses: abatilo/actions-poetry@v2.1.2
         with:
-          poetry-version: "1.1.4"
+          poetry-version: "1.1.6"
       - name: Poetry Install
         run: poetry install
       - name: Run flake8
@@ -31,7 +37,7 @@ jobs:
       - name: Install Poetry
         uses: abatilo/actions-poetry@v2.1.2
         with:
-          poetry-version: "1.1.4"
+          poetry-version: "1.1.6"
       - name: Poetry Install
         run: poetry install
       - name: Run sphinx
@@ -51,17 +57,38 @@ jobs:
       - name: Install Poetry
         uses: abatilo/actions-poetry@v2.1.2
         with:
-          poetry-version: "1.1.4"
+          poetry-version: "1.1.6"
       - name: Poetry Install
         run: poetry install
       - name: Run pytest
         run: poetry run pytest -vvv --cov=monitorcontrol
-      - name: Upload Coverage
-        run: poetry run coveralls
+      - name: Upload coverage data to coveralls.io
+        run: poetry run coveralls --service=github
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COVERALLS_FLAG_NAME: ${{ matrix.python-version }}
+          COVERALLS_FLAG_NAME: py${{ matrix.python-version }}
           COVERALLS_PARALLEL: true
+
+  coveralls:
+    name: Indicate completion to coveralls.io
+    needs: pytest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2.1.2
+        with:
+          poetry-version: "1.1.6"
+      - name: Poetry Install
+        run: poetry install
+      - name: Finished
+        run: poetry run coveralls --finish --service=github
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   release:
     name: PyPi Release
@@ -76,7 +103,7 @@ jobs:
       - name: Install Poetry
         uses: abatilo/actions-poetry@v2.1.2
         with:
-          poetry-version: "1.1.4"
+          poetry-version: "1.1.6"
       - name: Poetry Install
         run: poetry install
       - name: Poetry publish

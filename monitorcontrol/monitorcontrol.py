@@ -7,7 +7,7 @@ import sys
 
 @enum.unique
 class PowerMode(enum.Enum):
-    """ Monitor power modes. """
+    """Monitor power modes."""
 
     #: On.
     on = 0x01
@@ -23,7 +23,7 @@ class PowerMode(enum.Enum):
 
 @enum.unique
 class InputSource(enum.Enum):
-    """ Monitor input sources. """
+    """Monitor input sources."""
 
     OFF = 0x00
     ANALOG1 = 0x01
