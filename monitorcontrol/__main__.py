@@ -76,7 +76,7 @@ def get_parser() -> argparse.ArgumentParser:
 
 
 def count_to_level(count: int) -> int:
-    """ Number of -v to a logging level. """
+    """Number of -v to a logging level."""
     if count == 1:
         return logging.ERROR
     elif count == 2:
