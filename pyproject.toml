@@ -5,7 +5,7 @@ target-version = ["py36", "py37", "py38"]
 [tool.poetry]
 name = "monitorcontrol"
 description = "Monitor controls using MCCS over DDC-CI."
-version = "2.4.2"
+version = "2.5.0"
 authors = ["Alex M. <alexmgit@protonmail.com>"]
 license = "MIT"
 readme = "README.rst"
