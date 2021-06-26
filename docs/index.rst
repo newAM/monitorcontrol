@@ -5,7 +5,6 @@
    :caption: Contents
 
    api
-   changelog
    cli
    issues
    license
