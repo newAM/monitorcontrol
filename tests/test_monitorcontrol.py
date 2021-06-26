@@ -1,6 +1,7 @@
 from monitorcontrol import vcp
 from monitorcontrol.monitorcontrol import (
     InputSource,
+    InputSourceValueError,
     get_monitors,
     get_vcps,
     Monitor,
@@ -204,6 +205,19 @@ def test_input_source(
     monitor.set_input_source(mode)
     read_source = monitor.get_input_source()
     assert read_source == mode
+
+
+@pytest.mark.skipif(USE_ATTACHED_MONITORS, reason="This is mocked")
+def test_get_input_source_type_c(monitor: Monitor):
+    type_c_input = 27
+    with mock.patch.object(
+        monitor, "_get_vcp_feature", return_value=type_c_input
+    ):
+        try:
+            monitor.get_input_source()
+            assert 0, "Did not raise InputSourceValueError"
+        except InputSourceValueError as e:
+            assert e.value == type_c_input
 
 
 @pytest.mark.skipif(
