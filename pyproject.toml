@@ -22,7 +22,7 @@ black = { version = "21.6b0", allow-prereleases = true, markers = "python_versio
 coveralls = "^3"
 flake8-bugbear = "^21"
 flake8 = "^3"
-pep8-naming = "~0.11"
+pep8-naming = "~0.12"
 pytest-cov = "^2"
 pytest = "^6"
 sphinx = "^4"
