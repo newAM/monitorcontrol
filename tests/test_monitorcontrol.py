@@ -5,6 +5,7 @@ from monitorcontrol.monitorcontrol import (
     get_monitors,
     get_vcps,
     Monitor,
+    _convert_to_dict,
 )
 from types import TracebackType
 from typing import Iterable, List, Optional, Tuple, Type, Union
@@ -243,3 +244,70 @@ def test_get_vcp_capabilities(monitor: Monitor):
         raise AssertionError("Could not parse model")
     if set(inputs) != {"DP1", "HDMI1", "HDMI2"}:
         raise AssertionError("Could not parse input sources")
+
+
+def test_convert_to_dict():
+    # https://github.com/newAM/monitorcontrol/issues/110
+    caps_str = (
+        "02 04 05 08 10 12 14(05 08 0B ) "
+        "16 18 1A 52 60( 11 12 0F 10) AC "
+        "AE B2 B6 C0 C6 C8 C9 D6(01 04) "
+        "DF 62 8D F4 F5(00 01 02) F6(00 01 02) "
+        "4D 4E 4F 15(01 06 09 10 11 13 14 28 29 32  44 48) "
+        "F7(00 01 02 03) F8(00 01) F9 EF FD(00 01) FE(00 01 02) FF"
+    )
+    expected = {
+        0x02: [],
+        0x04: [],
+        0x05: [],
+        0x08: [],
+        0x10: [],
+        0x12: [],
+        0x14: [0x05, 0x08, 0x0B],
+        0x16: [],
+        0x18: [],
+        0x1A: [],
+        0x52: [],
+        0x60: [0x11, 0x12, 0x0F, 0x10],
+        0xAC: [],
+        0xAE: [],
+        0xB2: [],
+        0xB6: [],
+        0xC0: [],
+        0xC6: [],
+        0xC8: [],
+        0xC9: [],
+        0xD6: [0x01, 0x04],
+        0xDF: [],
+        0x62: [],
+        0x8D: [],
+        0xF4: [],
+        0xF5: [0x00, 0x01, 0x02],
+        0xF6: [0x00, 0x01, 0x02],
+        0x4D: [],
+        0x4E: [],
+        0x4F: [],
+        0x15: [
+            0x01,
+            0x06,
+            0x09,
+            0x10,
+            0x11,
+            0x13,
+            0x14,
+            0x28,
+            0x29,
+            0x32,
+            0x44,
+            0x48,
+        ],
+        0xF7: [0x00, 0x01, 0x02, 0x03],
+        0xF8: [0x00, 0x01],
+        0xF9: [],
+        0xEF: [],
+        0xFD: [0x00, 0x01],
+        0xFE: [0x00, 0x01, 0x02],
+        0xFF: [],
+    }
+
+    assert _convert_to_dict(caps_str) == expected
