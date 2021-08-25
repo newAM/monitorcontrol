@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html),
 as of version 2.1.1.
 
+## [2.5.1] - 2021-08-25
+### Fixed
+- Fixed a bug in capabilities parsing.
+
 ## [2.5.0] - 2021-06-26
 ### Added
 - Added support for selecting input sources outside of the MCCS specification.
@@ -51,7 +55,8 @@ as of version 2.1.1.
 - Added a changelog.
 
 
-[Unreleased]: https://github.com/newAM/monitorcontrol/compare/2.5.0...HEAD
+[Unreleased]: https://github.com/newAM/monitorcontrol/compare/2.5.1...HEAD
+[2.5.1]: https://github.com/newAM/monitorcontrol/compare/2.5.0...2.5.1
 [2.5.0]: https://github.com/newAM/monitorcontrol/compare/2.4.2...2.5.0
 [2.4.2]: https://github.com/newAM/monitorcontrol/compare/2.4.1...2.4.2
 [2.4.1]: https://github.com/newAM/monitorcontrol/compare/2.4.0...2.4.1
