@@ -515,12 +515,13 @@ def _convert_to_dict(caps_str: str) -> dict:
         Dict with all capabilities in hex
 
     Example:
-        Expected string "04 14(05 06) 16" is converted to
-        {
-            0x04: [],
-            0x14: [0x05, 0x06],
-            0x16: [],
-        }
+        Expected string "04 14(05 06) 16" is converted to::
+
+            {
+                0x04: [],
+                0x14: [0x05, 0x06],
+                0x16: [],
+            }
     """
 
     if len(caps_str) == 0:
@@ -528,41 +529,24 @@ def _convert_to_dict(caps_str: str) -> dict:
         # capabilities returns an empty string.
         return {}
 
-    start = 0
     result_dict = {}
-    sub_key = None
-
-    for i in range(len(caps_str)):
-        if caps_str[i] in " ":
-            val = caps_str[start:i]
-
-            # sub arrays can end in ") " which is detected as
-            # an empty value. Filter those out.
-            if val == "":
-                continue
-
-            val = int(val, 16)
-            if sub_key is None:
+    group = None
+    prev_digit = None
+    for chunk in caps_str.replace("(", " ( ").replace(")", " ) ").split(" "):
+        if chunk == "":
+            continue
+        elif chunk == "(":
+            group = prev_digit
+        elif chunk == ")":
+            group = None
+        else:
+            val = int(chunk, 16)
+            if group is None:
                 result_dict[val] = []
             else:
-                result_dict[sub_key].append(val)
+                result_dict[group].append(val)
+            prev_digit = val
 
-            start = i + 1  # +1 to skip the space
-        if caps_str[i] in "(":
-            sub_key = int(caps_str[start:i], 16)
-            result_dict[sub_key] = []
-            start = i + 1  # +1 to skip the (
-        if caps_str[i] in ")":
-            val = caps_str[start:i]
-
-            if val == "":
-                continue
-
-            val = int(val, 16)
-            result_dict[sub_key].append(val)
-
-            sub_key = None
-            start = i + 1  # +1 to skip the )
     return result_dict
 
 
