@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: "3.9"
       - name: Install Poetry
-        uses: abatilo/actions-poetry@v2.1.2
+        uses: abatilo/actions-poetry@v2.1.3
         with:
           poetry-version: "1.1.6"
       - name: Poetry Install
@@ -36,7 +36,7 @@ jobs:
         with:
           python-version: "3.9"
       - name: Install Poetry
-        uses: abatilo/actions-poetry@v2.1.2
+        uses: abatilo/actions-poetry@v2.1.3
         with:
           poetry-version: "1.1.6"
       - name: Poetry Install
@@ -56,7 +56,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Poetry
-        uses: abatilo/actions-poetry@v2.1.2
+        uses: abatilo/actions-poetry@v2.1.3
         with:
           poetry-version: "1.1.6"
       - name: Poetry Install
@@ -81,7 +81,7 @@ jobs:
         with:
           python-version: "3.9"
       - name: Install Poetry
-        uses: abatilo/actions-poetry@v2.1.2
+        uses: abatilo/actions-poetry@v2.1.3
         with:
           poetry-version: "1.1.6"
       - name: Poetry Install
@@ -102,7 +102,7 @@ jobs:
         with:
           python-version: "3.8"
       - name: Install Poetry
-        uses: abatilo/actions-poetry@v2.1.2
+        uses: abatilo/actions-poetry@v2.1.3
         with:
           poetry-version: "1.1.6"
       - name: Poetry Install
