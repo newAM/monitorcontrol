@@ -1,17 +1,11 @@
 from . import get_monitors, PowerMode, InputSource
 from typing import List, Optional
 import argparse
+import importlib.metadata
 import logging
 import sys
 
-if sys.version_info >= (3, 8):
-    import importlib.metadata
-
-    version = importlib.metadata.version("monitorcontrol")
-else:
-    import importlib_metadata
-
-    version = importlib_metadata.version("monitorcontrol")
+version = importlib.metadata.version("monitorcontrol")
 
 
 def get_parser() -> argparse.ArgumentParser:
