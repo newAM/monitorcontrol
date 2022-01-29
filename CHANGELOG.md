@@ -8,10 +8,13 @@ as of version 2.1.1.
 
 ## [Unreleased]
 ### Added
-- Added support for python 3.10
+- Added support for python 3.10.
+
+### Changed
+- Updated pyudev from 0.22 to 0.23.
 
 ### Removed
-- Removed support for python 3.6 and 3.7
+- Removed support for python 3.6 and 3.7.
 
 ## [2.5.1] - 2021-08-25
 ### Fixed
