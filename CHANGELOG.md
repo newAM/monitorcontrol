@@ -12,6 +12,7 @@ as of version 2.1.1.
 
 ### Changed
 - Updated pyudev from 0.22 to 0.23.
+- Changed `get_vcp_capabilities()["inputs"]` from `List[str]` to `Union[InputSource, int]`.
 
 ### Removed
 - Removed support for python 3.6 and 3.7.

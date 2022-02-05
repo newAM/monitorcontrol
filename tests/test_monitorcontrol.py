@@ -34,9 +34,10 @@ class UnitTestVCP(vcp.VCP):
         return (
             "(prot(monitor)type(LCD)model(ACER VG271U)cmds(01 02 03 07 0C"
             " E3 F3)vcp(04 10 12 14(05 06 08 0B) 16 18 1A 59 5A 5B 5C 5D"
-            " 5E 60(0F 11 12)62 9B 9C 9D 9E 9F A0 D6 E0(00 04 05 06) E1(00"
-            " 01 02)E2(00 01 02 03 05 06 07 0B 10 11 12)E3 E4 E5 E7(00 01"
-            " 02) E8(00 01 02 03 04)) mswhql(1)asset_eep(40)mccs_ver(2.2))"
+            " 5E 60(00 0F 11 12 24)62 9B 9C 9D 9E 9F A0 D6 E0(00 04 05 06)"
+            "E1(00 01 02)E2(00 01 02 03 05 06 07 0B 10 11 12)E3 E4 E5"
+            " E7(00 01 02) E8(00 01 02 03 04))"
+            " mswhql(1)asset_eep(40)mccs_ver(2.2))"
         )
 
     def __enter__(self):
@@ -171,7 +172,7 @@ def test_power_mode(
             monitor.set_power_mode(mode)
 
 
-# ASUS VG27A when set to a mode that doesnt exist returnd analog1 (0x1)
+# ASUS VG27A when set to a mode that doesnt exist returned analog1 (0x1)
 @pytest.mark.skipif(
     USE_ATTACHED_MONITORS, reason="Real monitors dont support all input types"
 )
@@ -239,11 +240,14 @@ def test_get_vcp_capabilities(monitor: Monitor):
     monitors_dict = monitor.get_vcp_capabilities()
     model = monitors_dict["model"]
     inputs = monitors_dict["inputs"]
-    print(inputs)
-    if model != "ACER VG271U":
-        raise AssertionError("Could not parse model")
-    if set(inputs) != {"DP1", "HDMI1", "HDMI2"}:
-        raise AssertionError("Could not parse input sources")
+    assert model == "ACER VG271U"
+    assert inputs == [
+        InputSource.OFF,
+        InputSource.DP1,
+        InputSource.HDMI1,
+        InputSource.HDMI2,
+        36,
+    ]
 
 
 def test_convert_to_dict():

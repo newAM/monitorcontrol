@@ -190,7 +190,13 @@ class Monitor:
                             2: [],
                             96: [15, 17, 18],
                     },
-                    "inputs": ["DP1", "HDMI1", "HDMI2"],
+                    "inputs": [
+                        InputSource.DP1,
+                        InputSource.HDMI1,
+                        InputSource.HDMI2
+                        # this may return integers for out-of-spec values,
+                        # such as USB Type-C monitors
+                    ],
                 }
         """
         assert (
@@ -596,6 +602,11 @@ def _parse_capabilities(caps_str: str) -> dict:
         input_val_list.sort()
 
         for val in input_val_list:
-            caps_dict["inputs"].append(InputSource(val).name)
+            try:
+                input_source = InputSource(val)
+            except ValueError:
+                input_source = val
+
+            caps_dict["inputs"].append(input_source)
 
     return caps_dict
