@@ -9,7 +9,7 @@
   };
 
   outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
+    flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ] (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
         pyproject = nixpkgs.lib.importTOML ./pyproject.toml;
@@ -17,7 +17,7 @@
       rec {
         packages.default = pkgs.python3.pkgs.buildPythonPackage rec {
           pname = pyproject.tool.poetry.name;
-          version = pyproject.tool.poetry.version;
+          inherit (pyproject.tool.poetry) version;
           format = "pyproject";
 
           src = ./.;
@@ -45,13 +45,25 @@
           '';
 
           meta = with nixpkgs.lib; {
+            inherit (pyproject.tool.poetry) description;
             homepage = pyproject.tool.poetry.repository;
-            description = pyproject.tool.poetry.description;
             license = with licenses; [ mit ];
           };
         };
         apps.default = flake-utils.lib.mkApp { drv = packages.default; };
         devShells.default = packages.default;
+
+        checks = {
+          format = pkgs.runCommand "format" { } ''
+            ${pkgs.nixpkgs-fmt}/bin/nixpkgs-fmt --check ${./.}
+            touch $out
+          '';
+
+          lint = pkgs.runCommand "lint" { } ''
+            ${pkgs.statix}/bin/statix check ${./.}
+            touch $out
+          '';
+        };
       }
     );
 }
