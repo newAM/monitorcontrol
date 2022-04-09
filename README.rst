@@ -8,7 +8,7 @@ over the Display Data Channel Command Interface Standard (DDC-CI).
 
 Supported Platforms
 *******************
--  Linux (tested with Ubuntu desktop 20.04 LTS)
+-  Linux (tested with NixOS)
 -  Windows (tested with Windows 10)
 
 Windows Install

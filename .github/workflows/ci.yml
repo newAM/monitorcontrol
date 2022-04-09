@@ -10,6 +10,14 @@ on:
 
 
 jobs:
+  nixpkg:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: cachix/install-nix-action@v17
+    - run: nix build -L
+    - run: nix flake check -L
+
   style:
     runs-on: ubuntu-latest
     steps:
@@ -20,7 +28,7 @@ jobs:
       - name: Install Poetry
         uses: abatilo/actions-poetry@v2.1.4
         with:
-          poetry-version: "1.1.11"
+          poetry-version: "1.1.13"
       - name: Poetry Install
         run: poetry install
       - name: Run flake8
@@ -38,7 +46,7 @@ jobs:
       - name: Install Poetry
         uses: abatilo/actions-poetry@v2.1.4
         with:
-          poetry-version: "1.1.11"
+          poetry-version: "1.1.13"
       - name: Poetry Install
         run: poetry install
       - name: Run sphinx
@@ -58,7 +66,7 @@ jobs:
       - name: Install Poetry
         uses: abatilo/actions-poetry@v2.1.4
         with:
-          poetry-version: "1.1.11"
+          poetry-version: "1.1.13"
       - name: Poetry Install
         run: poetry install
       - name: Run pytest
@@ -83,7 +91,7 @@ jobs:
       - name: Install Poetry
         uses: abatilo/actions-poetry@v2.1.4
         with:
-          poetry-version: "1.1.11"
+          poetry-version: "1.1.13"
       - name: Poetry Install
         run: poetry install
       - name: Finished
@@ -95,7 +103,11 @@ jobs:
     name: PyPi Release
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
-    needs: [pytest, docs, style]
+    needs:
+      - pytest
+      - docs
+      - style
+      - nixpkg
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
@@ -104,7 +116,7 @@ jobs:
       - name: Install Poetry
         uses: abatilo/actions-poetry@v2.1.4
         with:
-          poetry-version: "1.1.11"
+          poetry-version: "1.1.13"
       - name: Poetry Install
         run: poetry install
       - name: Poetry publish
