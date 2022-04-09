@@ -17,6 +17,10 @@ as of version 2.1.1.
 ### Removed
 - Removed support for python 3.6 and 3.7.
 
+### Fixed
+- Increased the length limit for the capabilities string on Linux.
+  - This fixes some occurrences of the "Capabilities string incomplete or too long" error.
+
 ## [2.5.1] - 2021-08-25
 ### Fixed
 - Fixed a bug in capabilities parsing.
