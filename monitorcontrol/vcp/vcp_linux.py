@@ -221,7 +221,7 @@ class LinuxVCP(VCP):
 
         # Keep a count going to keep things sane
         loop_count = 0
-        loop_count_limit = 20
+        loop_count_limit = 40
 
         while loop_count < loop_count_limit:
             loop_count += 1
