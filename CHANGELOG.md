@@ -6,13 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html),
 as of version 2.1.1.
 
-## [Unreleased]
+## [3.0.0] - 2022-04-09
 ### Added
 - Added support for python 3.10.
 
 ### Changed
 - Updated pyudev from 0.22 to 0.23.
-- Changed `get_vcp_capabilities()["inputs"]` from `List[str]` to `Union[InputSource, int]`.
+- Changed `get_vcp_capabilities()["inputs"]` from `List[str]` to `List[Union[InputSource, int]]`.
 
 ### Removed
 - Removed support for python 3.6 and 3.7.
@@ -70,7 +70,8 @@ as of version 2.1.1.
 - Added a changelog.
 
 
-[Unreleased]: https://github.com/newAM/monitorcontrol/compare/2.5.1...HEAD
+[Unreleased]: https://github.com/newAM/monitorcontrol/compare/3.0.0...HEAD
+[3.0.0]: https://github.com/newAM/monitorcontrol/compare/2.5.1...3.0.0
 [2.5.1]: https://github.com/newAM/monitorcontrol/compare/2.5.0...2.5.1
 [2.5.0]: https://github.com/newAM/monitorcontrol/compare/2.4.2...2.5.0
 [2.4.2]: https://github.com/newAM/monitorcontrol/compare/2.4.1...2.4.2
