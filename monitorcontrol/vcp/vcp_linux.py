@@ -250,11 +250,15 @@ class LinuxVCP(VCP):
 
             # read the data
             header = self.read_bytes(self.GET_VCP_HEADER_LENGTH)
-            self.logger.debug(f"response header={header}")
+            self.logger.debug(
+                "header=" + " ".join([f"{x:02X}" for x in header])
+            )
             source, length = struct.unpack("BB", header)
             length &= ~self.PROTOCOL_FLAG  # clear protocol flag
             payload = self.read_bytes(length + 1)
-            self.logger.debug(f"payload={payload}")
+            self.logger.debug(
+                "payload=" + " ".join([f"{x:02X}" for x in payload])
+            )
 
             # check if length is valid
             if length < 3 or length > 35:
