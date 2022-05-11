@@ -8,7 +8,7 @@ as of version 2.1.1.
 
 ## [3.0.1] - 2022-05-11
 ### Fixed
-- Fixed the checksum calculation to work with more monitors on Linux.
+- Fixed the checksum calculation on Linux.
 
 ## [3.0.0] - 2022-04-09
 ### Added
