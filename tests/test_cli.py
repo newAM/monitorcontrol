@@ -2,11 +2,9 @@ from .test_monitorcontrol import UnitTestVCP
 from monitorcontrol import Monitor
 from monitorcontrol.__main__ import main
 from unittest import mock
-import monitorcontrol
-import os
-import pytest
 import sys
-import toml
+import monitorcontrol
+import pytest
 
 get_monitors_mock = mock.patch.object(
     monitorcontrol.__main__,
@@ -16,17 +14,9 @@ get_monitors_mock = mock.patch.object(
 
 
 def test_version():
-    toml_path = os.path.join(
-        os.path.abspath(os.path.dirname(__file__)), "..", "pyproject.toml"
-    )
-    with open(toml_path, "r") as f:
-        pyproject = toml.load(f)
-
-    toml_version = pyproject["tool"]["poetry"]["version"]
-
     with mock.patch.object(sys.stdout, "write") as stdout_mock:
         main(["--version"])
-        stdout_mock.assert_called_once_with(f"{toml_version}\n")
+        stdout_mock.assert_called_once()
 
 
 def test_get_luminance():
@@ -61,3 +51,31 @@ def test_set_power(value: int):
     ) as api_mock:
         main(["--set-power", str(value)])
         api_mock.assert_called_once_with(value)
+
+
+def test_get_input_source():
+    with get_monitors_mock, mock.patch.object(
+        Monitor, "get_input_source"
+    ) as api_mock:
+        main(["--get-input-source"])
+        api_mock.assert_called_once()
+
+
+@pytest.mark.parametrize("value", ["DP1", "HDMI1"])
+def test_set_input_source(value: str):
+    with get_monitors_mock, mock.patch.object(
+        Monitor, "set_input_source"
+    ) as api_mock:
+        main(["--set-input-source", str(value)])
+        api_mock.assert_called_once_with(value)
+
+
+def test_get_monitors():
+    with get_monitors_mock, mock.patch.object(
+        Monitor, "get_input_source"
+    ) as input_source_api_mock, mock.patch.object(
+        Monitor, "get_vcp_capabilities"
+    ) as vcp_capabilities_api_mock:
+        main(["--get-monitors"])
+        input_source_api_mock.assert_called()
+        vcp_capabilities_api_mock.assert_called()

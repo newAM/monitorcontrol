@@ -5,32 +5,32 @@ target-version = ["py36", "py37", "py38"]
 [tool.poetry]
 name = "monitorcontrol"
 description = "Monitor controls using MCCS over DDC-CI."
-version = "2.3.0"  # update --version command
-authors = ["Alex M. <alexmgit@protonmail.com>"]
+version = "3.0.0"
+authors = ["Alex Martens <alex@thinglab.org>"]
 license = "MIT"
 readme = "README.rst"
 repository = "https://github.com/newAM/monitorcontrol"
 documentation = "https://monitorcontrol.readthedocs.io/en/latest/"
 
 [tool.poetry.dependencies]
-python = "^3.6"
-pyudev = { version = "^0.22.0", markers = "sys_platform != 'win32'" }
+python = "^3.8"
+pyudev = { version = "^0.23", markers = "sys_platform != 'win32'" }
 
 [tool.poetry.dev-dependencies]
-black = { version = "20.8b1", allow-prereleases = true }
-coveralls = "^2.2.0"
-flake8-bugbear = "^20.1.4"
-flake8 = "^3.8.3"
-pep8-naming = "^0.11.1"
-pytest-cov = "^2.10.0"
-pytest = "^6.1.2"
-sphinx = "^3.3.1"
-sphinx-rtd-theme = "^0.5.0"
-voluptuous = "^0.12.0"
+black = "22.3.0"
+coveralls = "^3"
+flake8-bugbear = "^22"
+flake8 = "^4"
+pep8-naming = "~0.12"
+pytest-cov = "^3"
+pytest = "^7"
+sphinx = "^4"
+sphinx-rtd-theme = "^1"
+voluptuous = "~0.13"
 
 [tool.poetry.scripts]
 monitorcontrol = "monitorcontrol.__main__:main"
 
 [build-system]
 requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+build-backend = "poetry.core.masonry.api"

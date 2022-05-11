@@ -1,6 +1,7 @@
 docs/cli.txt
 .vscode/
 public/
+*.orig
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -122,3 +123,5 @@ dmypy.json
 # IDE/Editor files
 *.sublime-project
 *.sublime-workspace
+
+/result
