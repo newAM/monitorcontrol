@@ -38,7 +38,7 @@ class LinuxVCP(VCP):
 
     # addresses
     DDCCI_ADDR = 0x37  # DDC-CI command address on the I2C bus
-    HOST_ADDRESS = 0x50  # virtual I2C slave address of the host
+    HOST_ADDRESS = 0x51  # virtual I2C slave address of the host
     I2C_SLAVE = 0x0703  # I2C bus slave address
 
     GET_VCP_RESULT_CODES = {
@@ -110,9 +110,12 @@ class LinuxVCP(VCP):
         # add headers and footers
         data.insert(0, (len(data) | self.PROTOCOL_FLAG))
         data.insert(0, self.HOST_ADDRESS)
-        data.append(self.get_checksum(data))
+        data.append(
+            self.get_checksum(bytearray([self.DDCCI_ADDR << 1]) + data)
+        )
 
         # write data
+        self.logger.debug("data=" + " ".join([f"{x:02X}" for x in data]))
         self.write_bytes(data)
 
         # store time of last set VCP
@@ -141,24 +144,26 @@ class LinuxVCP(VCP):
         # add headers and footers
         data.insert(0, (len(data) | self.PROTOCOL_FLAG))
         data.insert(0, self.HOST_ADDRESS)
-        data.append(self.get_checksum(data))
-        self.logger.debug(f"data={data}")
+        data.append(
+            self.get_checksum(bytearray([self.DDCCI_ADDR << 1]) + data)
+        )
 
         # write data
+        self.logger.debug("data=" + " ".join([f"{x:02X}" for x in data]))
         self.write_bytes(data)
 
         time.sleep(self.GET_VCP_TIMEOUT)
 
         # read the data
         header = self.read_bytes(self.GET_VCP_HEADER_LENGTH)
-        self.logger.debug(f"header={header}")
-        source, length = struct.unpack("BB", header)
+        self.logger.debug("header=" + " ".join([f"{x:02X}" for x in header]))
+        source, length = struct.unpack("=BB", header)
         length &= ~self.PROTOCOL_FLAG  # clear protocol flag
         payload = self.read_bytes(length + 1)
-        self.logger.debug(f"payload={payload}")
+        self.logger.debug("payload=" + " ".join([f"{x:02X}" for x in payload]))
 
         # check checksum
-        payload, checksum = struct.unpack(f"{length}sB", payload)
+        payload, checksum = struct.unpack(f"={length}sB", payload)
         calculated_checksum = self.get_checksum(header + payload)
         checksum_xor = checksum ^ calculated_checksum
         if checksum_xor:
@@ -245,11 +250,15 @@ class LinuxVCP(VCP):
 
             # read the data
             header = self.read_bytes(self.GET_VCP_HEADER_LENGTH)
-            self.logger.debug(f"response header={header}")
+            self.logger.debug(
+                "header=" + " ".join([f"{x:02X}" for x in header])
+            )
             source, length = struct.unpack("BB", header)
             length &= ~self.PROTOCOL_FLAG  # clear protocol flag
             payload = self.read_bytes(length + 1)
-            self.logger.debug(f"payload={payload}")
+            self.logger.debug(
+                "payload=" + " ".join([f"{x:02X}" for x in payload])
+            )
 
             # check if length is valid
             if length < 3 or length > 35:
@@ -298,19 +307,19 @@ class LinuxVCP(VCP):
 
         return caps_str
 
-    def get_checksum(self, data: List, prime: bool = False) -> int:
+    @staticmethod
+    def get_checksum(data: bytearray) -> int:
         """
         Computes the checksum for a set of data, with the option to
         use the virtual host address (per the DDC-CI specification).
 
         Args:
-            data: data array to transmit
-            prime: compute checksum using the 0x50 virtual host address
+            data: Data array to transmit.
 
         Returns:
-            checksum for the data
+            Checksum for the data.
         """
-        checksum = self.HOST_ADDRESS
+        checksum = 0x00
         for data_byte in data:
             checksum ^= data_byte
         return checksum
