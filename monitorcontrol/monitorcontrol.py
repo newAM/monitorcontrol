@@ -602,7 +602,7 @@ def _parse_capabilities(caps_str: str) -> dict:
         caps_dict["inputs"] = []
         input_val_list = caps_dict["vcp"][input_source_cap]
         input_val_list.sort()
-        print(input_val_list)
+
         for val in input_val_list:
             try:
                 input_source = InputSource(val)
@@ -610,5 +610,5 @@ def _parse_capabilities(caps_str: str) -> dict:
                 input_source = val
 
             caps_dict["inputs"].append(input_source)
-    return caps_dict
 
+    return caps_dict
