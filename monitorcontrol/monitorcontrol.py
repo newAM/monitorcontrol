@@ -588,8 +588,6 @@ def _parse_capabilities(caps_str: str) -> dict:
         "inputs": "",
     }
 
-
-
     for key in caps_dict:
         if key in ["cmds", "vcp"]:
             caps_dict[key] = _convert_to_dict(_extract_a_cap(caps_str, key))
