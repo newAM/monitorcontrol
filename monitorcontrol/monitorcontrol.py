@@ -44,7 +44,7 @@ class InputSource(enum.Enum):
     DP2 = 0x10
     HDMI1 = 0x11
     HDMI2 = 0x12
-
+    USBC1 = 0x1B
 
 class InputSourceValueError(ValueError):
     """
@@ -588,6 +588,8 @@ def _parse_capabilities(caps_str: str) -> dict:
         "inputs": "",
     }
 
+
+
     for key in caps_dict:
         if key in ["cmds", "vcp"]:
             caps_dict[key] = _convert_to_dict(_extract_a_cap(caps_str, key))
@@ -600,7 +602,7 @@ def _parse_capabilities(caps_str: str) -> dict:
         caps_dict["inputs"] = []
         input_val_list = caps_dict["vcp"][input_source_cap]
         input_val_list.sort()
-
+        print(input_val_list)
         for val in input_val_list:
             try:
                 input_source = InputSource(val)
@@ -608,5 +610,5 @@ def _parse_capabilities(caps_str: str) -> dict:
                 input_source = val
 
             caps_dict["inputs"].append(input_source)
-
     return caps_dict
+
