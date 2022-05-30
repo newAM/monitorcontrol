@@ -1,9 +1,13 @@
 import datetime
 import os
 import sys
+import toml
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(this_dir, ".."))
+repo_root = os.path.abspath(os.path.join(this_dir, ".."))
+if repo_root not in sys.path:
+    sys.path.insert(0, repo_root)
+
 from monitorcontrol.__main__ import get_parser  # noqa: E402
 
 # Sphinx extensions
@@ -16,17 +20,20 @@ extensions = [
 templates_path = []
 source_suffix = ".rst"
 
+with open(os.path.join(repo_root, "pyproject.toml"), "r") as f:
+    pyproject = toml.load(f)
+
 # The master toctree document.
 master_doc = "index"
 
 # General information about the project.
-project = "monitorcontrol"
+project = pyproject["tool"]["poetry"]["name"]
 year = datetime.datetime.now().year
-author = "Alex M."
+author = pyproject["tool"]["poetry"]["authors"][0]
 copyright = f"2019 - {year}, {author}"
-version = "1.6"
-release = "1.6"
-language = None
+version = pyproject["tool"]["poetry"]["version"]
+release = pyproject["tool"]["poetry"]["version"]
+language = "en"
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", ".tox"]
 pygments_style = "sphinx"
 todo_include_todos = True
