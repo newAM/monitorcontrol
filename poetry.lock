@@ -394,14 +394,11 @@ python-versions = "*"
 
 [[package]]
 name = "pyudev"
-version = "0.23.2"
+version = "0.24.0"
 description = "A libudev binding"
 category = "main"
 optional = false
-python-versions = "*"
-
-[package.dependencies]
-six = "*"
+python-versions = ">=3.7"
 
 [[package]]
 name = "requests"
@@ -420,14 +417,6 @@ urllib3 = ">=1.21.1,<1.27"
 [package.extras]
 socks = ["PySocks (>=1.5.6,!=1.5.7)"]
 use_chardet_on_py3 = ["chardet (>=3.0.2,<6)"]
-
-[[package]]
-name = "six"
-version = "1.16.0"
-description = "Python 2 and 3 compatibility utilities"
-category = "main"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "snowballstemmer"
@@ -615,7 +604,7 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "d7d8db3155fd467a7fab41234d2d3ad64e378531127bbe96ce38d1bc97be6813"
+content-hash = "a1d5a445765f537acc776c17cb0389d3381e5e30fe84fa8421acd477de7634d0"
 
 [metadata.files]
 alabaster = [
@@ -859,16 +848,12 @@ pytz = [
     {file = "pytz-2022.1.tar.gz", hash = "sha256:1e760e2fe6a8163bc0b3d9a19c4f84342afa0a2affebfaa84b01b978a02ecaa7"},
 ]
 pyudev = [
-    {file = "pyudev-0.23.2-py3-none-any.whl", hash = "sha256:50d94bef0669f9aabd323a2259be67e8d49b9ebab9eae27b2cf8262767f9a2ae"},
-    {file = "pyudev-0.23.2.tar.gz", hash = "sha256:32ae3585b320a51bc283e0a04000fd8a25599edb44541e2f5034f6afee5d15cc"},
+    {file = "pyudev-0.24.0-py3-none-any.whl", hash = "sha256:d22451d9f10b4fef7737a0fa5c5664e7547cf9ae58a79084eb396e0ce9a0e406"},
+    {file = "pyudev-0.24.0.tar.gz", hash = "sha256:b2a3afe1c99ea751f8296652557eac559874da2a1b1ec0625178706ec5a345f3"},
 ]
 requests = [
     {file = "requests-2.28.1-py3-none-any.whl", hash = "sha256:8fefa2a1a1365bf5520aac41836fbee479da67864514bdb821f31ce07ce65349"},
     {file = "requests-2.28.1.tar.gz", hash = "sha256:7c5599b102feddaa661c826c56ab4fee28bfd17f5abca1ebbe3e7f19d7c97983"},
-]
-six = [
-    {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
-    {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 snowballstemmer = [
     {file = "snowballstemmer-2.2.0-py2.py3-none-any.whl", hash = "sha256:c8e1716e83cc398ae16824e5572ae04e0d9fc2c6b985fb0f900f5f0c96ecba1a"},
