@@ -14,7 +14,7 @@ documentation = "https://monitorcontrol.readthedocs.io/en/latest/"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pyudev = { version = "^0.23", markers = "sys_platform != 'win32'" }
+pyudev = { version = ">=0.23,<0.25", markers = "sys_platform != 'win32'" }
 
 [tool.poetry.dev-dependencies]
 black = "22.6.0"
