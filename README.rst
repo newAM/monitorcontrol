@@ -28,8 +28,7 @@ Linux Install
 Documentation
 *************
 
-Full documentation including examples is available on readthedocs
-`here <https://monitorcontrol.readthedocs.io/en/latest/>`__.
+Full documentation including examples are avaliable in the `docs <https://newam.github.io/monitorcontrol>`__.
 
 .. |PyPi Version| image:: https://badge.fury.io/py/monitorcontrol.svg
    :target: https://badge.fury.io/py/monitorcontrol
@@ -37,7 +36,7 @@ Full documentation including examples is available on readthedocs
    :target: https://travis-ci.com/newAM/monitorcontrol
 .. |Coverage Status| image:: https://coveralls.io/repos/github/newAM/monitorcontrol/badge.svg?branch=master
    :target: https://coveralls.io/github/newAM/monitorcontrol?branch=master
-.. |Documentation Status| image:: https://readthedocs.org/projects/monitorcontrol/badge/?version=latest
-   :target: https://monitorcontrol.readthedocs.io/en/latest/?badge=latest
+.. |Documentation Status| image:: https://img.shields.io/badge/docs-latest-blue
+   :target: https://newam.github.io/monitorcontrol
 .. |Black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
    :target: https://github.com/psf/black
