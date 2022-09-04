@@ -10,7 +10,7 @@ authors = ["Alex Martens <alex@thinglab.org>"]
 license = "MIT"
 readme = "README.rst"
 repository = "https://github.com/newAM/monitorcontrol"
-documentation = "https://monitorcontrol.readthedocs.io/en/latest/"
+documentation = "https://newam.github.io/monitorcontrol"
 
 [tool.poetry.dependencies]
 python = "^3.8"

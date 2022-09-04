@@ -29,7 +29,7 @@ master_doc = "index"
 # General information about the project.
 project = pyproject["tool"]["poetry"]["name"]
 year = datetime.datetime.now().year
-author = pyproject["tool"]["poetry"]["authors"][0]
+author = pyproject["tool"]["poetry"]["authors"][0].split("<", 1)[0].rstrip()
 copyright = f"2019 - {year}, {author}"
 version = pyproject["tool"]["poetry"]["version"]
 release = pyproject["tool"]["poetry"]["version"]
