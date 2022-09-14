@@ -3,67 +3,83 @@
 {
   description = "Monitor controls using MCCS over DDC-CI";
 
-  inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
-  };
+  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ] (system:
-      let
-        pkgs = nixpkgs.legacyPackages.${system};
-        pyproject = nixpkgs.lib.importTOML ./pyproject.toml;
-      in
-      rec {
-        packages.default = pkgs.python3.pkgs.buildPythonPackage rec {
-          pname = pyproject.tool.poetry.name;
-          inherit (pyproject.tool.poetry) version;
-          format = "pyproject";
+  outputs = { self, nixpkgs }:
+    let
+      pyproject = nixpkgs.lib.importTOML ./pyproject.toml;
+      pname = pyproject.tool.poetry.name;
 
-          src = ./.;
+      python3Overlay = final: prev: prev.buildPythonPackage {
+        inherit pname;
+        inherit (pyproject.tool.poetry) version;
+        format = "pyproject";
 
-          nativeBuildInputs = [
-            pkgs.python3.pkgs.poetry-core
-          ];
+        src = ./.;
 
-          propagatedBuildInputs = [
-            pkgs.python3.pkgs.pyudev
-          ];
+        nativeBuildInputs = [
+          prev.poetry-core
+        ];
 
-          checkInputs = [
-            pkgs.python3.pkgs.pytestCheckHook
-            pkgs.python3.pkgs.voluptuous
-          ];
+        propagatedBuildInputs = [
+          prev.pyudev
+        ];
 
-          pythonImportsCheck = [
-            pname
-          ];
+        checkInputs = [
+          prev.pytestCheckHook
+          prev.voluptuous
+        ];
 
-          postInstall = ''
-            mkdir -p $out/etc/udev/rules.d
-            echo 'KERNEL=="i2c-[0-9]*", GROUP="i2c"' > $out/etc/udev/rules.d/10-i2c.rules
-          '';
+        pythonImportsCheck = [
+          pname
+        ];
 
-          meta = with nixpkgs.lib; {
-            inherit (pyproject.tool.poetry) description;
-            homepage = pyproject.tool.poetry.repository;
-            license = with licenses; [ mit ];
+        postInstall = ''
+          mkdir -p $out/etc/udev/rules.d
+          echo 'KERNEL=="i2c-[0-9]*", GROUP="i2c"' > $out/etc/udev/rules.d/10-i2c.rules
+        '';
+
+        meta = with nixpkgs.lib; {
+          inherit (pyproject.tool.poetry) description;
+          homepage = pyproject.tool.poetry.repository;
+          license = with licenses; [ mit ];
+        };
+      };
+
+      overlay = final: prev: rec {
+        python3 = prev.python3.override {
+          packageOverrides = final: prev: {
+            monitorcontrol = python3Overlay final prev;
           };
         };
-        apps.default = flake-utils.lib.mkApp { drv = packages.default; };
-        devShells.default = packages.default;
+        python3Packages = python3.pkgs;
+      };
 
-        checks = {
-          format = pkgs.runCommand "format" { } ''
-            ${pkgs.nixpkgs-fmt}/bin/nixpkgs-fmt --check ${./.}
-            touch $out
-          '';
+      pkgs = import nixpkgs {
+        system = "x86_64-linux";
+        overlays = [ overlay ];
+      };
+    in
+    rec {
+      packages.x86_64-linux.default = pkgs.python3Packages.monitorcontrol;
+      devShells.x86_64-linux.default = self.packages.x86_64-linux.default;
 
-          lint = pkgs.runCommand "lint" { } ''
-            ${pkgs.statix}/bin/statix check ${./.}
-            touch $out
-          '';
-        };
-      }
-    );
+      checks.x86_64-linux = {
+        pkg = self.packages.x86_64-linux.default;
+
+        nixpkgs-fmt = pkgs.runCommand "nixpkgs-fmt" { } ''
+          ${pkgs.nixpkgs-fmt}/bin/nixpkgs-fmt --check ${./.}
+          touch $out
+        '';
+
+        statix = pkgs.runCommand "statix" { } ''
+          ${pkgs.statix}/bin/statix check ${./.}
+          touch $out
+        '';
+      };
+      overlays = {
+        default = overlay;
+        python3 = python3Overlay;
+      };
+    };
 }
