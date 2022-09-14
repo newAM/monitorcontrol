@@ -45,11 +45,15 @@ intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
 
 html_theme = "sphinx_rtd_theme"
 htmlhelp_basename = "monitorcontroldoc"
+github_user = "newAM"
 html_theme_options = {"display_version": False}
 html_context = {
     "display_github": True,
-    "github_user": "newAM",
+    "github_user": github_user,
     "github_repo": project,
+    # https://github.com/readthedocs/sphinx_rtd_theme/issues/465
+    "github_version": "main",
+    "conf_py_path": "/docs/",  # needs leading and trailing slashes
 }
 
 parser = get_parser()
