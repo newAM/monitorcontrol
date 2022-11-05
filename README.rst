@@ -16,14 +16,14 @@ Windows Install
 
 .. code-block:: bash
 
-   py -3.8 -m pip install monitorcontrol
+   py -3 -m pip install monitorcontrol
 
 Linux Install
 *************
 
 .. code-block:: bash
 
-   python3.8 -m pip install monitorcontrol
+   python3 -m pip install monitorcontrol
 
 Documentation
 *************
