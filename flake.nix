@@ -15,7 +15,10 @@
         inherit (pyproject.tool.poetry) version;
         format = "pyproject";
 
-        src = ./.;
+        src = builtins.path {
+          path = ./.;
+          name = "monitorcontrol";
+        };
 
         nativeBuildInputs = [
           prev.poetry-core
