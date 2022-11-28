@@ -25,7 +25,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install Poetry
-        uses: abatilo/actions-poetry@v2.1.6
+        uses: abatilo/actions-poetry@v2.2.0
       - name: Poetry Install
         run: poetry install
       - name: Run flake8
@@ -41,7 +41,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install Poetry
-        uses: abatilo/actions-poetry@v2.1.6
+        uses: abatilo/actions-poetry@v2.2.0
       - name: Poetry Install
         run: poetry install
       - name: Run sphinx
@@ -78,7 +78,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Poetry
-        uses: abatilo/actions-poetry@v2.1.6
+        uses: abatilo/actions-poetry@v2.2.0
       - name: Poetry Install
         run: poetry install
       - name: Run pytest
@@ -101,7 +101,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install Poetry
-        uses: abatilo/actions-poetry@v2.1.6
+        uses: abatilo/actions-poetry@v2.2.0
       - name: Poetry Install
         run: poetry install
       - name: Finished
@@ -124,7 +124,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install Poetry
-        uses: abatilo/actions-poetry@v2.1.6
+        uses: abatilo/actions-poetry@v2.2.0
       - name: Poetry Install
         run: poetry install
       - name: Poetry publish
