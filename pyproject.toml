@@ -19,8 +19,8 @@ pyudev = { version = ">=0.23,<0.25", markers = "sys_platform != 'win32'" }
 [tool.poetry.dev-dependencies]
 black = "23.3.0"
 coveralls = "^3"
-flake8 = "^5"
-flake8-bugbear = "^23"
+flake8 = { version = "^6", python = ">=3.8.1,<4.0" }
+flake8-bugbear = { version = "^23.3.23", python = ">=3.8.1,<4.0" }
 pep8-naming = "~0.13"
 pytest = "^7"
 pytest-cov = "^4"
