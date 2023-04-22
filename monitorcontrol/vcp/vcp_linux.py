@@ -56,20 +56,31 @@ class LinuxVCP(VCP):
         self.logger = logging.getLogger(__name__)
         self.bus_number = bus_number
         self.fd: Optional[str] = None
-        self.fp = None
+        self.fp: str = f"/dev/i2c-{self.bus_number}"
         # time of last feature set call
         self.last_set: Optional[float] = None
 
     def __enter__(self):
+        def cleanup(fd: Optional[int]):
+            if fd is not None:
+                try:
+                    os.close(self.fd)
+                except OSError:
+                    pass
+
         try:
-            self.fp = f"/dev/i2c-{self.bus_number}"
             self.fd = os.open(self.fp, os.O_RDWR)
             fcntl.ioctl(self.fd, self.I2C_SLAVE, self.DDCCI_ADDR)
             self.read_bytes(1)
         except PermissionError as e:
+            cleanup(self.fd)
             raise VCPPermissionError(f"permission error for {self.fp}") from e
         except OSError as e:
+            cleanup(self.fd)
             raise VCPIOError(f"unable to open VCP at {self.fp}") from e
+        except Exception as e:
+            cleanup(self.fd)
+            raise e
         return self
 
     def __exit__(
