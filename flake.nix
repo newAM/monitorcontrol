@@ -5,12 +5,15 @@
 
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
-  outputs = { self, nixpkgs }:
-    let
-      pyproject = nixpkgs.lib.importTOML ./pyproject.toml;
-      pname = pyproject.tool.poetry.name;
+  outputs = {
+    self,
+    nixpkgs,
+  }: let
+    pyproject = nixpkgs.lib.importTOML ./pyproject.toml;
+    pname = pyproject.tool.poetry.name;
 
-      python3Overlay = final: prev: prev.buildPythonPackage {
+    python3Overlay = final: prev:
+      prev.buildPythonPackage {
         inherit pname;
         inherit (pyproject.tool.poetry) version;
         format = "pyproject";
@@ -45,44 +48,45 @@
         meta = with nixpkgs.lib; {
           inherit (pyproject.tool.poetry) description;
           homepage = pyproject.tool.poetry.repository;
-          license = with licenses; [ mit ];
+          license = with licenses; [mit];
         };
       };
 
-      overlay = final: prev: rec {
-        python3 = prev.python3.override {
-          packageOverrides = final: prev: {
-            monitorcontrol = python3Overlay final prev;
-          };
+    overlay = final: prev: rec {
+      python3 = prev.python3.override {
+        packageOverrides = final: prev: {
+          monitorcontrol = python3Overlay final prev;
         };
-        python3Packages = python3.pkgs;
       };
-
-      pkgs = import nixpkgs {
-        system = "x86_64-linux";
-        overlays = [ overlay ];
-      };
-    in
-    rec {
-      packages.x86_64-linux.default = pkgs.python3Packages.monitorcontrol;
-      devShells.x86_64-linux.default = self.packages.x86_64-linux.default;
-
-      checks.x86_64-linux = {
-        pkg = self.packages.x86_64-linux.default;
-
-        nixpkgs-fmt = pkgs.runCommand "nixpkgs-fmt" { } ''
-          ${pkgs.nixpkgs-fmt}/bin/nixpkgs-fmt --check ${./.}
-          touch $out
-        '';
-
-        statix = pkgs.runCommand "statix" { } ''
-          ${pkgs.statix}/bin/statix check ${./.}
-          touch $out
-        '';
-      };
-      overlays = {
-        default = overlay;
-        python3 = python3Overlay;
-      };
+      python3Packages = python3.pkgs;
     };
+
+    pkgs = import nixpkgs {
+      system = "x86_64-linux";
+      overlays = [overlay];
+    };
+  in {
+    packages.x86_64-linux.default = pkgs.python3Packages.monitorcontrol;
+    devShells.x86_64-linux.default = self.packages.x86_64-linux.default;
+
+    formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
+
+    checks.x86_64-linux = {
+      pkg = self.packages.x86_64-linux.default;
+
+      alejandra = pkgs.runCommand "alejandra" {} ''
+        ${pkgs.alejandra}/bin/alejandra --check ${./.}
+        touch $out
+      '';
+
+      statix = pkgs.runCommand "statix" {} ''
+        ${pkgs.statix}/bin/statix check ${./.}
+        touch $out
+      '';
+    };
+    overlays = {
+      default = overlay;
+      python3 = python3Overlay;
+    };
+  };
 }
