@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html),
 as of version 2.1.1.
 
+## [3.0.3] - 2023-04-22
+### Fixed
+- Fixed dangling file descriptors on linux platforms after calling `get_monitors()`.
+
 ## [3.0.2] - 2022-11-05
 ### Added
 - Added support for pyudev version 0.24.0.
@@ -78,7 +82,8 @@ as of version 2.1.1.
 - Added a changelog.
 
 
-[Unreleased]: https://github.com/newAM/monitorcontrol/compare/3.0.2...HEAD
+[Unreleased]: https://github.com/newAM/monitorcontrol/compare/3.0.3...HEAD
+[3.0.3]: https://github.com/newAM/monitorcontrol/compare/3.0.2...3.0.3
 [3.0.2]: https://github.com/newAM/monitorcontrol/compare/3.0.1...3.0.2
 [3.0.1]: https://github.com/newAM/monitorcontrol/compare/3.0.0...3.0.1
 [3.0.0]: https://github.com/newAM/monitorcontrol/compare/2.5.1...3.0.0
