@@ -24,7 +24,7 @@ flake8-bugbear = { version = "^23.3.23", python = ">=3.8.1,<4.0" }
 pep8-naming = "~0.13"
 pytest = "^7"
 pytest-cov = "^4"
-sphinx = "^6.1"
+sphinx = "^6.2"
 sphinx-rtd-theme = "^1"
 toml = "~0.10"
 voluptuous = "~0.13"
