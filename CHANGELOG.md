@@ -11,6 +11,9 @@ as of version 2.1.1.
 - Added `get_color_preset` and `set_color_preset`.
 - Added a `description` attribute with the physical monitors description to `WindowsVCP`.
 
+### Fixed
+- Fixed parsing of nested capability groups.
+
 ## [3.0.3] - 2023-04-22
 ### Fixed
 - Fixed dangling file descriptors on linux platforms after calling `get_monitors()`.
