@@ -601,9 +601,9 @@ def _convert_to_dict(caps_str: str) -> dict:
         Expected string "04 14(05 06) 16" is converted to::
 
             {
-                0x04: [],
-                0x14: [0x05, 0x06],
-                0x16: [],
+                0x04: {},
+                0x14: {0x05: {}, 0x06: {}},
+                0x16: {},
             }
     """
 
@@ -613,22 +613,25 @@ def _convert_to_dict(caps_str: str) -> dict:
         return {}
 
     result_dict = {}
-    group = None
-    prev_digit = None
+    group = []
+    prev_val = None
     for chunk in caps_str.replace("(", " ( ").replace(")", " ) ").split(" "):
         if chunk == "":
             continue
         elif chunk == "(":
-            group = prev_digit
+            group.append(prev_val)
         elif chunk == ")":
-            group = None
+            group.pop(-1)
         else:
             val = int(chunk, 16)
-            if group is None:
-                result_dict[val] = []
+            if len(group) == 0:
+                result_dict[val] = {}
             else:
-                result_dict[group].append(val)
-            prev_digit = val
+                d = result_dict
+                for g in group:
+                    d = d[g]
+                d[val] = {}
+            prev_val = val
 
     return result_dict
 
@@ -677,7 +680,7 @@ def _parse_capabilities(caps_str: str) -> dict:
     input_source_cap = vcp.VCPCode("input_select").value
     if input_source_cap in caps_dict["vcp"]:
         caps_dict["inputs"] = []
-        input_val_list = caps_dict["vcp"][input_source_cap]
+        input_val_list = list(caps_dict["vcp"][input_source_cap].keys())
         input_val_list.sort()
 
         for val in input_val_list:
@@ -692,7 +695,7 @@ def _parse_capabilities(caps_str: str) -> dict:
     color_preset_cap = vcp.VCPCode("image_color_preset").value
     if color_preset_cap in caps_dict["vcp"]:
         caps_dict["color_presets"] = []
-        color_val_list = caps_dict["vcp"][color_preset_cap]
+        color_val_list = list(caps_dict["vcp"][color_preset_cap])
         color_val_list.sort()
 
         for val in color_val_list:
