@@ -1,4 +1,12 @@
-from . import get_monitors, PowerMode, InputSource
+import os
+import sys
+import pathlib
+
+PACKAGE_PARENT=pathlib.Path(__file__).parent
+SCRIPT_DIR=PACKAGE_PARENT
+sys.path.append(str(SCRIPT_DIR))
+
+from monitorcontrol import get_monitors, PowerMode, InputSource
 from typing import List, Optional
 import argparse
 import importlib.metadata
@@ -58,6 +66,11 @@ def get_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Get the monitors.",
     )
+    group.add_argument(
+        "--get-monitors-fast",
+        action="store_true",
+        help="Get the monitors and query only display controller id and firmware version",
+    )
     group = parser.add_argument_group("Optional monitor select")
     group.add_argument(
         "--monitor",
@@ -66,8 +79,17 @@ def get_parser() -> argparse.ArgumentParser:
         help="Select monitor for command. "
         "Default: getters use monitor 1. Setters use all monitors.",
     )
+    group.add_argument(
+        "--display-controller-id",
+        default=None,
+        help="Filter monitor(s) by display controller id for command. "
+    )
+    group.add_argument(
+        "--firmware-version",
+        default=None,
+        help="Filter monitor(s) by firmware version for command. "
+    )
     return parser
-
 
 def count_to_level(count: int) -> int:
     """Number of -v to a logging level."""
@@ -82,6 +104,16 @@ def count_to_level(count: int) -> int:
 
     return logging.CRITICAL
 
+def monitor_match(monitor_obj, exp_disp_ctrl, exp_firmware):
+    with monitor_obj:
+        disp_ctrl = monitor_obj.get_display_controller_id()
+        firmware = monitor_obj.get_firmware_ver()
+        eq = exp_disp_ctrl == f'{disp_ctrl:x}'
+        rv = False
+        if exp_disp_ctrl == f'{disp_ctrl:x}':
+            rv = exp_firmware == f'{firmware:x}' if exp_firmware is not None else True
+        sys.stdout.write(f"{'including' if rv else 'excluding'} monitor display_controller: {disp_ctrl:x} firmware: {firmware:x}\n")
+        return rv
 
 def main(argv: Optional[List[str]] = None):
     parser = get_parser()
@@ -144,6 +176,7 @@ def main(argv: Optional[List[str]] = None):
     elif args.set_input_source is not None:
         if args.monitor is None:
             for monitor_obj in get_monitors():
+                if args.display_controller_id is not None and not monitor_match(monitor_obj, args.display_controller_id, args.firmware_version): continue
                 with monitor_obj:
                     monitor_obj.set_input_source(args.set_input_source)
         else:
@@ -168,5 +201,16 @@ def main(argv: Optional[List[str]] = None):
                     sys.stdout.write("\n")
 
         return
+    elif args.get_monitors_fast:
+        for monitor_index, monitor_obj in enumerate(get_monitors(), 0):
+            with monitor_obj:
+                disp_ctrl = monitor_obj.get_display_controller_id()
+                firmware = monitor_obj.get_firmware_ver()
+                sys.stdout.write(f"Monitor {monitor_index + 1}: display_controller: {disp_ctrl:x} firmware: {firmware:x}\n")
+        return
     else:
         raise AssertionError("Internal error, please report this bug")
+
+
+if __name__ == "__main__":
+    main()

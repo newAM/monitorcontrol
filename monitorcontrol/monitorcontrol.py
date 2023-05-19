@@ -1,9 +1,16 @@
-from . import vcp
+import os
+import sys
+import pathlib
+
+PACKAGE_PARENT=pathlib.Path(__file__).parent
+SCRIPT_DIR=PACKAGE_PARENT
+sys.path.append(str(SCRIPT_DIR))
+
+import vcp
 from types import TracebackType
 from typing import List, Optional, Type, Union
 import enum
 import sys
-
 
 @enum.unique
 class PowerMode(enum.Enum):
@@ -358,6 +365,50 @@ class Monitor:
 
         code = vcp.VCPCode("display_power_mode")
         self._set_vcp_feature(code, mode_value)
+
+    def get_display_controller_id(self) -> str:
+        """
+        Gets the monitors display controller id.
+
+        Returns:
+            Display controller id.
+
+        Example:
+            Basic Usage::
+
+                from monitorcontrol import get_monitors
+
+                for monitor in get_monitors():
+                    with monitor:
+                        print(monitor.get_display_controller_id())
+
+        Raises:
+            VCPError: Failed to get display controller id from the VCP.
+        """
+        code = vcp.VCPCode("display_controller_id")
+        return self._get_vcp_feature(code)
+
+    def get_firmware_ver(self) -> str:
+        """
+        Gets the monitors firmware ver.
+
+        Returns:
+            Firmware version
+
+        Example:
+            Basic Usage::
+
+                from monitorcontrol import get_monitors
+
+                for monitor in get_monitors():
+                    with monitor:
+                        print(monitor.get_firmware_ver())
+
+        Raises:
+            VCPError: Failed to get firmware version from the VCP.
+        """
+        code = vcp.VCPCode("firmware_version")
+        return self._get_vcp_feature(code)
 
     def get_input_source(self) -> InputSource:
         """

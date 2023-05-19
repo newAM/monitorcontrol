@@ -22,6 +22,18 @@ _VCP_CODE_DEFINTIONS = {
         "type": "rw",
         "function": "c",
     },
+    "display_controller_id": {
+        "name": "display controller id",
+        "value": 0xc8,
+        "type": "ro",
+        "function": "nc",
+    },
+    "firmware_version": {
+        "name": "firmware version",
+        "value": 0xc9,
+        "type": "ro",
+        "function": "nc",
+    },
     "active_control": {
         "name": "active control",
         "value": 0x52,
