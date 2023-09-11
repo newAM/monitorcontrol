@@ -62,6 +62,7 @@ if sys.platform == "win32":
             except ctypes.WinError as e:
                 raise VCPError("failed to open physical monitor handle") from e
             self.handle = physical_monitors[0].handle
+            self.description = physical_monitors[0].description
             return self
 
         def __exit__(
