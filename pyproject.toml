@@ -20,7 +20,7 @@ pyudev = { version = ">=0.23,<0.25", markers = "sys_platform != 'win32'" }
 black = "23.9.1"
 coveralls = "^3"
 flake8 = { version = "^6", python = ">=3.8.1,<4.0" }
-flake8-bugbear = { version = "^23.7.10", python = ">=3.8.1,<4.0" }
+flake8-bugbear = { version = "^23.9.16", python = ">=3.8.1,<4.0" }
 pep8-naming = "~0.13"
 pytest = "^7"
 pytest-cov = "^4"
