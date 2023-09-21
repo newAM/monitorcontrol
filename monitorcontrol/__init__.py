@@ -5,4 +5,5 @@ from .monitorcontrol import (  # noqa: F401
     Monitor,
     PowerMode,
     InputSource,
+    ColorPreset,
 )
