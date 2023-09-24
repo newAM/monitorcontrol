@@ -1,4 +1,4 @@
-from . import get_monitors, PowerMode, InputSource, ColorPreset
+from . import get_monitors, PowerMode, InputSource
 from typing import List, Optional
 import argparse
 import importlib.metadata

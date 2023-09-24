@@ -293,7 +293,7 @@ class Monitor:
         code = vcp.VCPCode("image_color_preset")
         return self._get_vcp_feature(code)
 
-    def set_color_preset(self, value: [int|str|ColorPreset]):
+    def set_color_preset(self, value: Union[int, str, ColorPreset]):
         """
         Sets the monitors color preset.
 
