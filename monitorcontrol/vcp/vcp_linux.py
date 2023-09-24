@@ -288,7 +288,7 @@ class LinuxVCP(VCP):
                 elif self.CHECKSUM_ERRORS.lower() == "warning":
                     self.logger.warning(message)
                 # else ignore
-            # remove cheksum from length
+            # remove checksum from length
 
             # unpack the payload
             reply_code, payload = struct.unpack(f">B{length-1}s", payload)

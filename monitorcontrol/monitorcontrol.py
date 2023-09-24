@@ -6,6 +6,23 @@ import sys
 
 
 @enum.unique
+class ColorPreset(enum.Enum):
+    """Monitor color presets."""
+
+    COLOR_TEMP_4000K = 0x03
+    COLOR_TEMP_5000K = 0x04
+    COLOR_TEMP_6500K = 0x05
+    COLOR_TEMP_7500K = 0x06
+    COLOR_TEMP_8200K = 0x07
+    COLOR_TEMP_9300K = 0x08
+    COLOR_TEMP_10000K = 0x09
+    COLOR_TEMP_11500K = 0x0A
+    COLOR_TEMP_USER1 = 0x0B
+    COLOR_TEMP_USER2 = 0x0C
+    COLOR_TEMP_USER3 = 0x0D
+
+
+@enum.unique
 class PowerMode(enum.Enum):
     """Monitor power modes."""
 
@@ -65,7 +82,7 @@ class Monitor:
     """
     A physical monitor attached to a Virtual Control Panel (VCP).
 
-    Typically you do not use this class directly and instead use
+    Typically, you do not use this class directly and instead use
     :py:meth:`get_monitors` to get a list of initialized monitors.
 
     All class methods must be called from within a context manager unless
@@ -98,7 +115,7 @@ class Monitor:
         finally:
             self._in_ctx = False
 
-    def _get_code_maximum(self, code: Type[vcp.VCPCode]) -> int:
+    def _get_code_maximum(self, code: vcp.VCPCode) -> int:
         """
         Gets the maximum values for a given code, and caches in the
         class dictionary if not already found.
@@ -253,6 +270,66 @@ class Monitor:
         code = vcp.VCPCode("image_luminance")
         self._set_vcp_feature(code, value)
 
+    def get_color_preset(self) -> int:
+        """
+        Gets the monitors color preset.
+
+        Returns:
+            Current color preset.
+            Valid values are enumerated in :py:class:`ColorPreset`.
+
+        Example:
+            Basic Usage::
+
+                from monitorcontrol import get_monitors
+
+                for monitor in get_monitors():
+                    with monitor:
+                        print(monitor.get_color_preset())
+
+        Raises:
+            VCPError: Failed to get color preset from the VCP.
+        """
+        code = vcp.VCPCode("image_color_preset")
+        return self._get_vcp_feature(code)
+
+    def set_color_preset(self, value: Union[int, str, ColorPreset]):
+        """
+        Sets the monitors color preset.
+
+        Args:
+            value:
+                An integer color preset,
+                or a string representing the color preset,
+                or a value from :py:class:`ColorPreset`.
+
+        Example:
+            Basic Usage::
+
+                from monitorcontrol import get_monitors, ColorPreset
+
+                for monitor in get_monitors():
+                    with monitor:
+                        monitor.set_color_preset(ColorPreset.COLOR_TEMP_5000K)
+
+        Raises:
+            VCPError: Failed to set color preset in the VCP.
+            ValueError: Color preset outside valid range.
+            AttributeError: Color preset string is invalid.
+            TypeError: Unsupported value
+        """
+        if isinstance(value, str):
+            mode_value = getattr(ColorPreset, value).value
+        elif isinstance(value, int):
+            mode_value = ColorPreset(value).value
+        elif isinstance(value, ColorPreset):
+            mode_value = value.value
+        else:
+            raise TypeError("unsupported color preset: " + repr(type(value)))
+
+        code = vcp.VCPCode("image_color_preset")
+        self._set_vcp_feature(code, mode_value)
+
     def get_contrast(self) -> int:
         """
         Gets the monitors contrast.
@@ -330,7 +407,7 @@ class Monitor:
         Args:
             value:
                 An integer power mode,
-                or a string represeting the power mode,
+                or a string representing the power mode,
                 or a value from :py:class:`PowerMode`.
 
         Example:
@@ -492,7 +569,7 @@ def _extract_a_cap(caps_str: str, key: str) -> str:
 
     if start_of_filter == -1:
         # not all keys are returned by monitor.
-        # Also sometimes the string has errors.
+        # Also, sometimes the string has errors.
         return ""
 
     start_of_filter += len(key)
@@ -504,7 +581,7 @@ def _extract_a_cap(caps_str: str, key: str) -> str:
         if filtered_caps_str[i] == ")":
             end_of_filter -= 1
         if end_of_filter == 0:
-            # dont change end_of_filter to remove the closing ")"
+            # don't change end_of_filter to remove the closing ")"
             break
 
     # 1:i to remove the first character "("
@@ -514,7 +591,7 @@ def _extract_a_cap(caps_str: str, key: str) -> str:
 def _convert_to_dict(caps_str: str) -> dict:
     """
     Parses the VCP capabilities string to a dictionary.
-    Non continuous capabilities will include an array of
+    Non-continuous capabilities will include an array of
     all supported values.
 
     Returns:
@@ -531,7 +608,7 @@ def _convert_to_dict(caps_str: str) -> dict:
     """
 
     if len(caps_str) == 0:
-        # Sometimes the keys arent found and the extracting of
+        # Sometimes the keys aren't found and the extracting of
         # capabilities returns an empty string.
         return {}
 
@@ -586,6 +663,8 @@ def _parse_capabilities(caps_str: str) -> dict:
         "vcpname": "",
         # Parsed input sources into text. Not part of capabilities string.
         "inputs": "",
+        # Parsed color presets into text. Not part of capabilities string.
+        "color_presets": "",
     }
 
     for key in caps_dict:
@@ -608,5 +687,20 @@ def _parse_capabilities(caps_str: str) -> dict:
                 input_source = val
 
             caps_dict["inputs"].append(input_source)
+
+    # Parse the color presets into a text list for readability
+    color_preset_cap = vcp.VCPCode("image_color_preset").value
+    if color_preset_cap in caps_dict["vcp"]:
+        caps_dict["color_presets"] = []
+        color_val_list = caps_dict["vcp"][color_preset_cap]
+        color_val_list.sort()
+
+        for val in color_val_list:
+            try:
+                color_source = ColorPreset(val)
+            except ValueError:
+                color_source = val
+
+            caps_dict["color_presets"].append(color_source)
 
     return caps_dict
