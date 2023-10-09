@@ -10,6 +10,7 @@ as of version 2.1.1.
 ### Added
 - Added `get_color_preset` and `set_color_preset`.
 - Added a `description` attribute with the physical monitors description to `WindowsVCP`.
+- Added support for python 3.12.
 
 ### Fixed
 - Fixed parsing of nested capability groups.
