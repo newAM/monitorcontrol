@@ -47,7 +47,7 @@ if sys.platform == "win32":
                         "Call to GetNumberOfPhysicalMonitorsFromHMONITOR failed: "
                         + ctypes.FormatError()
                     )
-            except ctypes.WinError as e:
+            except OSError as e:
                 raise VCPError(
                     "Call to GetNumberOfPhysicalMonitorsFromHMONITOR failed"
                 ) from e
@@ -69,7 +69,7 @@ if sys.platform == "win32":
                         "Call to GetPhysicalMonitorsFromHMONITOR failed: "
                         + ctypes.FormatError()
                     )
-            except ctypes.WinError as e:
+            except OSError as e:
                 raise VCPError("failed to open physical monitor handle") from e
             self.handle = physical_monitors[0].handle
             self.description = physical_monitors[0].description
@@ -87,7 +87,7 @@ if sys.platform == "win32":
                         "Call to DestroyPhysicalMonitor failed: "
                         + ctypes.FormatError()
                     )
-            except ctypes.WinError as e:
+            except OSError as e:
                 raise VCPError("failed to close handle") from e
             return False
 
@@ -109,7 +109,7 @@ if sys.platform == "win32":
                     raise VCPError(
                         "failed to set VCP feature: " + ctypes.FormatError()
                     )
-            except ctypes.WinError as e:
+            except OSError as e:
                 raise VCPError("failed to close handle") from e
 
         def get_vcp_feature(self, code: int) -> Tuple[int, int]:
@@ -138,7 +138,7 @@ if sys.platform == "win32":
                     raise VCPError(
                         "failed to get VCP feature: " + ctypes.FormatError()
                     )
-            except ctypes.WinError as e:
+            except OSError as e:
                 raise VCPError("failed to get VCP feature") from e
             return feature_current.value, feature_max.value
 
@@ -175,7 +175,7 @@ if sys.platform == "win32":
                         "failed to get VCP capabilities: "
                         + ctypes.FormatError()
                     )
-            except ctypes.WinError as e:
+            except OSError as e:
                 raise VCPError("failed to get VCP capabilities") from e
             return cap_string.value.decode("ascii")
 
@@ -205,7 +205,7 @@ if sys.platform == "win32":
             callback = MONITORENUMPROC(_callback)
             if not ctypes.windll.user32.EnumDisplayMonitors(0, 0, callback, 0):
                 raise VCPError("Call to EnumDisplayMonitors failed")
-        except ctypes.WinError as e:
+        except OSError as e:
             raise VCPError("failed to enumerate VCPs") from e
 
         for logical in hmonitors:
