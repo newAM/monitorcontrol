@@ -14,6 +14,9 @@ as of version 2.1.1.
 
 ### Fixed
 - Fixed parsing of nested capability groups.
+- Fixed `TypeError` raised from incorrectly catching `ctypes.WinError` instead of `OSError`.
+- Fixed the VCP backend ignoring return codes on Windows.
+  Return codes are now checked and `VCPError` is raised when the API call fails.
 
 ## [3.0.3] - 2023-04-22
 ### Fixed
