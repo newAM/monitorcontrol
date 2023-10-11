@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "monitorcontrol"
 description = "Monitor controls using MCCS over DDC-CI."
-version = "3.0.3"
+version = "3.1.0"
 authors = ["Alex Martens <alex@thinglab.org>"]
 license = "MIT"
 readme = "README.rst"
