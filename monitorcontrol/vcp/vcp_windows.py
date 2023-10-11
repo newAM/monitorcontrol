@@ -84,8 +84,7 @@ if sys.platform == "win32":
             try:
                 if not ctypes.windll.dxva2.DestroyPhysicalMonitor(self.handle):
                     raise VCPError(
-                        "Call to DestroyPhysicalMonitor failed: "
-                        + ctypes.FormatError()
+                        "Call to DestroyPhysicalMonitor failed: " + ctypes.FormatError()
                     )
             except OSError as e:
                 raise VCPError("failed to close handle") from e
@@ -106,9 +105,7 @@ if sys.platform == "win32":
                 if not ctypes.windll.dxva2.SetVCPFeature(
                     HANDLE(self.handle), BYTE(code), DWORD(value)
                 ):
-                    raise VCPError(
-                        "failed to set VCP feature: " + ctypes.FormatError()
-                    )
+                    raise VCPError("failed to set VCP feature: " + ctypes.FormatError())
             except OSError as e:
                 raise VCPError("failed to close handle") from e
 
@@ -135,9 +132,7 @@ if sys.platform == "win32":
                     ctypes.byref(feature_current),
                     ctypes.byref(feature_max),
                 ):
-                    raise VCPError(
-                        "failed to get VCP feature: " + ctypes.FormatError()
-                    )
+                    raise VCPError("failed to get VCP feature: " + ctypes.FormatError())
             except OSError as e:
                 raise VCPError("failed to get VCP feature") from e
             return feature_current.value, feature_max.value
@@ -164,16 +159,14 @@ if sys.platform == "win32":
                     HANDLE(self.handle), ctypes.byref(cap_length)
                 ):
                     raise VCPError(
-                        "failed to get VCP capabilities: "
-                        + ctypes.FormatError()
+                        "failed to get VCP capabilities: " + ctypes.FormatError()
                     )
                 cap_string = (ctypes.c_char * cap_length.value)()
                 if not ctypes.windll.dxva2.CapabilitiesRequestAndCapabilitiesReply(
                     HANDLE(self.handle), cap_string, cap_length
                 ):
                     raise VCPError(
-                        "failed to get VCP capabilities: "
-                        + ctypes.FormatError()
+                        "failed to get VCP capabilities: " + ctypes.FormatError()
                     )
             except OSError as e:
                 raise VCPError("failed to get VCP capabilities") from e
