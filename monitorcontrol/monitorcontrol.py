@@ -129,9 +129,7 @@ class Monitor:
         Raises:
             TypeError: Code is write only.
         """
-        assert (
-            self._in_ctx
-        ), "This function must be run within the context manager"
+        assert self._in_ctx, "This function must be run within the context manager"
         if not code.readable:
             raise TypeError(f"code is not readable: {code.name}")
 
@@ -155,17 +153,13 @@ class Monitor:
             ValueError: Value is greater than the maximum allowable.
             VCPError: Failed to get VCP feature.
         """
-        assert (
-            self._in_ctx
-        ), "This function must be run within the context manager"
+        assert self._in_ctx, "This function must be run within the context manager"
         if code.type == "ro":
             raise TypeError(f"cannot write read-only code: {code.name}")
         elif code.type == "rw" and code.function == "c":
             maximum = self._get_code_maximum(code)
             if value > maximum:
-                raise ValueError(
-                    f"value of {value} exceeds code maximum of {maximum}"
-                )
+                raise ValueError(f"value of {value} exceeds code maximum of {maximum}")
 
         self.vcp.set_vcp_feature(code.value, value)
 
@@ -183,9 +177,7 @@ class Monitor:
             TypeError: Code is write only.
             VCPError: Failed to get VCP feature.
         """
-        assert (
-            self._in_ctx
-        ), "This function must be run within the context manager"
+        assert self._in_ctx, "This function must be run within the context manager"
         if code.type == "wo":
             raise TypeError(f"cannot read write-only code: {code.name}")
 
@@ -216,9 +208,7 @@ class Monitor:
                     ],
                 }
         """
-        assert (
-            self._in_ctx
-        ), "This function must be run within the context manager"
+        assert self._in_ctx, "This function must be run within the context manager"
 
         cap_str = self.vcp.get_vcp_capabilities()
 
@@ -473,9 +463,7 @@ class Monitor:
         try:
             return InputSource(value)
         except ValueError:
-            raise InputSourceValueError(
-                f"{value} is not a valid InputSource", value
-            )
+            raise InputSourceValueError(f"{value} is not a valid InputSource", value)
 
     def set_input_source(self, value: Union[int, str, InputSource]):
         """

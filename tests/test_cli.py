@@ -20,52 +20,40 @@ def test_version():
 
 
 def test_get_luminance():
-    with get_monitors_mock, mock.patch.object(
-        Monitor, "get_luminance"
-    ) as api_mock:
+    with get_monitors_mock, mock.patch.object(Monitor, "get_luminance") as api_mock:
         main(["--get-luminance"])
         api_mock.assert_called_once()
 
 
 @pytest.mark.parametrize("value", [0, 100])
 def test_set_luminance(value: int):
-    with get_monitors_mock, mock.patch.object(
-        Monitor, "set_luminance"
-    ) as api_mock:
+    with get_monitors_mock, mock.patch.object(Monitor, "set_luminance") as api_mock:
         main(["--set-luminance", str(value)])
         api_mock.assert_called_once_with(value)
 
 
 def test_get_power():
-    with get_monitors_mock, mock.patch.object(
-        Monitor, "get_power_mode"
-    ) as api_mock:
+    with get_monitors_mock, mock.patch.object(Monitor, "get_power_mode") as api_mock:
         main(["--get-power"])
         api_mock.assert_called_once()
 
 
 @pytest.mark.parametrize("value", ["on", "suspend"])
 def test_set_power(value: int):
-    with get_monitors_mock, mock.patch.object(
-        Monitor, "set_power_mode"
-    ) as api_mock:
+    with get_monitors_mock, mock.patch.object(Monitor, "set_power_mode") as api_mock:
         main(["--set-power", str(value)])
         api_mock.assert_called_once_with(value)
 
 
 def test_get_input_source():
-    with get_monitors_mock, mock.patch.object(
-        Monitor, "get_input_source"
-    ) as api_mock:
+    with get_monitors_mock, mock.patch.object(Monitor, "get_input_source") as api_mock:
         main(["--get-input-source"])
         api_mock.assert_called_once()
 
 
 @pytest.mark.parametrize("value", ["DP1", "HDMI1"])
 def test_set_input_source(value: str):
-    with get_monitors_mock, mock.patch.object(
-        Monitor, "set_input_source"
-    ) as api_mock:
+    with get_monitors_mock, mock.patch.object(Monitor, "set_input_source") as api_mock:
         main(["--set-input-source", str(value)])
         api_mock.assert_called_once_with(value)
 

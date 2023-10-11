@@ -122,9 +122,7 @@ def test_luminance(
         monitor.set_luminance(original)
 
 
-@pytest.mark.skipif(
-    USE_ATTACHED_MONITORS, reason="not going to change your contrast"
-)
+@pytest.mark.skipif(USE_ATTACHED_MONITORS, reason="not going to change your contrast")
 def test_contrast(monitor: Monitor):
     contrast = monitor.get_contrast()
     contrast += 1
@@ -132,9 +130,7 @@ def test_contrast(monitor: Monitor):
     assert monitor.get_contrast() == contrast
 
 
-@pytest.mark.skipif(
-    USE_ATTACHED_MONITORS, reason="not going to turn off your monitors"
-)
+@pytest.mark.skipif(USE_ATTACHED_MONITORS, reason="not going to turn off your monitors")
 @pytest.mark.parametrize(
     "mode, expected",
     [
@@ -212,9 +208,7 @@ def test_input_source(
 @pytest.mark.skipif(USE_ATTACHED_MONITORS, reason="This is mocked")
 def test_get_input_source_type_c(monitor: Monitor):
     type_c_input = 27
-    with mock.patch.object(
-        monitor, "_get_vcp_feature", return_value=type_c_input
-    ):
+    with mock.patch.object(monitor, "_get_vcp_feature", return_value=type_c_input):
         try:
             monitor.get_input_source()
             assert 0, "Did not raise InputSourceValueError"
