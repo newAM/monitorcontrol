@@ -941,13 +941,13 @@ zstd = ["zstandard (>=0.18.0)"]
 
 [[package]]
 name = "voluptuous"
-version = "0.13.1"
-description = ""
+version = "0.14.0"
+description = "Python data validation library"
 optional = false
 python-versions = "*"
 files = [
-    {file = "voluptuous-0.13.1-py3-none-any.whl", hash = "sha256:4b838b185f5951f2d6e8752b68fcf18bd7a9c26ded8f143f92d6d28f3921a3e6"},
-    {file = "voluptuous-0.13.1.tar.gz", hash = "sha256:e8d31c20601d6773cb14d4c0f42aee29c6821bbd1018039aac7ac5605b489723"},
+    {file = "voluptuous-0.14.0-py3-none-any.whl", hash = "sha256:f9d63353f270c87d5f3aea29f8c251beddfd164d74d934e54dad7b8f84ad7a74"},
+    {file = "voluptuous-0.14.0.tar.gz", hash = "sha256:145384a9613f7520b70e214e5c06de0809e069ab56716685446450f9bee15e2e"},
 ]
 
 [[package]]
@@ -968,4 +968,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "4ba84dc797eabe92faeeef4a2d2159478797431d9c5d9a4ad5bb2afa01818503"
+content-hash = "f342b2e1285e82628a28967e0c555b01a63bfee19fbabed3007bd70a99435d8f"
