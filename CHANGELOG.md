@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html),
 as of version 2.1.1.
 
+## [Unreleased]
+### Added
+- Added additional logging for Windows API calls.
+
 ## [3.1.0] - 2023-10-10
 ### Added
 - Added `get_color_preset` and `set_color_preset`.
