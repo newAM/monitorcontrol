@@ -21,7 +21,7 @@ pep8-naming = "~0.13"
 pytest = "^7"
 pytest-cov = "^4"
 sphinx = "^7.1"
-sphinx-rtd-theme = "^1"
+sphinx-rtd-theme = "^2"
 toml = "~0.10"
 voluptuous = "~0.14"
 
