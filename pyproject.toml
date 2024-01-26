@@ -13,7 +13,7 @@ python = "^3.8"
 pyudev = { version = ">=0.23,<0.25", markers = "sys_platform != 'win32'" }
 
 [tool.poetry.dev-dependencies]
-black = "23.12.1"
+black = "24.1.0"
 coveralls = "^3"
 flake8 = { version = "^7", python = ">=3.8.1,<4.0" }
 flake8-bugbear = { version = "^24.1.17", python = ">=3.8.1,<4.0" }
