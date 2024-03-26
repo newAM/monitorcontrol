@@ -19,7 +19,7 @@ flake8 = { version = "^7", python = ">=3.8.1,<4.0" }
 flake8-bugbear = { version = "^24.2.6", python = ">=3.8.1,<4.0" }
 pep8-naming = "~0.13"
 pytest = "^8"
-pytest-cov = "^4"
+pytest-cov = "^5"
 sphinx = "^7.1"
 sphinx-rtd-theme = "^2"
 toml = "~0.10"
