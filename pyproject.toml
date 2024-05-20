@@ -17,7 +17,7 @@ black = "24.4.2"
 coveralls = "^3"
 flake8 = { version = "^7", python = ">=3.8.1,<4.0" }
 flake8-bugbear = { version = "^24.4.26", python = ">=3.8.1,<4.0" }
-pep8-naming = "~0.13"
+pep8-naming = "~0.14"
 pytest = "^8"
 pytest-cov = "^5"
 sphinx = "^7.1"
