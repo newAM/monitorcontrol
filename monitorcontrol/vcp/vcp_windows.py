@@ -198,7 +198,9 @@ if sys.platform == "win32":
                 if not ctypes.windll.dxva2.SaveCurrentMonitorSettings(
                     HANDLE(self.handle)
                 ):
-                    raise VCPError("failed to save current settings: " + ctypes.FormatError())
+                    raise VCPError(
+                        "failed to save current settings: " + ctypes.FormatError()
+                    )
             except OSError as e:
                 raise VCPError("failed to close handle") from e
 
