@@ -185,7 +185,23 @@ if sys.platform == "win32":
             except OSError as e:
                 raise VCPError("failed to get VCP capabilities") from e
             return cap_string.value.decode("ascii")
+        
+        def save_current_settings(self):
+            """
+            Saves the current settings to monitor NVRAM.
 
+            Raises:
+                VCPError: Failed to set VCP feature.
+            """
+            self.logger.debug("SaveCurrentSettingsCommand")
+            try:
+                if not ctypes.windll.dxva2.SaveCurrentMonitorSettings(
+                    HANDLE(self.handle)
+                ):
+                    raise VCPError("failed to save current settings: " + ctypes.FormatError())
+            except OSError as e:
+                raise VCPError("failed to close handle") from e
+            
     def get_vcps() -> List[WindowsVCP]:
         """
         Opens handles to all physical VCPs.
