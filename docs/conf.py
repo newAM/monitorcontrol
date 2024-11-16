@@ -46,7 +46,6 @@ intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
 html_theme = "sphinx_rtd_theme"
 htmlhelp_basename = "monitorcontroldoc"
 github_user = "newAM"
-html_theme_options = {"display_version": False}
 html_context = {
     "display_github": True,
     "github_user": github_user,
