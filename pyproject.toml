@@ -9,7 +9,7 @@ repository = "https://github.com/newAM/monitorcontrol"
 documentation = "https://newam.github.io/monitorcontrol"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 pyudev = { version = ">=0.23,<0.25", markers = "sys_platform != 'win32'" }
 
 [tool.poetry.dev-dependencies]

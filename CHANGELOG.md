@@ -10,6 +10,9 @@ as of version 2.1.1.
 ### Added
 - Added additional logging for Windows API calls.
 
+### Removed
+- Removed support for end-of-life python version 3.8.
+
 ## [3.1.0] - 2023-10-10
 ### Added
 - Added `get_color_preset` and `set_color_preset`.
