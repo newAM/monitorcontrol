@@ -59,11 +59,11 @@ def test_set_input_source(value: str):
 
 
 def test_get_monitors():
-    with get_monitors_mock, mock.patch.object(
-        Monitor, "get_input_source"
-    ) as input_source_api_mock, mock.patch.object(
-        Monitor, "get_vcp_capabilities"
-    ) as vcp_capabilities_api_mock:
+    with (
+        get_monitors_mock,
+        mock.patch.object(Monitor, "get_input_source") as input_source_api_mock,
+        mock.patch.object(Monitor, "get_vcp_capabilities") as vcp_capabilities_api_mock,
+    ):
         main(["--get-monitors"])
         input_source_api_mock.assert_called()
         vcp_capabilities_api_mock.assert_called()

@@ -463,7 +463,9 @@ class Monitor:
         try:
             return InputSource(value)
         except ValueError:
-            raise InputSourceValueError(f"{value} is not a valid InputSource", value)
+            raise InputSourceValueError(
+                f"{value} is not a valid InputSource", value
+            ) from None
 
     def set_input_source(self, value: Union[int, str, InputSource]):
         """
