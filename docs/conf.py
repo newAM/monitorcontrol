@@ -27,12 +27,12 @@ with open(os.path.join(repo_root, "pyproject.toml"), "r") as f:
 master_doc = "index"
 
 # General information about the project.
-project = pyproject["tool"]["poetry"]["name"]
+project = pyproject["project"]["name"]
 year = datetime.datetime.now().year
-author = pyproject["tool"]["poetry"]["authors"][0].split("<", 1)[0].rstrip()
+author = pyproject["project"]["authors"][0]["name"]
 copyright = f"2019 - {year}, {author}"
-version = pyproject["tool"]["poetry"]["version"]
-release = pyproject["tool"]["poetry"]["version"]
+version = pyproject["project"]["version"]
+release = pyproject["project"]["version"]
 language = "en"
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", ".tox"]
 pygments_style = "sphinx"

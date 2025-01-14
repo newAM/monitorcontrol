@@ -10,6 +10,9 @@ as of version 2.1.1.
 ### Added
 - Added additional logging for Windows API calls.
 
+### Changed
+- Changed the build system from poetry-core to setuptools.
+
 ### Removed
 - Removed support for end-of-life python version 3.8.
 
