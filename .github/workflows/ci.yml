@@ -19,12 +19,9 @@ jobs:
           python-version: "3.12"
       - name: Install Poetry
         uses: abatilo/actions-poetry@v4.0.0
-      - name: Poetry Install
-        run: poetry install
-      - name: Run flake8
-        run: poetry run flake8
-      - name: Run black
-        run: poetry run black --verbose --check .
+      - run: poetry install
+      - run: poetry run ruff check
+      - run: poetry run ruff format --check
 
   docs:
     runs-on: ubuntu-latest

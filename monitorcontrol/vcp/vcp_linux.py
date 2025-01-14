@@ -279,14 +279,14 @@ class LinuxVCP(VCP):
             # remove checksum from length
 
             # unpack the payload
-            reply_code, payload = struct.unpack(f">B{length-1}s", payload)
+            reply_code, payload = struct.unpack(f">B{length - 1}s", payload)
             length -= 1
 
             if reply_code != self.GET_VCP_CAPS_REPLY:
                 raise VCPIOError(f"received unexpected response code: {reply_code}")
 
             # unpack the payload
-            offset, payload = struct.unpack(f">H{length-2}s", payload)
+            offset, payload = struct.unpack(f">H{length - 2}s", payload)
             length -= 2
 
             if length > 0:

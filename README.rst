@@ -1,7 +1,7 @@
 monitorcontrol
 ##############
 
-|PyPi Version| |Build Status| |Documentation Status| |Coverage Status| |Black|
+|PyPi Version| |Build Status| |Documentation Status| |Coverage Status| |Ruff|
 
 Python monitor control using the VESA Monitor Control Command Set (MCCS)
 over the Display Data Channel Command Interface Standard (DDC-CI).
@@ -38,5 +38,6 @@ Full documentation including examples are avaliable in the `docs <https://newam.
    :target: https://coveralls.io/github/newAM/monitorcontrol?branch=master
 .. |Documentation Status| image:: https://img.shields.io/badge/docs-latest-blue
    :target: https://newam.github.io/monitorcontrol
-.. |Black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
-   :target: https://github.com/psf/black
+.. |Ruff| image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json
+    :target: https://github.com/astral-sh/ruff
+    :alt: Ruff
