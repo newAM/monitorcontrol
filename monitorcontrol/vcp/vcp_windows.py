@@ -224,7 +224,7 @@ if sys.platform == "win32":
                     )
             except OSError as e:
                 raise VCPError("failed to open physical monitor handle") from e
-            return list(
+            return (
                 [physical_monitor.handle, physical_monitor.description]
                 for physical_monitor in physical_monitors
             )
