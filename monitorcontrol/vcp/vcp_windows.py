@@ -170,7 +170,7 @@ if sys.platform == "win32":
             )
 
         @staticmethod
-        def _EnumDisplayMonitors() -> List[HMONITOR]:
+        def _get_hmonitors() -> List[HMONITOR]:
             """
             Calls the Windows `EnumDisplayMonitors` API in Python-friendly form.
             """
@@ -193,7 +193,7 @@ if sys.platform == "win32":
             return hmonitors
 
         @staticmethod
-        def _GetPhysicalMonitorsFromHMONITOR(
+        def _physical_monitors_from_hmonitor(
             hmonitor: HMONITOR,
         ) -> List[Tuple[HANDLE, str]]:
             """
@@ -250,7 +250,7 @@ if sys.platform == "win32":
             VCPError: Failed to enumerate VCPs.
         """
         physical_monitors = WindowsVCP._get_physical_monitors(
-            WindowsVCP._EnumDisplayMonitors, WindowsVCP._GetPhysicalMonitorsFromHMONITOR
+            WindowsVCP._get_hmonitors, WindowsVCP._physical_monitors_from_hmonitor
         )
         return list(
             WindowsVCP(handle, description)

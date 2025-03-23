@@ -1,9 +1,9 @@
 import pytest
 import sys
-from monitorcontrol.vcp.vcp_windows import WindowsVCP
 
 
 if sys.platform == "win32":
+    from monitorcontrol.vcp.vcp_windows import WindowsVCP
 
     @pytest.mark.parametrize(
         "input,expected",
