@@ -156,7 +156,7 @@ if sys.platform == "win32":
             physical_monitors_from_hmonitor: Callable[
                 [HMONITOR], List[Tuple[HANDLE, str]]
             ],
-        ):
+        ) -> List[Tuple[HANDLE, str]]:
             """
             Returns a list of physical monitors.
 
