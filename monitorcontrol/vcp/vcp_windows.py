@@ -42,7 +42,7 @@ if sys.platform == "win32":
             self.description = description
 
         def __del__(self):
-            WindowsVCP._DestroyPhysicalMonitor(self.handle)
+            WindowsVCP._destroy_physical_monitor(self.handle)
 
         def __enter__(self):
             pass
@@ -230,7 +230,10 @@ if sys.platform == "win32":
             )
 
         @staticmethod
-        def _DestroyPhysicalMonitor(handle: HANDLE) -> None:
+        def _destroy_physical_monitor(handle: HANDLE) -> None:
+            """
+            Calls the Windows `DestroyPhysicalMonitor` API in Python-friendly form.
+            """
             try:
                 if not ctypes.windll.dxva2.DestroyPhysicalMonitor(handle):
                     raise VCPError(
