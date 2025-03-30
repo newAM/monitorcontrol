@@ -29,6 +29,5 @@ if sys.platform == "win32":
         physical_monitors_from_hmonitor.side_effect = (
             lambda hmonitor: physical_monitors.get(hmonitor)
         )
-        print(WindowsVCP._get_hmonitors())
         result = list(WindowsVCP._get_physical_monitors())
         assert result == expected
