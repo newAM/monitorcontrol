@@ -1,6 +1,6 @@
 from .vcp_abc import VCP, VCPError
 from types import TracebackType
-from typing import Callable, List, Optional, Tuple, Type
+from typing import Iterator, List, Optional, Tuple, Type
 import ctypes
 import logging
 import sys
@@ -151,12 +151,9 @@ if sys.platform == "win32":
             return cap_string.value.decode("ascii")
 
         @staticmethod
-        def _get_physical_monitors() -> List[Tuple[HANDLE, str]]:
+        def _get_physical_monitors() -> Iterator[Tuple[HANDLE, str]]:
             """
             Returns a list of physical monitors.
-
-            Underlying Windows APIs are given as `Callable`s to make this
-            function testable.
             """
             return (
                 physical_monitor
@@ -192,7 +189,7 @@ if sys.platform == "win32":
         @staticmethod
         def _physical_monitors_from_hmonitor(
             hmonitor: HMONITOR,
-        ) -> List[Tuple[HANDLE, str]]:
+        ) -> Iterator[Tuple[HANDLE, str]]:
             """
             Calls the Windows `GetPhysicalMonitorsFromHMONITOR` API in Python-friendly form.
             """
