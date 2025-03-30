@@ -151,12 +151,7 @@ if sys.platform == "win32":
             return cap_string.value.decode("ascii")
 
         @staticmethod
-        def _get_physical_monitors(
-            get_hmonitors: Callable[[], List[HMONITOR]],
-            physical_monitors_from_hmonitor: Callable[
-                [HMONITOR], List[Tuple[HANDLE, str]]
-            ],
-        ) -> List[Tuple[HANDLE, str]]:
+        def _get_physical_monitors() -> List[Tuple[HANDLE, str]]:
             """
             Returns a list of physical monitors.
 
@@ -165,8 +160,10 @@ if sys.platform == "win32":
             """
             return (
                 physical_monitor
-                for hmonitor in get_hmonitors()
-                for physical_monitor in physical_monitors_from_hmonitor(hmonitor)
+                for hmonitor in WindowsVCP._get_hmonitors()
+                for physical_monitor in WindowsVCP._physical_monitors_from_hmonitor(
+                    hmonitor
+                )
             )
 
         @staticmethod
@@ -252,9 +249,7 @@ if sys.platform == "win32":
         Raises:
             VCPError: Failed to enumerate VCPs.
         """
-        physical_monitors = WindowsVCP._get_physical_monitors(
-            WindowsVCP._get_hmonitors, WindowsVCP._physical_monitors_from_hmonitor
-        )
+        physical_monitors = WindowsVCP._get_physical_monitors()
         return list(
             WindowsVCP(handle, description)
             for (handle, description) in physical_monitors

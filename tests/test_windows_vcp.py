@@ -1,5 +1,6 @@
 import pytest
 import sys
+from unittest.mock import patch
 
 
 if sys.platform == "win32":
@@ -14,15 +15,20 @@ if sys.platform == "win32":
             [[1, 3], ["1-0", "3-0", "3-1", "3-2"]],
         ],
     )
-    def test_get_physical_monitors(input, expected):
+    @patch("monitorcontrol.vcp.vcp_windows.WindowsVCP._get_hmonitors")
+    @patch("monitorcontrol.vcp.vcp_windows.WindowsVCP._physical_monitors_from_hmonitor")
+    def test_get_physical_monitors(
+        physical_monitors_from_hmonitor, get_hmonitors, input, expected
+    ):
+        get_hmonitors.return_value = input
         physical_monitors = {
             1: ["1-0"],
             2: ["2-0", "2-1"],
             3: ["3-0", "3-1", "3-2"],
         }
-        result = list(
-            WindowsVCP._get_physical_monitors(
-                lambda: input, lambda hmonitor: physical_monitors.get(hmonitor)
-            )
+        physical_monitors_from_hmonitor.side_effect = (
+            lambda hmonitor: physical_monitors.get(hmonitor)
         )
+        print(WindowsVCP._get_hmonitors())
+        result = list(WindowsVCP._get_physical_monitors())
         assert result == expected
