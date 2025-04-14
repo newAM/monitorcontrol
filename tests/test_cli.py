@@ -33,6 +33,19 @@ def test_set_luminance(value: int):
         api_mock.assert_called_once_with(value)
 
 
+def test_get_volume():
+    with get_monitors_mock, mock.patch.object(Monitor, "get_volume") as api_mock:
+        main(["--get-volume"])
+        api_mock.assert_called_once()
+
+
+@pytest.mark.parametrize("value", [0, 100])
+def test_set_volume(value: int):
+    with get_monitors_mock, mock.patch.object(Monitor, "set_volume") as api_mock:
+        main(["--set-volume", str(value)])
+        api_mock.assert_called_once_with(value)
+
+
 def test_get_power():
     with get_monitors_mock, mock.patch.object(Monitor, "get_power_mode") as api_mock:
         main(["--get-power"])
@@ -43,6 +56,25 @@ def test_get_power():
 def test_set_power(value: int):
     with get_monitors_mock, mock.patch.object(Monitor, "set_power_mode") as api_mock:
         main(["--set-power", str(value)])
+        api_mock.assert_called_once_with(value)
+
+
+def test_get_audio_mute():
+    with (
+        get_monitors_mock,
+        mock.patch.object(Monitor, "get_audio_mute_mode") as api_mock,
+    ):
+        main(["--get-audio-mute"])
+        api_mock.assert_called_once()
+
+
+@pytest.mark.parametrize("value", ["on", "off"])
+def test_set_audio_mute(value: int):
+    with (
+        get_monitors_mock,
+        mock.patch.object(Monitor, "set_audio_mute_mode") as api_mock,
+    ):
+        main(["--set-audio-mute", str(value)])
         api_mock.assert_called_once_with(value)
 
 
