@@ -124,5 +124,6 @@ dmypy.json
 # IDE/Editor files
 *.sublime-project
 *.sublime-workspace
+.idea
 
 /result
