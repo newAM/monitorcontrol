@@ -1,37 +1,43 @@
-[tool.black]
-line-length = 79
-target-version = ["py36", "py37", "py38"]
-
-[tool.poetry]
+[project]
 name = "monitorcontrol"
 description = "Monitor controls using MCCS over DDC-CI."
-version = "3.0.3"
-authors = ["Alex Martens <alex@thinglab.org>"]
-license = "MIT"
+version = "3.1.0"
+authors = [{ name = "Alex Martens", email = "alex+monitorcontrol@thinglab.org" }]
+license.file = "LICENSE"
 readme = "README.rst"
-repository = "https://github.com/newAM/monitorcontrol"
-documentation = "https://newam.github.io/monitorcontrol"
+requires-python = ">= 3.9"
+dependencies = [
+    "pyudev>=0.23.3 ; sys_platform != 'win32'",
+]
 
-[tool.poetry.dependencies]
-python = "^3.8"
-pyudev = { version = ">=0.23,<0.25", markers = "sys_platform != 'win32'" }
+[dependency-groups]
+dev = [
+    "coveralls>=4.0.1",
+    "pytest>=8.3.4",
+    "pytest-cov>=6.0.0",
+    "ruff>=0.9.1",
+    "sphinx>=7.4.7",
+    "sphinx-rtd-theme>=3.0.2",
+    "toml>=0.10.2",
+    "voluptuous>=0.15.2",
+]
 
-[tool.poetry.dev-dependencies]
-black = "23.9.1"
-coveralls = "^3"
-flake8 = { version = "^6", python = ">=3.8.1,<4.0" }
-flake8-bugbear = { version = "^23.9.16", python = ">=3.8.1,<4.0" }
-pep8-naming = "~0.13"
-pytest = "^7"
-pytest-cov = "^4"
-sphinx = "^7.1"
-sphinx-rtd-theme = "^1"
-toml = "~0.10"
-voluptuous = "~0.13"
+[project.urls]
+Repository = "https://github.com/newAM/monitorcontrol"
+Documentation = "https://newam.github.io/monitorcontrol"
+Changelog = "https://github.com/newAM/monitorcontrol/blob/main/CHANGELOG.md"
+Issues = "https://github.com/newAM/monitorcontrol/issues"
 
-[tool.poetry.scripts]
+[project.scripts]
 monitorcontrol = "monitorcontrol.__main__:main"
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["monitorcontrol"]
+
+[tool.ruff.lint]
+# Add flake8-bugbear and pep8-naming rules
+extend-select = ["B", "N"]

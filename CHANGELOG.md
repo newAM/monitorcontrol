@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html),
 as of version 2.1.1.
 
+## [Unreleased]
+### Added
+- Added additional logging for Windows API calls.
+
+### Changed
+- Changed the build system from poetry-core to setuptools.
+
+### Removed
+- Removed support for end-of-life python version 3.8.
+
+## [3.1.0] - 2023-10-10
+### Added
+- Added `get_color_preset` and `set_color_preset`.
+- Added a `description` attribute with the physical monitors description to `WindowsVCP`.
+- Added support for python 3.12.
+
+### Fixed
+- Fixed parsing of nested capability groups.
+- Fixed `TypeError` raised from incorrectly catching `ctypes.WinError` instead of `OSError`.
+- Fixed the VCP backend ignoring return codes on Windows.
+  Return codes are now checked and `VCPError` is raised when the API call fails.
+
 ## [3.0.3] - 2023-04-22
 ### Fixed
 - Fixed dangling file descriptors on linux platforms after calling `get_monitors()`.
@@ -82,7 +104,8 @@ as of version 2.1.1.
 - Added a changelog.
 
 
-[Unreleased]: https://github.com/newAM/monitorcontrol/compare/3.0.3...HEAD
+[Unreleased]: https://github.com/newAM/monitorcontrol/compare/3.1.0...HEAD
+[3.1.0]: https://github.com/newAM/monitorcontrol/compare/3.0.3...3.1.0
 [3.0.3]: https://github.com/newAM/monitorcontrol/compare/3.0.2...3.0.3
 [3.0.2]: https://github.com/newAM/monitorcontrol/compare/3.0.1...3.0.2
 [3.0.1]: https://github.com/newAM/monitorcontrol/compare/3.0.0...3.0.1

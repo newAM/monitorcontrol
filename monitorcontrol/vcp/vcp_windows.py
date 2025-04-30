@@ -2,6 +2,7 @@ from .vcp_abc import VCP, VCPError
 from types import TracebackType
 from typing import List, Optional, Tuple, Type
 import ctypes
+import logging
 import sys
 
 # hide the Windows code from Linux CI coverage
@@ -35,16 +36,24 @@ if sys.platform == "win32":
             Args:
                 hmonitor: logical monitor handle
             """
+            self.logger = logging.getLogger(__name__)
             self.hmonitor = hmonitor
 
         def __enter__(self):
             num_physical = DWORD()
+            self.logger.debug("GetNumberOfPhysicalMonitorsFromHMONITOR")
             try:
-                ctypes.windll.dxva2.GetNumberOfPhysicalMonitorsFromHMONITOR(
+                if not ctypes.windll.dxva2.GetNumberOfPhysicalMonitorsFromHMONITOR(
                     self.hmonitor, ctypes.byref(num_physical)
-                )
-            except ctypes.WinError as e:
-                raise VCPError("Windows API call failed") from e
+                ):
+                    raise VCPError(
+                        "Call to GetNumberOfPhysicalMonitorsFromHMONITOR failed: "
+                        + ctypes.FormatError()
+                    )
+            except OSError as e:
+                raise VCPError(
+                    "Call to GetNumberOfPhysicalMonitorsFromHMONITOR failed"
+                ) from e
 
             if num_physical.value == 0:
                 raise VCPError("no physical monitor found")
@@ -55,11 +64,16 @@ if sys.platform == "win32":
                 raise VCPError("more than one physical monitor per hmonitor")
 
             physical_monitors = (PhysicalMonitor * num_physical.value)()
+            self.logger.debug("GetPhysicalMonitorsFromHMONITOR")
             try:
-                ctypes.windll.dxva2.GetPhysicalMonitorsFromHMONITOR(
+                if not ctypes.windll.dxva2.GetPhysicalMonitorsFromHMONITOR(
                     self.hmonitor, num_physical.value, physical_monitors
-                )
-            except ctypes.WinError as e:
+                ):
+                    raise VCPError(
+                        "Call to GetPhysicalMonitorsFromHMONITOR failed: "
+                        + ctypes.FormatError()
+                    )
+            except OSError as e:
                 raise VCPError("failed to open physical monitor handle") from e
             self.handle = physical_monitors[0].handle
             self.description = physical_monitors[0].description
@@ -71,9 +85,13 @@ if sys.platform == "win32":
             exception_value: Optional[BaseException],
             exception_traceback: Optional[TracebackType],
         ) -> Optional[bool]:
+            self.logger.debug("DestroyPhysicalMonitor")
             try:
-                ctypes.windll.dxva2.DestroyPhysicalMonitor(self.handle)
-            except ctypes.WinError as e:
+                if not ctypes.windll.dxva2.DestroyPhysicalMonitor(self.handle):
+                    raise VCPError(
+                        "Call to DestroyPhysicalMonitor failed: " + ctypes.FormatError()
+                    )
+            except OSError as e:
                 raise VCPError("failed to close handle") from e
             return False
 
@@ -88,11 +106,13 @@ if sys.platform == "win32":
             Raises:
                 VCPError: Failed to set VCP feature.
             """
+            self.logger.debug(f"SetVCPFeature(_, {code=}, {value=})")
             try:
-                ctypes.windll.dxva2.SetVCPFeature(
+                if not ctypes.windll.dxva2.SetVCPFeature(
                     HANDLE(self.handle), BYTE(code), DWORD(value)
-                )
-            except ctypes.WinError as e:
+                ):
+                    raise VCPError("failed to set VCP feature: " + ctypes.FormatError())
+            except OSError as e:
                 raise VCPError("failed to close handle") from e
 
         def get_vcp_feature(self, code: int) -> Tuple[int, int]:
@@ -110,16 +130,24 @@ if sys.platform == "win32":
             """
             feature_current = DWORD()
             feature_max = DWORD()
+            self.logger.debug(
+                f"GetVCPFeatureAndVCPFeatureReply(_, {code=}, None, _, _)"
+            )
             try:
-                ctypes.windll.dxva2.GetVCPFeatureAndVCPFeatureReply(
+                if not ctypes.windll.dxva2.GetVCPFeatureAndVCPFeatureReply(
                     HANDLE(self.handle),
                     BYTE(code),
                     None,
                     ctypes.byref(feature_current),
                     ctypes.byref(feature_max),
-                )
-            except ctypes.WinError as e:
+                ):
+                    raise VCPError("failed to get VCP feature: " + ctypes.FormatError())
+            except OSError as e:
                 raise VCPError("failed to get VCP feature") from e
+            self.logger.debug(
+                "GetVCPFeatureAndVCPFeatureReply -> "
+                f"({feature_current.value}, {feature_max.value})"
+            )
             return feature_current.value, feature_max.value
 
         def get_vcp_capabilities(self):
@@ -138,17 +166,24 @@ if sys.platform == "win32":
             """
 
             cap_length = DWORD()
-
+            self.logger.debug("GetCapabilitiesStringLength")
             try:
-                ctypes.windll.dxva2.GetCapabilitiesStringLength(
+                if not ctypes.windll.dxva2.GetCapabilitiesStringLength(
                     HANDLE(self.handle), ctypes.byref(cap_length)
-                )
+                ):
+                    raise VCPError(
+                        "failed to get VCP capabilities: " + ctypes.FormatError()
+                    )
                 cap_string = (ctypes.c_char * cap_length.value)()
-                ctypes.windll.dxva2.CapabilitiesRequestAndCapabilitiesReply(
+                self.logger.debug("CapabilitiesRequestAndCapabilitiesReply")
+                if not ctypes.windll.dxva2.CapabilitiesRequestAndCapabilitiesReply(
                     HANDLE(self.handle), cap_string, cap_length
-                )
-            except ctypes.WinError as e:
-                raise VCPError("failed to get VCP feature") from e
+                ):
+                    raise VCPError(
+                        "failed to get VCP capabilities: " + ctypes.FormatError()
+                    )
+            except OSError as e:
+                raise VCPError("failed to get VCP capabilities") from e
             return cap_string.value.decode("ascii")
 
     def get_vcps() -> List[WindowsVCP]:
@@ -175,8 +210,9 @@ if sys.platform == "win32":
                 BOOL, HMONITOR, HDC, ctypes.POINTER(RECT), LPARAM
             )
             callback = MONITORENUMPROC(_callback)
-            ctypes.windll.user32.EnumDisplayMonitors(0, 0, callback, 0)
-        except ctypes.WinError as e:
+            if not ctypes.windll.user32.EnumDisplayMonitors(0, 0, callback, 0):
+                raise VCPError("Call to EnumDisplayMonitors failed")
+        except OSError as e:
             raise VCPError("failed to enumerate VCPs") from e
 
         for logical in hmonitors:

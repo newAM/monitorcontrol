@@ -121,9 +121,7 @@ class LinuxVCP(VCP):
         # add headers and footers
         data.insert(0, (len(data) | self.PROTOCOL_FLAG))
         data.insert(0, self.HOST_ADDRESS)
-        data.append(
-            self.get_checksum(bytearray([self.DDCCI_ADDR << 1]) + data)
-        )
+        data.append(self.get_checksum(bytearray([self.DDCCI_ADDR << 1]) + data))
 
         # write data
         self.logger.debug("data=" + " ".join([f"{x:02X}" for x in data]))
@@ -155,9 +153,7 @@ class LinuxVCP(VCP):
         # add headers and footers
         data.insert(0, (len(data) | self.PROTOCOL_FLAG))
         data.insert(0, self.HOST_ADDRESS)
-        data.append(
-            self.get_checksum(bytearray([self.DDCCI_ADDR << 1]) + data)
-        )
+        data.append(self.get_checksum(bytearray([self.DDCCI_ADDR << 1]) + data))
 
         # write data
         self.logger.debug("data=" + " ".join([f"{x:02X}" for x in data]))
@@ -196,9 +192,7 @@ class LinuxVCP(VCP):
         ) = struct.unpack(">BBBBHH", payload)
 
         if reply_code != self.GET_VCP_REPLY:
-            raise VCPIOError(
-                f"received unexpected response code: {reply_code}"
-            )
+            raise VCPIOError(f"received unexpected response code: {reply_code}")
 
         if vcp_opcode != code:
             raise VCPIOError(f"received unexpected opcode: {vcp_opcode}")
@@ -261,21 +255,15 @@ class LinuxVCP(VCP):
 
             # read the data
             header = self.read_bytes(self.GET_VCP_HEADER_LENGTH)
-            self.logger.debug(
-                "header=" + " ".join([f"{x:02X}" for x in header])
-            )
+            self.logger.debug("header=" + " ".join([f"{x:02X}" for x in header]))
             source, length = struct.unpack("BB", header)
             length &= ~self.PROTOCOL_FLAG  # clear protocol flag
             payload = self.read_bytes(length + 1)
-            self.logger.debug(
-                "payload=" + " ".join([f"{x:02X}" for x in payload])
-            )
+            self.logger.debug("payload=" + " ".join([f"{x:02X}" for x in payload]))
 
             # check if length is valid
             if length < 3 or length > 35:
-                raise VCPIOError(
-                    f"received unexpected response length: {length}"
-                )
+                raise VCPIOError(f"received unexpected response length: {length}")
 
             # check checksum
             payload, checksum = struct.unpack(f"{length}sB", payload)
@@ -288,19 +276,17 @@ class LinuxVCP(VCP):
                 elif self.CHECKSUM_ERRORS.lower() == "warning":
                     self.logger.warning(message)
                 # else ignore
-            # remove cheksum from length
+            # remove checksum from length
 
             # unpack the payload
-            reply_code, payload = struct.unpack(f">B{length-1}s", payload)
+            reply_code, payload = struct.unpack(f">B{length - 1}s", payload)
             length -= 1
 
             if reply_code != self.GET_VCP_CAPS_REPLY:
-                raise VCPIOError(
-                    f"received unexpected response code: {reply_code}"
-                )
+                raise VCPIOError(f"received unexpected response code: {reply_code}")
 
             # unpack the payload
-            offset, payload = struct.unpack(f">H{length-2}s", payload)
+            offset, payload = struct.unpack(f">H{length - 2}s", payload)
             length -= 2
 
             if length > 0:

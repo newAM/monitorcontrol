@@ -22,6 +22,12 @@ _VCP_CODE_DEFINTIONS = {
         "type": "rw",
         "function": "c",
     },
+    "image_color_preset": {
+        "name": "image color preset",
+        "value": 0x14,
+        "type": "rw",
+        "function": "nc",
+    },
     "active_control": {
         "name": "active control",
         "value": 0x52,

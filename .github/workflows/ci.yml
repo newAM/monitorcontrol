@@ -10,44 +10,27 @@ on:
 
 
 jobs:
-  nixpkg:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: cachix/install-nix-action@v23
-    - run: nix flake check -L
-
   style:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
+      - uses: astral-sh/setup-uv@v6
         with:
-          python-version: "3.11"
-      - name: Install Poetry
-        uses: abatilo/actions-poetry@v2.3.0
-      - name: Poetry Install
-        run: poetry install
-      - name: Run flake8
-        run: poetry run flake8
-      - name: Run black
-        run: poetry run black --verbose --check .
+          python-version: "3.12"
+      - run: uv sync --all-extras --dev
+      - run: uv run ruff check
+      - run: uv run ruff format --check
 
   docs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
+      - uses: astral-sh/setup-uv@v6
         with:
-          python-version: "3.11"
-      - name: Install Poetry
-        uses: abatilo/actions-poetry@v2.3.0
-      - name: Poetry Install
-        run: poetry install
-      - name: Run sphinx
-        run: poetry run sphinx-build -W -b html docs public
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
+          python-version: "3.12"
+      - run: uv sync --all-extras --dev
+      - run: uv run sphinx-build -W -b html docs public
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: public
 
@@ -64,27 +47,22 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4
 
   pytest:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - uses: astral-sh/setup-uv@v6
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install Poetry
-        uses: abatilo/actions-poetry@v2.3.0
-      - name: Poetry Install
-        run: poetry install
-      - name: Run pytest
-        run: poetry run pytest -vvv --cov=monitorcontrol
+      - run: uv sync --all-extras --dev
+      - run: uv run pytest -vvv --cov=monitorcontrol
       - name: Upload coverage data to coveralls.io
-        run: poetry run coveralls --service=github
+        run: uv run coveralls --service=github
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COVERALLS_FLAG_NAME: py${{ matrix.python-version }}
@@ -96,16 +74,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: "Setup Python 3.11"
-        uses: actions/setup-python@v4
+      - uses: astral-sh/setup-uv@v6
         with:
-          python-version: "3.11"
-      - name: Install Poetry
-        uses: abatilo/actions-poetry@v2.3.0
-      - name: Poetry Install
-        run: poetry install
-      - name: Finished
-        run: poetry run coveralls --finish --service=github
+          python-version: "3.12"
+      - run: uv sync --all-extras --dev
+      - run: uv run coveralls --finish --service=github
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -117,17 +90,12 @@ jobs:
       - pytest
       - docs
       - style
-      - nixpkg
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
+      - uses: astral-sh/setup-uv@v6
         with:
-          python-version: "3.11"
-      - name: Install Poetry
-        uses: abatilo/actions-poetry@v2.3.0
-      - name: Poetry Install
-        run: poetry install
-      - name: Poetry publish
-        run: poetry publish --build
+          python-version: "3.12"
+      - run: uv sync --all-extras --dev
+      - run: uv publish
         env:
-          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}

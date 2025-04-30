@@ -6,6 +6,23 @@ import sys
 
 
 @enum.unique
+class ColorPreset(enum.Enum):
+    """Monitor color presets."""
+
+    COLOR_TEMP_4000K = 0x03
+    COLOR_TEMP_5000K = 0x04
+    COLOR_TEMP_6500K = 0x05
+    COLOR_TEMP_7500K = 0x06
+    COLOR_TEMP_8200K = 0x07
+    COLOR_TEMP_9300K = 0x08
+    COLOR_TEMP_10000K = 0x09
+    COLOR_TEMP_11500K = 0x0A
+    COLOR_TEMP_USER1 = 0x0B
+    COLOR_TEMP_USER2 = 0x0C
+    COLOR_TEMP_USER3 = 0x0D
+
+
+@enum.unique
 class PowerMode(enum.Enum):
     """Monitor power modes."""
 
@@ -65,7 +82,7 @@ class Monitor:
     """
     A physical monitor attached to a Virtual Control Panel (VCP).
 
-    Typically you do not use this class directly and instead use
+    Typically, you do not use this class directly and instead use
     :py:meth:`get_monitors` to get a list of initialized monitors.
 
     All class methods must be called from within a context manager unless
@@ -98,7 +115,7 @@ class Monitor:
         finally:
             self._in_ctx = False
 
-    def _get_code_maximum(self, code: Type[vcp.VCPCode]) -> int:
+    def _get_code_maximum(self, code: vcp.VCPCode) -> int:
         """
         Gets the maximum values for a given code, and caches in the
         class dictionary if not already found.
@@ -112,9 +129,7 @@ class Monitor:
         Raises:
             TypeError: Code is write only.
         """
-        assert (
-            self._in_ctx
-        ), "This function must be run within the context manager"
+        assert self._in_ctx, "This function must be run within the context manager"
         if not code.readable:
             raise TypeError(f"code is not readable: {code.name}")
 
@@ -138,17 +153,13 @@ class Monitor:
             ValueError: Value is greater than the maximum allowable.
             VCPError: Failed to get VCP feature.
         """
-        assert (
-            self._in_ctx
-        ), "This function must be run within the context manager"
+        assert self._in_ctx, "This function must be run within the context manager"
         if code.type == "ro":
             raise TypeError(f"cannot write read-only code: {code.name}")
         elif code.type == "rw" and code.function == "c":
             maximum = self._get_code_maximum(code)
             if value > maximum:
-                raise ValueError(
-                    f"value of {value} exceeds code maximum of {maximum}"
-                )
+                raise ValueError(f"value of {value} exceeds code maximum of {maximum}")
 
         self.vcp.set_vcp_feature(code.value, value)
 
@@ -166,9 +177,7 @@ class Monitor:
             TypeError: Code is write only.
             VCPError: Failed to get VCP feature.
         """
-        assert (
-            self._in_ctx
-        ), "This function must be run within the context manager"
+        assert self._in_ctx, "This function must be run within the context manager"
         if code.type == "wo":
             raise TypeError(f"cannot read write-only code: {code.name}")
 
@@ -199,9 +208,7 @@ class Monitor:
                     ],
                 }
         """
-        assert (
-            self._in_ctx
-        ), "This function must be run within the context manager"
+        assert self._in_ctx, "This function must be run within the context manager"
 
         cap_str = self.vcp.get_vcp_capabilities()
 
@@ -252,6 +259,66 @@ class Monitor:
         """
         code = vcp.VCPCode("image_luminance")
         self._set_vcp_feature(code, value)
+
+    def get_color_preset(self) -> int:
+        """
+        Gets the monitors color preset.
+
+        Returns:
+            Current color preset.
+            Valid values are enumerated in :py:class:`ColorPreset`.
+
+        Example:
+            Basic Usage::
+
+                from monitorcontrol import get_monitors
+
+                for monitor in get_monitors():
+                    with monitor:
+                        print(monitor.get_color_preset())
+
+        Raises:
+            VCPError: Failed to get color preset from the VCP.
+        """
+        code = vcp.VCPCode("image_color_preset")
+        return self._get_vcp_feature(code)
+
+    def set_color_preset(self, value: Union[int, str, ColorPreset]):
+        """
+        Sets the monitors color preset.
+
+        Args:
+            value:
+                An integer color preset,
+                or a string representing the color preset,
+                or a value from :py:class:`ColorPreset`.
+
+        Example:
+            Basic Usage::
+
+                from monitorcontrol import get_monitors, ColorPreset
+
+                for monitor in get_monitors():
+                    with monitor:
+                        monitor.set_color_preset(ColorPreset.COLOR_TEMP_5000K)
+
+        Raises:
+            VCPError: Failed to set color preset in the VCP.
+            ValueError: Color preset outside valid range.
+            AttributeError: Color preset string is invalid.
+            TypeError: Unsupported value
+        """
+        if isinstance(value, str):
+            mode_value = getattr(ColorPreset, value).value
+        elif isinstance(value, int):
+            mode_value = ColorPreset(value).value
+        elif isinstance(value, ColorPreset):
+            mode_value = value.value
+        else:
+            raise TypeError("unsupported color preset: " + repr(type(value)))
+
+        code = vcp.VCPCode("image_color_preset")
+        self._set_vcp_feature(code, mode_value)
 
     def get_contrast(self) -> int:
         """
@@ -330,7 +397,7 @@ class Monitor:
         Args:
             value:
                 An integer power mode,
-                or a string represeting the power mode,
+                or a string representing the power mode,
                 or a value from :py:class:`PowerMode`.
 
         Example:
@@ -398,7 +465,7 @@ class Monitor:
         except ValueError:
             raise InputSourceValueError(
                 f"{value} is not a valid InputSource", value
-            )
+            ) from None
 
     def set_input_source(self, value: Union[int, str, InputSource]):
         """
@@ -492,7 +559,7 @@ def _extract_a_cap(caps_str: str, key: str) -> str:
 
     if start_of_filter == -1:
         # not all keys are returned by monitor.
-        # Also sometimes the string has errors.
+        # Also, sometimes the string has errors.
         return ""
 
     start_of_filter += len(key)
@@ -504,7 +571,7 @@ def _extract_a_cap(caps_str: str, key: str) -> str:
         if filtered_caps_str[i] == ")":
             end_of_filter -= 1
         if end_of_filter == 0:
-            # dont change end_of_filter to remove the closing ")"
+            # don't change end_of_filter to remove the closing ")"
             break
 
     # 1:i to remove the first character "("
@@ -514,7 +581,7 @@ def _extract_a_cap(caps_str: str, key: str) -> str:
 def _convert_to_dict(caps_str: str) -> dict:
     """
     Parses the VCP capabilities string to a dictionary.
-    Non continuous capabilities will include an array of
+    Non-continuous capabilities will include an array of
     all supported values.
 
     Returns:
@@ -524,34 +591,37 @@ def _convert_to_dict(caps_str: str) -> dict:
         Expected string "04 14(05 06) 16" is converted to::
 
             {
-                0x04: [],
-                0x14: [0x05, 0x06],
-                0x16: [],
+                0x04: {},
+                0x14: {0x05: {}, 0x06: {}},
+                0x16: {},
             }
     """
 
     if len(caps_str) == 0:
-        # Sometimes the keys arent found and the extracting of
+        # Sometimes the keys aren't found and the extracting of
         # capabilities returns an empty string.
         return {}
 
     result_dict = {}
-    group = None
-    prev_digit = None
+    group = []
+    prev_val = None
     for chunk in caps_str.replace("(", " ( ").replace(")", " ) ").split(" "):
         if chunk == "":
             continue
         elif chunk == "(":
-            group = prev_digit
+            group.append(prev_val)
         elif chunk == ")":
-            group = None
+            group.pop(-1)
         else:
             val = int(chunk, 16)
-            if group is None:
-                result_dict[val] = []
+            if len(group) == 0:
+                result_dict[val] = {}
             else:
-                result_dict[group].append(val)
-            prev_digit = val
+                d = result_dict
+                for g in group:
+                    d = d[g]
+                d[val] = {}
+            prev_val = val
 
     return result_dict
 
@@ -586,6 +656,8 @@ def _parse_capabilities(caps_str: str) -> dict:
         "vcpname": "",
         # Parsed input sources into text. Not part of capabilities string.
         "inputs": "",
+        # Parsed color presets into text. Not part of capabilities string.
+        "color_presets": "",
     }
 
     for key in caps_dict:
@@ -598,7 +670,7 @@ def _parse_capabilities(caps_str: str) -> dict:
     input_source_cap = vcp.VCPCode("input_select").value
     if input_source_cap in caps_dict["vcp"]:
         caps_dict["inputs"] = []
-        input_val_list = caps_dict["vcp"][input_source_cap]
+        input_val_list = list(caps_dict["vcp"][input_source_cap].keys())
         input_val_list.sort()
 
         for val in input_val_list:
@@ -608,5 +680,20 @@ def _parse_capabilities(caps_str: str) -> dict:
                 input_source = val
 
             caps_dict["inputs"].append(input_source)
+
+    # Parse the color presets into a text list for readability
+    color_preset_cap = vcp.VCPCode("image_color_preset").value
+    if color_preset_cap in caps_dict["vcp"]:
+        caps_dict["color_presets"] = []
+        color_val_list = list(caps_dict["vcp"][color_preset_cap])
+        color_val_list.sort()
+
+        for val in color_val_list:
+            try:
+                color_source = ColorPreset(val)
+            except ValueError:
+                color_source = val
+
+            caps_dict["color_presets"].append(color_source)
 
     return caps_dict
