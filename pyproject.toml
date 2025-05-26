@@ -34,9 +34,6 @@ monitorcontrol = "monitorcontrol.__main__:main"
 requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools]
-packages = ["monitorcontrol"]
-
 [tool.ruff.lint]
 extend-select = [
     # flake8-builtins
