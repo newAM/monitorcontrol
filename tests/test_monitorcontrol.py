@@ -173,32 +173,31 @@ def test_power_mode(
     USE_ATTACHED_MONITORS, reason="Real monitors dont support all input types"
 )
 @pytest.mark.parametrize(
-    "mode, expected",
+    "mode",
     [
-        (InputSource.ANALOG1, 0x01),
-        (InputSource.ANALOG2, 0x02),
-        (InputSource.DVI1, 0x03),
-        (InputSource.DVI2, 0x04),
-        (InputSource.COMPOSITE1, 0x05),
-        (InputSource.COMPOSITE2, 0x06),
-        (InputSource.SVIDEO1, 0x07),
-        (InputSource.SVIDEO2, 0x08),
-        (InputSource.TUNER1, 0x09),
-        (InputSource.TUNER2, 0x0A),
-        (InputSource.TUNER3, 0x0B),
-        (InputSource.CMPONENT1, 0x0C),
-        (InputSource.CMPONENT2, 0x0D),
-        (InputSource.CMPONENT3, 0x0E),
-        (InputSource.DP1, 0x0F),
-        (InputSource.DP2, 0x10),
-        (InputSource.HDMI1, 0x11),
-        (InputSource.HDMI2, 0x12),
+        InputSource.ANALOG1,
+        InputSource.ANALOG2,
+        InputSource.DVI1,
+        InputSource.DVI2,
+        InputSource.COMPOSITE1,
+        InputSource.COMPOSITE2,
+        InputSource.SVIDEO1,
+        InputSource.SVIDEO2,
+        InputSource.TUNER1,
+        InputSource.TUNER2,
+        InputSource.TUNER3,
+        InputSource.CMPONENT1,
+        InputSource.CMPONENT2,
+        InputSource.CMPONENT3,
+        InputSource.DP1,
+        InputSource.DP2,
+        InputSource.HDMI1,
+        InputSource.HDMI2,
     ],
 )
 def test_input_source(
     monitor: Monitor,
     mode: Union[str, int],
-    expected: Tuple[InputSource, int],
 ):
     monitor.set_input_source(mode)
     read_source = monitor.get_input_source()
