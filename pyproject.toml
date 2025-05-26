@@ -39,10 +39,14 @@ packages = ["monitorcontrol"]
 
 [tool.ruff.lint]
 extend-select = [
+    # flake8-builtins
+    "A",
     # flake8-unused-arguments
     "ARG",
     # flake8-bugbear
     "B",
+    # flake8-logging-format
+    "G",
     # pep8-naming
     "N",
 ]

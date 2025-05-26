@@ -6,17 +6,17 @@ class VCPCode:
     Args:
         name: VCP code name.
         value: VCP code value.
-        type: VCP code type.
+        code_type: VCP code type.
         function: VCP code function.
 
     Raises:
         KeyError: VCP code not found.
     """
 
-    def __init__(self, name: str, value: int, type: str, function: str):
+    def __init__(self, name: str, value: int, code_type: str, function: str):
         self.name = name
         self.value = value
-        self.type = type
+        self.type = code_type
         self.function = function
 
     def __str__(self) -> str:
@@ -47,48 +47,48 @@ class VCPCode:
 image_factory_default = VCPCode(
     name="restore factory default image",
     value=0x04,
-    type="wo",
+    code_type="wo",
     function="nc",
 )
 image_luminance = VCPCode(
     name="image luminance",
     value=0x10,
-    type="rw",
+    code_type="rw",
     function="c",
 )
 image_contrast = VCPCode(
     name="image contrast",
     value=0x12,
-    type="rw",
+    code_type="rw",
     function="c",
 )
 image_color_preset = VCPCode(
     name="image color preset",
     value=0x14,
-    type="rw",
+    code_type="rw",
     function="nc",
 )
 active_control = VCPCode(
     name="active control",
     value=0x52,
-    type="ro",
+    code_type="ro",
     function="nc",
 )
 input_select = VCPCode(
     name="input select",
     value=0x60,
-    type="rw",
+    code_type="rw",
     function="nc",
 )
 image_orientation = VCPCode(
     name="image orientation",
     value=0xAA,
-    type="ro",
+    code_type="ro",
     function="nc",
 )
 display_power_mode = VCPCode(
     name="display power mode",
     value=0xD6,
-    type="rw",
+    code_type="rw",
     function="nc",
 )
