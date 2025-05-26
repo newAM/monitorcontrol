@@ -19,7 +19,6 @@ dev = [
     "sphinx>=7.4.7",
     "sphinx-rtd-theme>=3.0.2",
     "toml>=0.10.2",
-    "voluptuous>=0.15.2",
 ]
 
 [project.urls]

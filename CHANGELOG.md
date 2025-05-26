@@ -12,6 +12,7 @@ as of version 2.1.1.
 
 ### Changed
 - Changed the build system from poetry-core to setuptools.
+- Changed the VCPCode type to use class attributes instead of property functions.
 
 ### Removed
 - Removed support for end-of-life python version 3.8.

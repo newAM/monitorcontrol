@@ -1,4 +1,4 @@
-from . import vcp
+from . import vcp, vcp_codes
 from types import TracebackType
 from typing import List, Optional, Type, Union
 import enum
@@ -234,8 +234,7 @@ class Monitor:
         Raises:
             VCPError: Failed to get luminance from the VCP.
         """
-        code = vcp.VCPCode("image_luminance")
-        return self._get_vcp_feature(code)
+        return self._get_vcp_feature(vcp_codes.image_luminance)
 
     def set_luminance(self, value: int):
         """
@@ -257,8 +256,7 @@ class Monitor:
             ValueError: Luminance outside of valid range.
             VCPError: Failed to set luminance in the VCP.
         """
-        code = vcp.VCPCode("image_luminance")
-        self._set_vcp_feature(code, value)
+        self._set_vcp_feature(vcp_codes.image_luminance, value)
 
     def get_color_preset(self) -> int:
         """
@@ -280,8 +278,7 @@ class Monitor:
         Raises:
             VCPError: Failed to get color preset from the VCP.
         """
-        code = vcp.VCPCode("image_color_preset")
-        return self._get_vcp_feature(code)
+        return self._get_vcp_feature(vcp_codes.image_color_preset)
 
     def set_color_preset(self, value: Union[int, str, ColorPreset]):
         """
@@ -317,8 +314,7 @@ class Monitor:
         else:
             raise TypeError("unsupported color preset: " + repr(type(value)))
 
-        code = vcp.VCPCode("image_color_preset")
-        self._set_vcp_feature(code, mode_value)
+        self._set_vcp_feature(vcp_codes.image_color_preset, mode_value)
 
     def get_contrast(self) -> int:
         """
@@ -339,8 +335,7 @@ class Monitor:
         Raises:
             VCPError: Failed to get contrast from the VCP.
         """
-        code = vcp.VCPCode("image_contrast")
-        return self._get_vcp_feature(code)
+        return self._get_vcp_feature(vcp_codes.image_contrast)
 
     def set_contrast(self, value: int):
         """
@@ -362,8 +357,7 @@ class Monitor:
             ValueError: Contrast outside of valid range.
             VCPError: Failed to set contrast in the VCP.
         """
-        code = vcp.VCPCode("image_contrast")
-        self._set_vcp_feature(code, value)
+        self._set_vcp_feature(vcp_codes.image_contrast, value)
 
     def get_power_mode(self) -> PowerMode:
         """
@@ -386,8 +380,7 @@ class Monitor:
             ValueError: Set power state outside of valid range.
             KeyError: Set power mode string is invalid.
         """
-        code = vcp.VCPCode("display_power_mode")
-        value = self._get_vcp_feature(code)
+        value = self._get_vcp_feature(vcp_codes.display_power_mode)
         return PowerMode(value)
 
     def set_power_mode(self, value: Union[int, str, PowerMode]):
@@ -423,8 +416,7 @@ class Monitor:
         else:
             raise TypeError("unsupported mode type: " + repr(type(value)))
 
-        code = vcp.VCPCode("display_power_mode")
-        self._set_vcp_feature(code, mode_value)
+        self._set_vcp_feature(vcp_codes.display_power_mode, mode_value)
 
     def get_input_source(self) -> InputSource:
         """
@@ -458,8 +450,7 @@ class Monitor:
             InputSourceValueError:
                 Input source value is not within the MCCS defined inputs.
         """
-        code = vcp.VCPCode("input_select")
-        value = self._get_vcp_feature(code) & 0xFF
+        value = self._get_vcp_feature(vcp_codes.input_select) & 0xFF
         try:
             return InputSource(value)
         except ValueError:
@@ -497,8 +488,7 @@ class Monitor:
         else:
             raise TypeError("unsupported input type: " + repr(type(value)))
 
-        code = vcp.VCPCode("input_select")
-        self._set_vcp_feature(code, mode_value)
+        self._set_vcp_feature(vcp_codes.input_select, mode_value)
 
 
 def get_vcps() -> List[Type[vcp.VCP]]:
@@ -667,7 +657,7 @@ def _parse_capabilities(caps_str: str) -> dict:
             caps_dict[key] = _extract_a_cap(caps_str, key)
 
     # Parse the input sources into a text list for readability
-    input_source_cap = vcp.VCPCode("input_select").value
+    input_source_cap = vcp_codes.input_select.value
     if input_source_cap in caps_dict["vcp"]:
         caps_dict["inputs"] = []
         input_val_list = list(caps_dict["vcp"][input_source_cap].keys())
@@ -682,7 +672,7 @@ def _parse_capabilities(caps_str: str) -> dict:
             caps_dict["inputs"].append(input_source)
 
     # Parse the color presets into a text list for readability
-    color_preset_cap = vcp.VCPCode("image_color_preset").value
+    color_preset_cap = vcp_codes.image_color_preset.value
     if color_preset_cap in caps_dict["vcp"]:
         caps_dict["color_presets"] = []
         color_val_list = list(caps_dict["vcp"][color_preset_cap])
