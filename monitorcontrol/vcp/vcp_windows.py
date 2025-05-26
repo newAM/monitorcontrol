@@ -106,7 +106,10 @@ if sys.platform == "win32":
             Raises:
                 VCPError: Failed to set VCP feature.
             """
-            self.logger.debug(f"SetVCPFeature(_, {code=}, {value=})")
+            self.logger.debug(
+                "SetVCPFeature(_, {code=}, {value=})",
+                extra=dict(code=code, value=value),
+            )
             try:
                 if not ctypes.windll.dxva2.SetVCPFeature(
                     HANDLE(self.handle), BYTE(code), DWORD(value)
@@ -131,7 +134,8 @@ if sys.platform == "win32":
             feature_current = DWORD()
             feature_max = DWORD()
             self.logger.debug(
-                f"GetVCPFeatureAndVCPFeatureReply(_, {code=}, None, _, _)"
+                "GetVCPFeatureAndVCPFeatureReply(_, {code=}, None, _, _)",
+                extra=dict(code=code),
             )
             try:
                 if not ctypes.windll.dxva2.GetVCPFeatureAndVCPFeatureReply(
@@ -145,8 +149,8 @@ if sys.platform == "win32":
             except OSError as e:
                 raise VCPError("failed to get VCP feature") from e
             self.logger.debug(
-                "GetVCPFeatureAndVCPFeatureReply -> "
-                f"({feature_current.value}, {feature_max.value})"
+                "GetVCPFeatureAndVCPFeatureReply -> ({feat_cur}, {feat_max})",
+                extra=dict(feat_cur=feature_current.value, feat_max=feature_max.value),
             )
             return feature_current.value, feature_max.value
 

@@ -124,7 +124,10 @@ class LinuxVCP(VCP):
         data.append(self.get_checksum(bytearray([self.DDCCI_ADDR << 1]) + data))
 
         # write data
-        self.logger.debug("data=" + " ".join([f"{x:02X}" for x in data]))
+        self.logger.debug(
+            "data=",
+            extra=dict(data=" ".join([f"{x:02X}" for x in data])),
+        )
         self.write_bytes(data)
 
         # store time of last set VCP
@@ -156,18 +159,27 @@ class LinuxVCP(VCP):
         data.append(self.get_checksum(bytearray([self.DDCCI_ADDR << 1]) + data))
 
         # write data
-        self.logger.debug("data=" + " ".join([f"{x:02X}" for x in data]))
+        self.logger.debug(
+            "data=",
+            extra=dict(data=" ".join([f"{x:02X}" for x in data])),
+        )
         self.write_bytes(data)
 
         time.sleep(self.GET_VCP_TIMEOUT)
 
         # read the data
         header = self.read_bytes(self.GET_VCP_HEADER_LENGTH)
-        self.logger.debug("header=" + " ".join([f"{x:02X}" for x in header]))
+        self.logger.debug(
+            "header={header}",
+            extra=dict(header=" ".join([f"{x:02X}" for x in header])),
+        )
         source, length = struct.unpack("=BB", header)
         length &= ~self.PROTOCOL_FLAG  # clear protocol flag
         payload = self.read_bytes(length + 1)
-        self.logger.debug("payload=" + " ".join([f"{x:02X}" for x in payload]))
+        self.logger.debug(
+            "payload={payload}",
+            extra=dict(payload=" ".join([f"{x:02X}" for x in payload])),
+        )
 
         # check checksum
         payload, checksum = struct.unpack(f"={length}sB", payload)
@@ -206,7 +218,7 @@ class LinuxVCP(VCP):
 
         return feature_current, feature_max
 
-    def get_vcp_capabilities(self):
+    def get_vcp_capabilities(self) -> str:
         """
         Gets capabilities string from the virtual control panel.
 
@@ -255,11 +267,17 @@ class LinuxVCP(VCP):
 
             # read the data
             header = self.read_bytes(self.GET_VCP_HEADER_LENGTH)
-            self.logger.debug("header=" + " ".join([f"{x:02X}" for x in header]))
+            self.logger.debug(
+                "header={header}",
+                extra=dict(header=" ".join([f"{x:02X}" for x in header])),
+            )
             source, length = struct.unpack("BB", header)
             length &= ~self.PROTOCOL_FLAG  # clear protocol flag
             payload = self.read_bytes(length + 1)
-            self.logger.debug("payload=" + " ".join([f"{x:02X}" for x in payload]))
+            self.logger.debug(
+                "payload={payload}",
+                extra=dict(payload=" ".join([f"{x:02X}" for x in payload])),
+            )
 
             # check if length is valid
             if length < 3 or length > 35:
@@ -297,7 +315,7 @@ class LinuxVCP(VCP):
             # update the offset and go again
             offset += length
 
-        self.logger.debug(f"caps str={caps_str}")
+        self.logger.debug("caps str={caps_str}", extra=dict(caps_str=caps_str))
 
         if loop_count >= loop_count_limit:
             raise VCPIOError("Capabilities string incomplete or too long")
