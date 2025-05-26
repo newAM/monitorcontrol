@@ -1,4 +1,4 @@
-from monitorcontrol import vcp
+from monitorcontrol import vcp, vcp_codes
 from monitorcontrol.monitorcontrol import (
     InputSource,
     InputSourceValueError,
@@ -87,19 +87,19 @@ def monitor(request) -> Iterable[Monitor]:
 
 
 def test_get_code_maximum_type_error(monitor: Monitor):
-    code = vcp.VCPCode("image_factory_default")
+    code = vcp_codes.image_factory_default
     with pytest.raises(TypeError):
         monitor._get_code_maximum(code)
 
 
 def test_set_vcp_feature_type_error(monitor: Monitor):
-    code = vcp.VCPCode("active_control")
+    code = vcp_codes.active_control
     with pytest.raises(TypeError):
         monitor._set_vcp_feature(code, 1)
 
 
 def test_get_vcp_feature_type_error(monitor: Monitor):
-    code = vcp.VCPCode("image_factory_default")
+    code = vcp_codes.image_factory_default
     with pytest.raises(TypeError):
         monitor._get_vcp_feature(code)
 
