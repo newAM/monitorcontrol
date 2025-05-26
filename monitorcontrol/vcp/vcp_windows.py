@@ -1,6 +1,6 @@
 from .vcp_abc import VCP, VCPError
 from types import TracebackType
-from typing import List, Optional, Tuple, Type
+from typing import Iterator, List, Optional, Tuple, Type
 import ctypes
 import logging
 import sys
@@ -31,53 +31,21 @@ if sys.platform == "win32":
             https://stackoverflow.com/questions/16588133/
         """
 
-        def __init__(self, hmonitor: HMONITOR):
+        def __init__(self, handle: HANDLE, description: str):
             """
             Args:
-                hmonitor: logical monitor handle
+                handle: Handle to the physical monitor.
+                description: Text description of the physical monitor.
             """
             self.logger = logging.getLogger(__name__)
-            self.hmonitor = hmonitor
+            self.handle = handle
+            self.description = description
+
+        def __del__(self):
+            WindowsVCP._destroy_physical_monitor(self.handle)
 
         def __enter__(self):
-            num_physical = DWORD()
-            self.logger.debug("GetNumberOfPhysicalMonitorsFromHMONITOR")
-            try:
-                if not ctypes.windll.dxva2.GetNumberOfPhysicalMonitorsFromHMONITOR(
-                    self.hmonitor, ctypes.byref(num_physical)
-                ):
-                    raise VCPError(
-                        "Call to GetNumberOfPhysicalMonitorsFromHMONITOR failed: "
-                        + ctypes.FormatError()
-                    )
-            except OSError as e:
-                raise VCPError(
-                    "Call to GetNumberOfPhysicalMonitorsFromHMONITOR failed"
-                ) from e
-
-            if num_physical.value == 0:
-                raise VCPError("no physical monitor found")
-            elif num_physical.value > 1:
-                # TODO: Figure out a clever way around the Windows API since
-                # it does not allow opening and closing of individual physical
-                # monitors without their hmonitors.
-                raise VCPError("more than one physical monitor per hmonitor")
-
-            physical_monitors = (PhysicalMonitor * num_physical.value)()
-            self.logger.debug("GetPhysicalMonitorsFromHMONITOR")
-            try:
-                if not ctypes.windll.dxva2.GetPhysicalMonitorsFromHMONITOR(
-                    self.hmonitor, num_physical.value, physical_monitors
-                ):
-                    raise VCPError(
-                        "Call to GetPhysicalMonitorsFromHMONITOR failed: "
-                        + ctypes.FormatError()
-                    )
-            except OSError as e:
-                raise VCPError("failed to open physical monitor handle") from e
-            self.handle = physical_monitors[0].handle
-            self.description = physical_monitors[0].description
-            return self
+            pass
 
         def __exit__(
             self,
@@ -85,14 +53,6 @@ if sys.platform == "win32":
             exception_value: Optional[BaseException],
             exception_traceback: Optional[TracebackType],
         ) -> Optional[bool]:
-            self.logger.debug("DestroyPhysicalMonitor")
-            try:
-                if not ctypes.windll.dxva2.DestroyPhysicalMonitor(self.handle):
-                    raise VCPError(
-                        "Call to DestroyPhysicalMonitor failed: " + ctypes.FormatError()
-                    )
-            except OSError as e:
-                raise VCPError("failed to close handle") from e
             return False
 
         def set_vcp_feature(self, code: int, value: int):
@@ -190,6 +150,92 @@ if sys.platform == "win32":
                 raise VCPError("failed to get VCP capabilities") from e
             return cap_string.value.decode("ascii")
 
+        @staticmethod
+        def _get_physical_monitors() -> Iterator[Tuple[HANDLE, str]]:
+            """
+            Returns a list of physical monitors.
+            """
+            return (
+                physical_monitor
+                for hmonitor in WindowsVCP._get_hmonitors()
+                for physical_monitor in WindowsVCP._physical_monitors_from_hmonitor(
+                    hmonitor
+                )
+            )
+
+        @staticmethod
+        def _get_hmonitors() -> List[HMONITOR]:
+            """
+            Calls the Windows `EnumDisplayMonitors` API in Python-friendly form.
+            """
+            hmonitors = []  # type: List[HMONITOR]
+            try:
+
+                def _callback(hmonitor, hdc, lprect, lparam):
+                    hmonitors.append(HMONITOR(hmonitor))
+                    del hmonitor, hdc, lprect, lparam
+                    return True  # continue enumeration
+
+                MONITORENUMPROC = ctypes.WINFUNCTYPE(  # noqa: N806
+                    BOOL, HMONITOR, HDC, ctypes.POINTER(RECT), LPARAM
+                )
+                callback = MONITORENUMPROC(_callback)
+                if not ctypes.windll.user32.EnumDisplayMonitors(0, 0, callback, 0):
+                    raise VCPError("Call to EnumDisplayMonitors failed")
+            except OSError as e:
+                raise VCPError("failed to enumerate VCPs") from e
+            return hmonitors
+
+        @staticmethod
+        def _physical_monitors_from_hmonitor(
+            hmonitor: HMONITOR,
+        ) -> Iterator[Tuple[HANDLE, str]]:
+            """
+            Calls the Windows `GetPhysicalMonitorsFromHMONITOR` API in Python-friendly form.
+            """
+            num_physical = DWORD()
+            try:
+                if not ctypes.windll.dxva2.GetNumberOfPhysicalMonitorsFromHMONITOR(
+                    hmonitor, ctypes.byref(num_physical)
+                ):
+                    raise VCPError(
+                        "Call to GetNumberOfPhysicalMonitorsFromHMONITOR failed: "
+                        + ctypes.FormatError()
+                    )
+            except OSError as e:
+                raise VCPError(
+                    "Call to GetNumberOfPhysicalMonitorsFromHMONITOR failed"
+                ) from e
+
+            physical_monitors = (PhysicalMonitor * num_physical.value)()
+            try:
+                if not ctypes.windll.dxva2.GetPhysicalMonitorsFromHMONITOR(
+                    hmonitor, num_physical.value, physical_monitors
+                ):
+                    raise VCPError(
+                        "Call to GetPhysicalMonitorsFromHMONITOR failed: "
+                        + ctypes.FormatError()
+                    )
+            except OSError as e:
+                raise VCPError("failed to open physical monitor handle") from e
+            return (
+                [physical_monitor.handle, physical_monitor.description]
+                for physical_monitor in physical_monitors
+            )
+
+        @staticmethod
+        def _destroy_physical_monitor(handle: HANDLE) -> None:
+            """
+            Calls the Windows `DestroyPhysicalMonitor` API in Python-friendly form.
+            """
+            try:
+                if not ctypes.windll.dxva2.DestroyPhysicalMonitor(handle):
+                    raise VCPError(
+                        "Call to DestroyPhysicalMonitor failed: " + ctypes.FormatError()
+                    )
+            except OSError as e:
+                raise VCPError("failed to close handle") from e
+
     def get_vcps() -> List[WindowsVCP]:
         """
         Opens handles to all physical VCPs.
@@ -200,26 +246,8 @@ if sys.platform == "win32":
         Raises:
             VCPError: Failed to enumerate VCPs.
         """
-        vcps = []
-        hmonitors = []
-
-        try:
-
-            def _callback(hmonitor, hdc, lprect, lparam):
-                hmonitors.append(HMONITOR(hmonitor))
-                del hmonitor, hdc, lprect, lparam
-                return True  # continue enumeration
-
-            MONITORENUMPROC = ctypes.WINFUNCTYPE(  # noqa: N806
-                BOOL, HMONITOR, HDC, ctypes.POINTER(RECT), LPARAM
-            )
-            callback = MONITORENUMPROC(_callback)
-            if not ctypes.windll.user32.EnumDisplayMonitors(0, 0, callback, 0):
-                raise VCPError("Call to EnumDisplayMonitors failed")
-        except OSError as e:
-            raise VCPError("failed to enumerate VCPs") from e
-
-        for logical in hmonitors:
-            vcps.append(WindowsVCP(logical))
-
-        return vcps
+        physical_monitors = WindowsVCP._get_physical_monitors()
+        return list(
+            WindowsVCP(handle, description)
+            for (handle, description) in physical_monitors
+        )
