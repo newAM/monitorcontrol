@@ -6,7 +6,7 @@ import sys
 
 
 @enum.unique
-class ColorPreset(enum.Enum):
+class ColorPreset(enum.IntEnum):
     """Monitor color presets."""
 
     COLOR_TEMP_4000K = 0x03
@@ -23,7 +23,7 @@ class ColorPreset(enum.Enum):
 
 
 @enum.unique
-class PowerMode(enum.Enum):
+class PowerMode(enum.IntEnum):
     """Monitor power modes."""
 
     #: On.
@@ -39,7 +39,7 @@ class PowerMode(enum.Enum):
 
 
 @enum.unique
-class InputSource(enum.Enum):
+class InputSource(enum.IntEnum):
     """Monitor input sources."""
 
     OFF = 0x00
