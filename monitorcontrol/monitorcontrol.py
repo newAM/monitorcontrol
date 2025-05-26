@@ -362,8 +362,6 @@ class Monitor:
 
         Raises:
             VCPError: Failed to get the power mode.
-            ValueError: Set power state outside of valid range.
-            KeyError: Set power mode string is invalid.
         """
         value = self._get_vcp_feature(vcp_codes.display_power_mode)
         return PowerMode(value)
