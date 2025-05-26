@@ -125,7 +125,7 @@ class LinuxVCP(VCP):
 
         # write data
         self.logger.debug(
-            "data=",
+            "data={data}",
             extra=dict(data=" ".join([f"{x:02X}" for x in data])),
         )
         self.write_bytes(data)
