@@ -7,7 +7,7 @@ if sys.platform == "win32":
     from monitorcontrol.vcp.vcp_windows import WindowsVCP
 
     @pytest.mark.parametrize(
-        "input,expected",
+        "monitor_input, expected",
         [
             [[1], ["1-0"]],
             [[2], ["2-0", "2-1"]],
@@ -18,9 +18,9 @@ if sys.platform == "win32":
     @patch("monitorcontrol.vcp.vcp_windows.WindowsVCP._get_hmonitors")
     @patch("monitorcontrol.vcp.vcp_windows.WindowsVCP._physical_monitors_from_hmonitor")
     def test_get_physical_monitors(
-        physical_monitors_from_hmonitor, get_hmonitors, input, expected
+        physical_monitors_from_hmonitor, get_hmonitors, monitor_input, expected
     ):
-        get_hmonitors.return_value = input
+        get_hmonitors.return_value = monitor_input
         physical_monitors = {
             1: ["1-0"],
             2: ["2-0", "2-1"],
