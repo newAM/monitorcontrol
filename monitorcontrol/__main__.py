@@ -1,4 +1,4 @@
-from . import get_monitors, PowerMode, InputSource
+from . import get_monitors, PowerMode
 from typing import List, Optional
 import argparse
 import importlib.metadata
@@ -50,7 +50,7 @@ def get_parser() -> argparse.ArgumentParser:
     )
     group.add_argument(
         "--set-input-source",
-        choices=[mode.name for mode in InputSource],
+        type=str,
         help="Set the input source of all monitors.",
     )
     group.add_argument(

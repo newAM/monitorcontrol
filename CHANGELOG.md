@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 as of version 2.1.1.
 
 ## [Unreleased]
+### Added
+- Added support a numerical input source with `--set-input-source`.
+
 ### Changed
 - Changed minimum setuptools version from 61 to 77.
 
