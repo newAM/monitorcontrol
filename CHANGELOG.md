@@ -10,6 +10,9 @@ as of version 2.1.1.
 ### Changed
 - Changed minimum setuptools version from 61 to 77.
 
+### Fixed
+- Fixed missing format placeholder in a Linux debug print.
+
 ## [4.0.1] - 2025-05-26
 ### Fixed
 - Fixed packaging bugs introduced when changing the build system.
