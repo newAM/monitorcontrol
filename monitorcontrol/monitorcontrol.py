@@ -63,21 +63,6 @@ class InputSource(enum.IntEnum):
     HDMI2 = 0x12
 
 
-class InputSourceValueError(ValueError):
-    """
-    Raised upon an invalid (out of spec) input source value.
-
-    https://github.com/newAM/monitorcontrol/issues/93
-
-    Attributes:
-        value (int): The value of the input source that was invalid.
-    """
-
-    def __init__(self, message: str, value: int):
-        super().__init__(message)
-        self.value = value
-
-
 class Monitor:
     """
     A physical monitor attached to a Virtual Control Panel (VCP).
@@ -418,7 +403,7 @@ class Monitor:
 
         self._set_vcp_feature(vcp_codes.display_power_mode, mode_value)
 
-    def get_input_source(self) -> InputSource:
+    def get_input_source(self) -> int:
         """
         Gets the monitors input source
 
@@ -428,35 +413,17 @@ class Monitor:
         Example:
             Basic Usage::
 
-                from monitorcontrol import get_monitors
+                from monitorcontrol import get_monitors, InputSource
 
                 for monitor in get_monitors():
                     with monitor:
-                        print(monitor.get_input_source())
-
-            Handling out-of-spec inputs (observed for USB type-C inputs)::
-
-                from monitorcontrol import get_monitors, InputSourceValueError
-
-                for monitor in get_monitors():
-                    with monitor:
-                        try:
-                            print(monitor.get_input_source())
-                        except InputSourceValueError as e:
-                            print(e.value)
+                        input_source_raw: int = monitor.get_input_source()
+                        print(InputSource(input_source_raw).name)
 
         Raises:
             VCPError: Failed to get input source from the VCP.
-            InputSourceValueError:
-                Input source value is not within the MCCS defined inputs.
         """
-        value = self._get_vcp_feature(vcp_codes.input_select) & 0xFF
-        try:
-            return InputSource(value)
-        except ValueError:
-            raise InputSourceValueError(
-                f"{value} is not a valid InputSource", value
-            ) from None
+        return self._get_vcp_feature(vcp_codes.input_select) & 0xFF
 
     def set_input_source(self, value: Union[int, str, InputSource]):
         """

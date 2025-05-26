@@ -13,6 +13,8 @@ as of version 2.1.1.
 ### Changed
 - Changed the build system from poetry-core to setuptools.
 - Changed the VCPCode type to use class attributes instead of property functions.
+- Changed `get_input_source` to return an `int` instead of an `InputSource`.
+  - This simplifies code for users with USB Type-C monitors.
 - Changed enums from `enum.Enum` to `enum.IntEnum`:
   - `ColorPreset`
   - `PowerMode`
@@ -20,6 +22,7 @@ as of version 2.1.1.
 
 ### Removed
 - Removed support for end-of-life python version 3.8.
+- Removed `InputSourceValueError`.
 
 ## [3.1.0] - 2023-10-10
 ### Added
