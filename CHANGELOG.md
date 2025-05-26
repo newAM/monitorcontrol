@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html),
 as of version 2.1.1.
 
+## [Unreleased]
+### Changed
+- Changed minimum setuptools version from 61 to 77.
+
 ## [4.0.1] - 2025-05-26
 ### Fixed
 - Fixed packaging bugs introduced when changing the build system.

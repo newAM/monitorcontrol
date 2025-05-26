@@ -3,7 +3,7 @@ name = "monitorcontrol"
 description = "Monitor controls using MCCS over DDC-CI."
 version = "4.0.1"
 authors = [{ name = "Alex Martens", email = "alex+monitorcontrol@thinglab.org" }]
-license.file = "LICENSE"
+license = "MIT"
 readme = "README.rst"
 requires-python = ">= 3.9"
 dependencies = [
@@ -31,7 +31,7 @@ Issues = "https://github.com/newAM/monitorcontrol/issues"
 monitorcontrol = "monitorcontrol.__main__:main"
 
 [build-system]
-requires = ["setuptools>=61"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [tool.ruff.lint]
