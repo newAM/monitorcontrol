@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html),
 as of version 2.1.1.
 
+## [Unreleased]
+### Fixed
+- Fixed AttributeError exceptions when passing an int with `--set-input-source`.
+
 ## [4.1.0] - 2025-05-26
 ### Added
 - Added support a numerical input source with `--set-input-source`.

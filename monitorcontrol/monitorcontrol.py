@@ -443,13 +443,15 @@ class Monitor:
             VCPError: Failed to get the input source.
             KeyError: Set input source string is invalid.
         """
-
         if isinstance(value, str):
-            mode_value = getattr(InputSource, value.upper()).value
-        elif isinstance(value, int):
-            mode_value = value
+            if value.isdigit():
+                mode_value = int(value)
+            else:
+                mode_value = getattr(InputSource, value.upper()).value
         elif isinstance(value, InputSource):
             mode_value = value.value
+        elif isinstance(value, int):
+            mode_value = value
         else:
             raise TypeError("unsupported input type: " + repr(type(value)))
 
