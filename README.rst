@@ -34,7 +34,7 @@ Full documentation including examples are avaliable in the `docs <https://newam.
    :target: https://badge.fury.io/py/monitorcontrol
 .. |Build Status| image:: https://github.com/newAM/monitorcontrol/actions/workflows/ci.yml/badge.svg
    :target: https://github.com/newAM/monitorcontrol/actions/workflows/ci.yml
-.. |Coverage Status| image:: https://coveralls.io/repos/github/newAM/monitorcontrol/badge.svg?branch=master
+.. |Coverage Status| image:: https://coveralls.io/repos/github/newAM/monitorcontrol/badge.svg?branch=main
    :target: https://coveralls.io/github/newAM/monitorcontrol?branch=master
 .. |Documentation Status| image:: https://img.shields.io/badge/docs-latest-blue
    :target: https://newam.github.io/monitorcontrol
