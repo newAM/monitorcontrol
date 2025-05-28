@@ -1,6 +1,6 @@
 from .test_monitorcontrol import UnitTestVCP
 from monitorcontrol import Monitor
-from monitorcontrol.__main__ import main
+from monitorcontrol.__main__ import main, count_to_level
 from unittest import mock
 import sys
 import monitorcontrol
@@ -67,3 +67,13 @@ def test_get_monitors():
         main(["--get-monitors"])
         input_source_api_mock.assert_called()
         vcp_capabilities_api_mock.assert_called()
+
+
+def test_count_to_level_cli():
+    for num_v in range(1, 10):
+        main(["--version", "-" + "v" * num_v])
+
+
+def test_count_to_level():
+    for num_v in range(10):
+        assert isinstance(count_to_level(num_v), int)
