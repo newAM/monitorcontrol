@@ -194,13 +194,16 @@ def test_power_mode(
         InputSource.HDMI2,
     ],
 )
-def test_input_source(
-    monitor: Monitor,
-    mode: Union[str, int],
-):
+def test_input_source(monitor: Monitor, mode: InputSource):
     monitor.set_input_source(mode)
-    read_source = monitor.get_input_source()
-    assert read_source == mode
+    assert monitor.get_input_source() == mode
+
+
+@pytest.mark.skipif(USE_ATTACHED_MONITORS, reason="Real monitors may not have USB-C")
+@pytest.mark.parametrize("mode", ["27", 27])
+def test_input_source_usbc(monitor: Monitor, mode: Union[str, int]):
+    monitor.set_input_source(mode)
+    assert monitor.get_input_source() == 27
 
 
 @pytest.mark.skipif(
@@ -215,6 +218,17 @@ def test_input_source_issue_59(monitor: Monitor):
     with mock.patch.object(monitor, "_get_vcp_feature", return_value=0x1010):
         input_source = monitor.get_input_source()
         assert input_source == InputSource.DP2
+
+
+def test_input_source_type_error(monitor: Monitor):
+    with pytest.raises(TypeError):
+        monitor.set_input_source([])
+
+
+@pytest.mark.skipif(USE_ATTACHED_MONITORS, reason="Real monitors may not this input")
+def test_input_source_str(monitor: Monitor):
+    monitor.set_input_source("HDMI1")
+    assert monitor.get_input_source() == InputSource.HDMI1
 
 
 def test_get_vcp_capabilities(monitor: Monitor):
