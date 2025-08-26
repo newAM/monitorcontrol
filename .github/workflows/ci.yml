@@ -30,7 +30,7 @@ jobs:
           python-version: "3.12"
       - run: uv sync --all-extras --dev
       - run: uv run sphinx-build -W -b html docs public
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: public
 
