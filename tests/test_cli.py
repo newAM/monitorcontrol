@@ -13,8 +13,9 @@ get_monitors_mock = mock.patch.object(
     return_value=[Monitor(UnitTestVCP({}))],
 )
 
+
 def test_version():
-    with mock.patch('builtins.print') as stdout_mock:
+    with mock.patch("builtins.print") as stdout_mock:
         main(["--version"])
         stdout_mock.assert_called_once()
 

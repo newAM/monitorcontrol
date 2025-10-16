@@ -61,12 +61,15 @@ def test_context_manager_assert():
 def test_get_vcps():
     get_vcps()
 
+
 def test_get_input_name():
     for param in list(InputSource):
         assert get_input_name(param) == param.name
 
+
 def test_unknown_input_name():
     assert get_input_name(0x420) == "UNKNOWN (code 0x420)"
+
 
 def test_get_monitors():
     get_monitors()

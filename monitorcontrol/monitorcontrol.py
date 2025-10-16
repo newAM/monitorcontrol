@@ -461,10 +461,10 @@ class Monitor:
 def get_input_name(input_code: int) -> str:
     """
     Returns the input name for a given input code.
-    
+
     Args:
         input_code: an integer representing a known (standard) input identifier
-    
+
     Returns:
         A string containing the input name, or "UNKNOWN" plus the unknown code as hex
     """
