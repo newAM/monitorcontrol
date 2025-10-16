@@ -1,4 +1,4 @@
-from . import get_monitors, PowerMode
+from . import get_monitors, PowerMode, InputSource
 from typing import List, Optional
 import argparse
 import importlib.metadata
@@ -161,11 +161,15 @@ def main(argv: Optional[List[str]] = None):
             print(f"Monitor {monitor_index + 1}: {model}")
             print("Available Inputs:")
             for i in inputs:
-                print(f"\t{i}", end="")
+                try:
+                    input_name = InputSource(i).name
+                except ValueError:
+                    input_name = f"UNKNOWN (code {i:#04x})"
                 if i == current_input:
-                    print("*")
+                    current = "*"
                 else:
-                    print()
+                    current = " "
+                print(f" {current} {input_name}")
 
         return
     else:
