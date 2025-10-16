@@ -1,4 +1,4 @@
-from . import get_monitors, PowerMode, InputSource
+from . import get_monitors, get_input_name, PowerMode, InputSource
 from typing import List, Optional
 import argparse
 import importlib.metadata
@@ -161,6 +161,7 @@ def main(argv: Optional[List[str]] = None):
             print(f"Monitor {monitor_index + 1}: {model}")
             print("Available Inputs:")
             for i in inputs:
+                input_name = get_input_name(i)
                 try:
                     input_name = InputSource(i).name
                 except ValueError:
