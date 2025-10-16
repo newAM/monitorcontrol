@@ -2,6 +2,7 @@ from monitorcontrol import vcp, vcp_codes
 from monitorcontrol.monitorcontrol import (
     InputSource,
     get_monitors,
+    get_input_name,
     get_vcps,
     Monitor,
     _convert_to_dict,
@@ -59,6 +60,15 @@ def test_context_manager_assert():
 
 def test_get_vcps():
     get_vcps()
+
+
+def test_get_input_name():
+    for param in list(InputSource):
+        assert get_input_name(param) == param.name
+
+
+def test_unknown_input_name():
+    assert get_input_name(0x420) == "UNKNOWN (code 0x420)"
 
 
 def test_get_monitors():

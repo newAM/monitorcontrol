@@ -458,7 +458,24 @@ class Monitor:
         self._set_vcp_feature(vcp_codes.input_select, mode_value)
 
 
-def get_vcps() -> List[Type[vcp.VCP]]:
+def get_input_name(input_code: int) -> str:
+    """
+    Returns the input name for a given input code.
+
+    Args:
+        input_code: an integer representing a known (standard) input identifier
+
+    Returns:
+        A string containing the input name, or "UNKNOWN" plus the unknown code as hex
+    """
+    try:
+        input_name = InputSource(input_code).name
+    except ValueError:
+        input_name = f"UNKNOWN (code {input_code:#04x})"
+    return input_name
+
+
+def get_vcps() -> List[vcp.VCP]:
     """
     Discovers virtual control panels.
 
