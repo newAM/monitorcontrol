@@ -4,7 +4,6 @@ import monitorcontrol.__main__
 from monitorcontrol.__main__ import main, count_to_level
 
 from unittest import mock
-import sys
 import monitorcontrol
 import pytest
 
