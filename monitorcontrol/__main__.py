@@ -23,12 +23,12 @@ def get_parser() -> argparse.ArgumentParser:
 
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument(
-        "--set-luminance", type=int, help="Set the lumianance of all monitors."
+        "--set-luminance", type=int, help="Set the luminance of all monitors."
     )
     group.add_argument(
         "--get-luminance",
         action="store_true",
-        help="Get the lumianance of the first monitor.",
+        help="Get the luminance of the first monitor.",
     )
     group.add_argument(
         "--get-power-mode",
