@@ -162,10 +162,6 @@ def main(argv: Optional[List[str]] = None):
             print("Available Inputs:")
             for i in inputs:
                 input_name = get_input_name(i)
-                try:
-                    input_name = InputSource(i).name
-                except ValueError:
-                    input_name = f"UNKNOWN (code {i:#04x})"
                 if i == current_input:
                     current = "*"
                 else:
