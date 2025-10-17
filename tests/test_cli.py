@@ -1,4 +1,5 @@
 from .test_monitorcontrol import UnitTestVCP
+import monitorcontrol.__main__
 from monitorcontrol import Monitor
 from monitorcontrol.__main__ import main, count_to_level
 from unittest import mock
