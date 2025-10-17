@@ -20,6 +20,7 @@ jobs:
       - run: uv sync --all-extras --dev
       - run: uv run ruff check
       - run: uv run ruff format --check
+      - run: uv run pyrefly check
 
   docs:
     runs-on: ubuntu-latest
