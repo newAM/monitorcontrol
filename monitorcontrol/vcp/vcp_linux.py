@@ -55,7 +55,7 @@ class LinuxVCP(VCP):
         """
         self.logger = logging.getLogger(__name__)
         self.bus_number = bus_number
-        self.fd: Optional[str] = None
+        self.fd: Optional[int] = None
         self.fp: str = f"/dev/i2c-{self.bus_number}"
         # time of last feature set call
         self.last_set: Optional[float] = None
@@ -64,7 +64,7 @@ class LinuxVCP(VCP):
         def cleanup(fd: Optional[int]):
             if fd is not None:
                 try:
-                    os.close(self.fd)
+                    os.close(fd)
                 except OSError:
                     pass
 
@@ -90,7 +90,8 @@ class LinuxVCP(VCP):
         exception_traceback: Optional[TracebackType],
     ) -> Optional[bool]:
         try:
-            os.close(self.fd)
+            if self.fd:
+                os.close(self.fd)
         except OSError as e:
             raise VCPIOError("unable to close descriptor") from e
         self.fd = None
@@ -359,11 +360,14 @@ class LinuxVCP(VCP):
             VCPIOError: unable to read data
         """
         try:
-            return os.read(self.fd, num_bytes)
+            if self.fd:
+                return os.read(self.fd, num_bytes)
+            else:
+                raise VCPIOError("unable read from I2C bus: no open file descriptor")
         except OSError as e:
             raise VCPIOError("unable to read from I2C bus") from e
 
-    def write_bytes(self, data: bytes):
+    def write_bytes(self, data: bytes | bytearray):
         """
         Writes bytes to the I2C bus.
 
@@ -374,12 +378,15 @@ class LinuxVCP(VCP):
             VCPIOError: unable to write data
         """
         try:
-            os.write(self.fd, data)
+            if self.fd:
+                os.write(self.fd, data)
+            else:
+                VCPIOError("unable write to I2C bus: no open file descriptor found")
         except OSError as e:
             raise VCPIOError("unable write to I2C bus") from e
 
 
-def get_vcps() -> List[LinuxVCP]:
+def get_vcps() -> List[VCP]:
     """
     Interrogates I2C buses to determine if they are DDC-CI capable.
 

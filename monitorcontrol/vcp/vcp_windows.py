@@ -16,6 +16,14 @@ from ctypes.wintypes import (
     WCHAR,
 )
 
+# Move some aliases here so we can have our type
+# ignoring in one place
+
+# pyrefly: ignore[missing-attribute]
+c_windll = ctypes.windll
+# pyrefly: ignore[missing-attribute]
+c_formaterror = ctypes.FormatError
+
 
 # structure type for a physical monitor
 class PhysicalMonitor(ctypes.Structure):
@@ -37,11 +45,12 @@ class WindowsVCP(VCP):
             description: Text description of the physical monitor.
         """
         self.logger = logging.getLogger(__name__)
-        self.handle = handle
+        self.handle_p = handle
+        self.handle = int(handle)
         self.description = description
 
     def __del__(self):
-        WindowsVCP._destroy_physical_monitor(self.handle)
+        WindowsVCP._destroy_physical_monitor(self.handle_p)
 
     def __enter__(self):
         pass
@@ -70,10 +79,10 @@ class WindowsVCP(VCP):
             extra=dict(code=code, value=value),
         )
         try:
-            if not ctypes.windll.dxva2.SetVCPFeature(
-                HANDLE(self.handle), BYTE(code), DWORD(value)
+            if not c_windll.dxva2.SetVCPFeature(
+                HANDLE(int(self.handle)), BYTE(code), DWORD(value)
             ):
-                raise VCPError("failed to set VCP feature: " + ctypes.FormatError())
+                raise VCPError("failed to set VCP feature: " + c_formaterror())
         except OSError as e:
             raise VCPError("failed to close handle") from e
 
@@ -97,14 +106,14 @@ class WindowsVCP(VCP):
             extra=dict(code=code),
         )
         try:
-            if not ctypes.windll.dxva2.GetVCPFeatureAndVCPFeatureReply(
+            if not c_windll.dxva2.GetVCPFeatureAndVCPFeatureReply(
                 HANDLE(self.handle),
                 BYTE(code),
                 None,
                 ctypes.byref(feature_current),
                 ctypes.byref(feature_max),
             ):
-                raise VCPError("failed to get VCP feature: " + ctypes.FormatError())
+                raise VCPError("failed to get VCP feature: " + c_formaterror())
         except OSError as e:
             raise VCPError("failed to get VCP feature") from e
         self.logger.debug(
@@ -131,20 +140,16 @@ class WindowsVCP(VCP):
         cap_length = DWORD()
         self.logger.debug("GetCapabilitiesStringLength")
         try:
-            if not ctypes.windll.dxva2.GetCapabilitiesStringLength(
+            if not c_windll.dxva2.GetCapabilitiesStringLength(
                 HANDLE(self.handle), ctypes.byref(cap_length)
             ):
-                raise VCPError(
-                    "failed to get VCP capabilities: " + ctypes.FormatError()
-                )
+                raise VCPError("failed to get VCP capabilities: " + c_formaterror())
             cap_string = (ctypes.c_char * cap_length.value)()
             self.logger.debug("CapabilitiesRequestAndCapabilitiesReply")
-            if not ctypes.windll.dxva2.CapabilitiesRequestAndCapabilitiesReply(
+            if not c_windll.dxva2.CapabilitiesRequestAndCapabilitiesReply(
                 HANDLE(self.handle), cap_string, cap_length
             ):
-                raise VCPError(
-                    "failed to get VCP capabilities: " + ctypes.FormatError()
-                )
+                raise VCPError("failed to get VCP capabilities: " + c_formaterror())
         except OSError as e:
             raise VCPError("failed to get VCP capabilities") from e
         return cap_string.value.decode("ascii")
@@ -167,7 +172,7 @@ class WindowsVCP(VCP):
         """
         Calls the Windows `EnumDisplayMonitors` API in Python-friendly form.
         """
-        hmonitors = []  # type: List[HMONITOR]
+        hmonitors: List[HMONITOR] = []
         try:
 
             def _callback(hmonitor, hdc, lprect, lparam):
@@ -175,11 +180,12 @@ class WindowsVCP(VCP):
                 del hmonitor, hdc, lprect, lparam
                 return True  # continue enumeration
 
+            # pyrefly: ignore[missing-attribute]
             MONITORENUMPROC = ctypes.WINFUNCTYPE(  # noqa: N806
                 BOOL, HMONITOR, HDC, ctypes.POINTER(RECT), LPARAM
             )
             callback = MONITORENUMPROC(_callback)
-            if not ctypes.windll.user32.EnumDisplayMonitors(0, 0, callback, 0):
+            if not c_windll.user32.EnumDisplayMonitors(0, 0, callback, 0):
                 raise VCPError("Call to EnumDisplayMonitors failed")
         except OSError as e:
             raise VCPError("failed to enumerate VCPs") from e
@@ -194,12 +200,13 @@ class WindowsVCP(VCP):
         """
         num_physical = DWORD()
         try:
-            if not ctypes.windll.dxva2.GetNumberOfPhysicalMonitorsFromHMONITOR(
+            # pyrefly: ignore[missing-attribute]
+            if not c_windll.dxva2.GetNumberOfPhysicalMonitorsFromHMONITOR(
                 hmonitor, ctypes.byref(num_physical)
             ):
                 raise VCPError(
                     "Call to GetNumberOfPhysicalMonitorsFromHMONITOR failed: "
-                    + ctypes.FormatError()
+                    + c_formaterror()
                 )
         except OSError as e:
             raise VCPError(
@@ -208,17 +215,16 @@ class WindowsVCP(VCP):
 
         physical_monitors = (PhysicalMonitor * num_physical.value)()
         try:
-            if not ctypes.windll.dxva2.GetPhysicalMonitorsFromHMONITOR(
+            if not c_windll.dxva2.GetPhysicalMonitorsFromHMONITOR(
                 hmonitor, num_physical.value, physical_monitors
             ):
                 raise VCPError(
-                    "Call to GetPhysicalMonitorsFromHMONITOR failed: "
-                    + ctypes.FormatError()
+                    "Call to GetPhysicalMonitorsFromHMONITOR failed: " + c_formaterror()
                 )
         except OSError as e:
             raise VCPError("failed to open physical monitor handle") from e
         return (
-            [physical_monitor.handle, physical_monitor.description]
+            (physical_monitor.handle, physical_monitor.description)
             for physical_monitor in physical_monitors
         )
 
@@ -228,9 +234,9 @@ class WindowsVCP(VCP):
         Calls the Windows `DestroyPhysicalMonitor` API in Python-friendly form.
         """
         try:
-            if not ctypes.windll.dxva2.DestroyPhysicalMonitor(handle):
+            if not c_windll.dxva2.DestroyPhysicalMonitor(handle):
                 raise VCPError(
-                    "Call to DestroyPhysicalMonitor failed: " + ctypes.FormatError()
+                    "Call to DestroyPhysicalMonitor failed: " + c_formaterror()
                 )
         except OSError as e:
             raise VCPError("failed to close handle") from e

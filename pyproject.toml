@@ -10,9 +10,17 @@ dependencies = [
     "pyudev>=0.23.3 ; sys_platform != 'win32'",
 ]
 
+[tool.pyrefly]
+project-includes = ["**/*"]
+project-excludes = [
+    "**/__pycache__",
+    "**/*venv/**/*",
+]
+
 [dependency-groups]
 dev = [
     "coveralls>=4.0.1",
+    "pyrefly>=v0.37.0",
     "pytest>=8.3.4",
     "pytest-cov>=6.0.0",
     "ruff>=0.11.11",

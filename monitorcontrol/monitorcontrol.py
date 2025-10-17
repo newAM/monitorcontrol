@@ -458,7 +458,7 @@ class Monitor:
         self._set_vcp_feature(vcp_codes.input_select, mode_value)
 
 
-def get_vcps() -> List[Type[vcp.VCP]]:
+def get_vcps() -> List[vcp.VCP]:
     """
     Discovers virtual control panels.
 
@@ -587,7 +587,8 @@ def _parse_capabilities(caps_str: str) -> dict:
     """
     Converts the capabilities string into a nice dict
     """
-    caps_dict = {
+
+    caps_dict: dict[str, str | list | dict[int, dict]] = {
         # Used to specify the protocol class
         "prot": "",
         # Identifies the type of display
@@ -595,10 +596,10 @@ def _parse_capabilities(caps_str: str) -> dict:
         # The display model number
         "model": "",
         # A list of supported VCP codes. Somehow not the same as "vcp"
-        "cmds": "",
+        "cmds": {},
         # A list of supported VCP codes with a list of supported values
         # for each nc code
-        "vcp": "",
+        "vcp": {},
         # undocumented
         "mswhql": "",
         # undocumented
@@ -612,12 +613,13 @@ def _parse_capabilities(caps_str: str) -> dict:
         # Alternate name to be used for control
         "vcpname": "",
         # Parsed input sources into text. Not part of capabilities string.
-        "inputs": "",
+        "inputs": [],
         # Parsed color presets into text. Not part of capabilities string.
         "color_presets": "",
     }
 
     for key in caps_dict:
+        # The "cmds" and "vcp" caps can be a mapping
         if key in ["cmds", "vcp"]:
             caps_dict[key] = _convert_to_dict(_extract_a_cap(caps_str, key))
         else:
@@ -625,6 +627,10 @@ def _parse_capabilities(caps_str: str) -> dict:
 
     # Parse the input sources into a text list for readability
     input_source_cap = vcp_codes.input_select.value
+
+    # Put this check here to appease the type checker
+    if isinstance(caps_dict["vcp"], str):
+        raise ValueError("VCP capabilities dictionary is the wrong type!")
     if input_source_cap in caps_dict["vcp"]:
         caps_dict["inputs"] = []
         input_val_list = list(caps_dict["vcp"][input_source_cap].keys())
