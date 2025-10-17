@@ -390,12 +390,20 @@ def get_vcps() -> List[LinuxVCP]:
 
     # iterate I2C devices
     for device in pyudev.Context().list_devices(subsystem="i2c"):
-        vcp = LinuxVCP(device.sys_number)
         try:
+            if sys_no := device.sys_number:
+                vcp = LinuxVCP(int(sys_no))
+            else:
+                logging.error(
+                    "Unable to check i2c device %s: no device number found", device
+                )
+                continue
             with vcp:
                 pass
         except (OSError, VCPIOError):
             pass
+        except VCPPermissionError as exc:
+            logging.error("Unable to check i2c device: %s", exc)
         else:
             vcps.append(vcp)
 
