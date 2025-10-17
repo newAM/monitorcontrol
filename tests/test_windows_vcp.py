@@ -1,6 +1,9 @@
+import sys
 import pytest
 from unittest.mock import patch
 
+if not sys.platform.startswith("win"):
+    pytest.skip("skipping windows-only tests", allow_module_level=True)
 
 from monitorcontrol.vcp.vcp_windows import WindowsVCP
 
