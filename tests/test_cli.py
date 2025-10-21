@@ -1,8 +1,9 @@
 from .test_monitorcontrol import UnitTestVCP
 from monitorcontrol import Monitor
+import monitorcontrol.__main__
 from monitorcontrol.__main__ import main, count_to_level
+
 from unittest import mock
-import sys
 import monitorcontrol
 import pytest
 
@@ -14,7 +15,7 @@ get_monitors_mock = mock.patch.object(
 
 
 def test_version():
-    with mock.patch.object(sys.stdout, "write") as stdout_mock:
+    with mock.patch("builtins.print") as stdout_mock:
         main(["--version"])
         stdout_mock.assert_called_once()
 

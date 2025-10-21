@@ -1,4 +1,4 @@
-from . import get_monitors, PowerMode
+from . import get_monitors, get_input_name, PowerMode
 from typing import List, Optional
 import argparse
 import importlib.metadata
@@ -23,12 +23,12 @@ def get_parser() -> argparse.ArgumentParser:
 
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument(
-        "--set-luminance", type=int, help="Set the lumianance of all monitors."
+        "--set-luminance", type=int, help="Set the luminance of all monitors."
     )
     group.add_argument(
         "--get-luminance",
         action="store_true",
-        help="Get the lumianance of the first monitor.",
+        help="Get the luminance of the first monitor.",
     )
     group.add_argument(
         "--get-power-mode",
@@ -101,19 +101,19 @@ def main(argv: Optional[List[str]] = None):
         monitor_index = args.monitor - 1
 
     if args.version:
-        sys.stdout.write(version + "\n")
+        print(version)
         return
     elif args.get_luminance:
         monitor_obj = get_monitors()[monitor_index]
         with monitor_obj:
             luminance = monitor_obj.get_luminance()
-        sys.stdout.write(str(luminance) + "\n")
+        print(str(luminance))
         return
     elif args.get_power_mode:
         monitor_obj = get_monitors()[monitor_index]
         with monitor_obj:
             power = monitor_obj.get_power_mode()
-        sys.stdout.write(str(power.name) + "\n")
+        print(str(power.name))
         return
     elif args.set_luminance is not None:
         if args.monitor is None:
@@ -139,7 +139,7 @@ def main(argv: Optional[List[str]] = None):
         monitor_obj = get_monitors()[monitor_index]
         with monitor_obj:
             input_source = monitor_obj.get_input_source()
-        sys.stdout.write(str(input_source) + "\n")
+        print(str(input_source))
         return
     elif args.set_input_source is not None:
         if args.monitor is None:
@@ -158,14 +158,15 @@ def main(argv: Optional[List[str]] = None):
                 current_input = monitor_obj.get_input_source()
             model = monitors_dict["model"]
             inputs = monitors_dict["inputs"]
-            sys.stdout.write(f"Monitor {monitor_index + 1}: {model}" + "\n")
-            sys.stdout.write("Available Inputs:\n")
+            print(f"Monitor {monitor_index + 1}: {model}")
+            print("Available Inputs:")
             for i in inputs:
-                sys.stdout.write(f"\t{i}")
+                input_name = get_input_name(i)
                 if i == current_input:
-                    sys.stdout.write("*\n")
+                    current = "*"
                 else:
-                    sys.stdout.write("\n")
+                    current = " "
+                print(f" {current} {input_name}")
 
         return
     else:
