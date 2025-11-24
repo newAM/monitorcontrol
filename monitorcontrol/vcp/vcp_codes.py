@@ -86,8 +86,8 @@ image_orientation = VCPCode(
     code_type="ro",
     function="nc",
 )
-display_mode = VCPCode(
-    name="display mode",
+display_application = VCPCode(
+    name="display application",
     value=0xDC,
     code_type="rw",
     function="nc",
