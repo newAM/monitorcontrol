@@ -1,4 +1,4 @@
-from . import get_monitors, get_input_name, PowerMode
+from . import get_monitors, get_input_name, PowerMode, AudioMuteMode
 from typing import List, Optional
 import argparse
 import importlib.metadata
@@ -30,6 +30,12 @@ def get_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Get the luminance of the first monitor.",
     )
+    group.add_argument("--set-volume", type=int, help="Set the volume of all monitors.")
+    group.add_argument(
+        "--get-volume",
+        action="store_true",
+        help="Get the volume of the first monitor.",
+    )
     group.add_argument(
         "--get-power-mode",
         action="store_true",
@@ -39,6 +45,16 @@ def get_parser() -> argparse.ArgumentParser:
         "--set-power-mode",
         choices=[mode.name for mode in PowerMode],
         help="Set the power mode of all monitors.",
+    )
+    group.add_argument(
+        "--get-audio-mute-mode",
+        action="store_true",
+        help="Get the audio mute mode of the first monitor.",
+    )
+    group.add_argument(
+        "--set-audio-mute-mode",
+        choices=[mode.name for mode in AudioMuteMode],
+        help="Set the audio mute mode of all monitors.",
     )
     group.add_argument(
         "--version", action="store_true", help="Show the version and exit."
@@ -109,11 +125,23 @@ def main(argv: Optional[List[str]] = None):
             luminance = monitor_obj.get_luminance()
         print(str(luminance))
         return
+    elif args.get_volume:
+        monitor_obj = get_monitors()[monitor_index]
+        with monitor_obj:
+            volume = monitor_obj.get_volume()
+        sys.stdout.write(str(volume) + "\n")
+        return
     elif args.get_power_mode:
         monitor_obj = get_monitors()[monitor_index]
         with monitor_obj:
             power = monitor_obj.get_power_mode()
         print(str(power.name))
+        return
+    elif args.get_audio_mute_mode:
+        monitor_obj = get_monitors()[monitor_index]
+        with monitor_obj:
+            audio_mute = monitor_obj.get_audio_mute_mode()
+        sys.stdout.write(str(audio_mute.name) + "\n")
         return
     elif args.set_luminance is not None:
         if args.monitor is None:
@@ -125,6 +153,16 @@ def main(argv: Optional[List[str]] = None):
             with monitor_obj:
                 monitor_obj.set_luminance(args.set_luminance)
         return
+    elif args.set_volume is not None:
+        if args.monitor is None:
+            for monitor_obj in get_monitors():
+                with monitor_obj:
+                    monitor_obj.set_volume(args.set_volume)
+        else:
+            monitor_obj = get_monitors()[monitor_index]
+            with monitor_obj:
+                monitor_obj.set_volume(args.set_volume)
+        return
     elif args.set_power_mode is not None:
         if args.monitor is None:
             for monitor_obj in get_monitors():
@@ -134,6 +172,16 @@ def main(argv: Optional[List[str]] = None):
             monitor_obj = get_monitors()[monitor_index]
             with monitor_obj:
                 monitor_obj.set_power_mode(args.set_power_mode)
+        return
+    elif args.set_audio_mute_mode is not None:
+        if args.monitor is None:
+            for monitor_obj in get_monitors():
+                with monitor_obj:
+                    monitor_obj.set_audio_mute_mode(args.set_audio_mute_mode)
+        else:
+            monitor_obj = get_monitors()[monitor_index]
+            with monitor_obj:
+                monitor_obj.set_audio_mute_mode(args.set_audio_mute_mode)
         return
     elif args.get_input_source:
         monitor_obj = get_monitors()[monitor_index]

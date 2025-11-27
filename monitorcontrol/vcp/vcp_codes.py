@@ -56,6 +56,12 @@ image_luminance = VCPCode(
     code_type="rw",
     function="c",
 )
+sound_volume = VCPCode(
+    name="sound volume",
+    value=0x62,
+    code_type="rw",
+    function="c",
+)
 image_contrast = VCPCode(
     name="image contrast",
     value=0x12,
@@ -95,6 +101,12 @@ display_application = VCPCode(
 display_power_mode = VCPCode(
     name="display power mode",
     value=0xD6,
+    code_type="rw",
+    function="nc",
+)
+display_audio_mute_mode = VCPCode(
+    name="display audio mute mode",
+    value=0x8D,
     code_type="rw",
     function="nc",
 )

@@ -81,7 +81,9 @@ def get_test_vcps() -> List[Type[vcp.VCP]]:
     else:
         unit_test_vcp_dict = {
             0x10: {"current": 50, "maximum": 100},
+            0x62: {"current": 50, "maximum": 100},
             0xD6: {"current": 1, "maximum": 5},
+            0x8D: {"current": 1, "maximum": 2},
             0x12: {"current": 50, "maximum": 100},
             0x60: {"current": "HDMI1", "maximum": 3},
         }
@@ -131,6 +133,22 @@ def test_luminance(
         monitor.set_luminance(original)
 
 
+@pytest.mark.parametrize(
+    "volume, expected", [(100, 100), (0, 0), (50, 50), (101, ValueError)]
+)
+def test_volume(monitor: Monitor, volume: int, expected: Union[int, Type[Exception]]):
+    original = monitor.get_volume()
+    try:
+        if isinstance(expected, int):
+            monitor.set_volume(volume)
+            assert monitor.get_volume() == expected
+        elif isinstance(expected, type(Exception)):
+            with pytest.raises(expected):
+                monitor.set_volume(volume)
+    finally:
+        monitor.set_volume(original)
+
+
 @pytest.mark.skipif(USE_ATTACHED_MONITORS, reason="not going to change your contrast")
 def test_contrast(monitor: Monitor):
     contrast = monitor.get_contrast()
@@ -175,6 +193,32 @@ def test_power_mode(
     elif isinstance(expected, type(Exception)):
         with pytest.raises(expected):
             monitor.set_power_mode(mode)
+
+
+@pytest.mark.skipif(USE_ATTACHED_MONITORS, reason="not going to mute your monitors")
+@pytest.mark.parametrize(
+    "mode, expected",
+    [
+        ("on", 0x01),
+        (0x01, 0x01),
+        ("INVALID", AttributeError),
+        (["on"], TypeError),
+        (0x00, ValueError),
+        (0x03, ValueError),
+        ("off", 0x02),
+    ],
+)
+def test_audio_mute_mode(
+    monitor: Monitor,
+    mode: Union[str, int],
+    expected: Union[int, Type[Exception]],
+):
+    if isinstance(expected, (int, str)):
+        monitor.set_audio_mute_mode(mode)
+        assert monitor.get_audio_mute_mode().value == expected
+    elif isinstance(expected, type(Exception)):
+        with pytest.raises(expected):
+            monitor.set_audio_mute_mode(mode)
 
 
 # ASUS VG27A when set to a mode that doesnt exist returned analog1 (0x1)
