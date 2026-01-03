@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html),
 as of version 2.1.1.
 
+## [4.2.0] - 2026-01-03
+### Added
+- Added volume and mute controls by [@contemno] in [#413].
+
+### Fixed
+- Fixed printing monitor input names instead of codes by [@danudey] in [#408].
+
+[@danudey]: https://github.com/danudey
+[@contemno]: https://github.com/contemno
+[#408]: https://github.com/newAM/monitorcontrol/pull/408
+[#413]: https://github.com/newAM/monitorcontrol/pull/413
+
 ## [4.1.1] - 2025-05-29
 ### Fixed
 - Fixed AttributeError exceptions when passing an int with `--set-input-source`.
@@ -133,7 +145,8 @@ as of version 2.1.1.
 - Added a changelog.
 
 
-[Unreleased]: https://github.com/newAM/monitorcontrol/compare/4.1.1...HEAD
+[Unreleased]: https://github.com/newAM/monitorcontrol/compare/4.2.0...HEAD
+[4.2.0]: https://github.com/newAM/monitorcontrol/compare/4.1.1...4.2.0
 [4.1.1]: https://github.com/newAM/monitorcontrol/compare/4.1.0...4.1.1
 [4.1.0]: https://github.com/newAM/monitorcontrol/compare/4.0.1...4.1.0
 [4.0.1]: https://github.com/newAM/monitorcontrol/compare/4.0.0...4.0.1

@@ -1,7 +1,7 @@
 [project]
 name = "monitorcontrol"
 description = "Monitor controls using MCCS over DDC-CI."
-version = "4.1.1"
+version = "4.2.0"
 authors = [{ name = "Alex Martens", email = "alex+monitorcontrol@thinglab.org" }]
 license = "MIT"
 readme = "README.rst"
