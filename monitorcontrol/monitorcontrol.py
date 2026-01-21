@@ -71,6 +71,8 @@ class InputSource(enum.IntEnum):
     DP2 = 0x10
     HDMI1 = 0x11
     HDMI2 = 0x12
+    USBC1 = 0x19
+    USBC2 = 0x1B
 
 
 class Monitor:
