@@ -25,8 +25,8 @@ def test_get_physical_monitors(
         2: ["2-0", "2-1"],
         3: ["3-0", "3-1", "3-2"],
     }
-    physical_monitors_from_hmonitor.side_effect = (
-        lambda hmonitor: physical_monitors.get(hmonitor)
+    physical_monitors_from_hmonitor.side_effect = lambda hmonitor: (
+        physical_monitors.get(hmonitor)
     )
     result = list(WindowsVCP._get_physical_monitors())
     assert result == expected
