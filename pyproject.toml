@@ -5,7 +5,7 @@ version = "4.2.0"
 authors = [{ name = "Alex Martens", email = "alex+monitorcontrol@thinglab.org" }]
 license = "MIT"
 readme = "README.rst"
-requires-python = ">= 3.9"
+requires-python = ">= 3.10"
 dependencies = [
     "pyudev>=0.23.3 ; sys_platform != 'win32'",
 ]
