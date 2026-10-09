@@ -1,6 +1,8 @@
 import abc
 from types import TracebackType
-from typing import Optional, Tuple, Type
+from typing import Generic, Optional, Tuple, Type, TypeVar
+
+T = TypeVar("T")
 
 
 class VCPError(Exception):
@@ -21,9 +23,9 @@ class VCPPermissionError(VCPError):
     pass
 
 
-class VCP(abc.ABC):
+class VCP(Generic[T], abc.ABC):
     @abc.abstractmethod
-    def __enter__(self):
+    def __enter__(self) -> T:
         pass
 
     @abc.abstractmethod
@@ -63,4 +65,8 @@ class VCP(abc.ABC):
         Raises:
             VCPError: Failed to get VCP feature.
         """
+        pass
+
+    @abc.abstractmethod
+    def get_vcp_capabilities(self) -> str:
         pass

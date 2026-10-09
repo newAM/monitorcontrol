@@ -53,7 +53,8 @@ class UnitTestVCP(vcp.VCP):
 
 
 def test_context_manager_assert():
-    m = Monitor(None)
+    vcps = get_test_vcps()
+    m = Monitor(vcps[0])
     with pytest.raises(AssertionError):
         m.get_power_mode()
 
@@ -75,7 +76,7 @@ def test_get_monitors():
     get_monitors()
 
 
-def get_test_vcps() -> List[Type[vcp.VCP]]:
+def get_test_vcps() -> List[vcp.VCP]:
     if USE_ATTACHED_MONITORS:
         return get_vcps()
     else:
@@ -276,6 +277,7 @@ def test_input_source_issue_59(monitor: Monitor):
 
 def test_input_source_type_error(monitor: Monitor):
     with pytest.raises(TypeError):
+        # pyrefly: ignore[bad-argument-type]
         monitor.set_input_source([])
 
 
@@ -371,3 +373,8 @@ def test_convert_to_dict_nested():
     caps_str = "DC(00(00 12 13 14))"
     expected = {0xDC: {0: {0: {}, 0x12: {}, 0x13: {}, 0x14: {}}}}
     assert _convert_to_dict(caps_str) == expected
+
+
+def test_convert_to_dict_empty():
+    # capabilities extraction can return an empty string
+    assert _convert_to_dict("") == {}
