@@ -2,6 +2,7 @@ from . import vcp, vcp_codes
 from types import TracebackType
 from typing import List, Optional, Type, Union
 import enum
+import re
 import sys
 
 
@@ -650,8 +651,19 @@ def _extract_a_cap(caps_str: str, key: str) -> str:
 
     start_of_filter += len(key)
     filtered_caps_str = caps_str[start_of_filter:]
+    named_fields = set()
+    if key.lower() in ("cmds", "vcp"):
+        named_fields = {
+            match.start()
+            for match in re.finditer(r"\b([A-Za-z_][A-Za-z0-9_]*)\(", filtered_caps_str)
+            if not re.fullmatch(r"[A-Fa-f0-9]+", match.group(1))
+        }
+
     end_of_filter = 0
     for i in range(len(filtered_caps_str)):
+        if end_of_filter == 1 and i in named_fields:
+            # Some monitors omit the closing parenthesis before the next field.
+            break
         if filtered_caps_str[i] == "(":
             end_of_filter += 1
         if filtered_caps_str[i] == ")":

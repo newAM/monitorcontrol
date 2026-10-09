@@ -1,11 +1,13 @@
 from monitorcontrol import vcp, vcp_codes
 from monitorcontrol.monitorcontrol import (
+    ColorPreset,
     InputSource,
     get_monitors,
     get_input_name,
     get_vcps,
     Monitor,
     _convert_to_dict,
+    _extract_a_cap,
 )
 from types import TracebackType
 from typing import Iterable, List, Optional, Tuple, Type, Union
@@ -297,6 +299,79 @@ def test_get_vcp_capabilities(monitor: Monitor):
         InputSource.HDMI2,
         36,
     ]
+
+
+@pytest.mark.parametrize("vcp_closing", ["", ")"])
+def test_get_vcp_capabilities_lemon25(vcp_closing):
+    caps_str = (
+        "(prot(monitor)type(lcd)model(LEMON25)cmds(01 02 03 07 0C E3 F3)"
+        "vcp(02 04 05 08 10 12 14(05 08 0B 0C) 16 18 1A 52 "
+        "60(11 12 0F ) 62 87 8D CC"
+        f"{vcp_closing} mccs_ver(2.2)mswhql(1))"
+    )
+    test_vcp = UnitTestVCP({})
+    with mock.patch.object(test_vcp, "get_vcp_capabilities", return_value=caps_str):
+        with Monitor(test_vcp) as monitor:
+            caps = monitor.get_vcp_capabilities()
+
+    assert caps["prot"] == "monitor"
+    assert caps["type"] == "lcd"
+    assert caps["model"] == "LEMON25"
+    assert caps["cmds"] == {
+        0x01: {},
+        0x02: {},
+        0x03: {},
+        0x07: {},
+        0x0C: {},
+        0xE3: {},
+        0xF3: {},
+    }
+    assert caps["vcp"] == {
+        0x02: {},
+        0x04: {},
+        0x05: {},
+        0x08: {},
+        0x10: {},
+        0x12: {},
+        0x14: {0x05: {}, 0x08: {}, 0x0B: {}, 0x0C: {}},
+        0x16: {},
+        0x18: {},
+        0x1A: {},
+        0x52: {},
+        0x60: {0x11: {}, 0x12: {}, 0x0F: {}},
+        0x62: {},
+        0x87: {},
+        0x8D: {},
+        0xCC: {},
+    }
+    assert caps["inputs"] == [InputSource.DP1, InputSource.HDMI1, InputSource.HDMI2]
+    assert caps["color_presets"] == [
+        ColorPreset.COLOR_TEMP_6500K,
+        ColorPreset.COLOR_TEMP_9300K,
+        ColorPreset.COLOR_TEMP_USER1,
+        ColorPreset.COLOR_TEMP_USER2,
+    ]
+    assert caps["mccs_ver"] == "2.2"
+    assert caps["mswhql"] == "1"
+
+
+@pytest.mark.parametrize("key", ["cmds", "vcp"])
+@pytest.mark.parametrize("closing", ["", ")"])
+@pytest.mark.parametrize("next_field", ["mccs_ver(2.2)", "MSWHQL(1)"])
+def test_extract_numeric_cap_next_field(key, closing, next_field):
+    values = "DC(00(00 12 13 14)) CC"
+    caps_str = f"({key}({values}{closing} {next_field})"
+    extracted = _extract_a_cap(caps_str, key)
+    assert extracted.strip() == values
+    assert _convert_to_dict(extracted) == {
+        0xDC: {0: {0: {}, 0x12: {}, 0x13: {}, 0x14: {}}},
+        0xCC: {},
+    }
+
+
+def test_convert_to_dict_invalid_token():
+    with pytest.raises(ValueError):
+        _convert_to_dict("10 invalid 12")
 
 
 def test_convert_to_dict():
