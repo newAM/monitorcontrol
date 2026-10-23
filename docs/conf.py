@@ -1,6 +1,7 @@
 import datetime
 import os
 import sys
+
 import toml
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
@@ -8,7 +9,7 @@ repo_root = os.path.abspath(os.path.join(this_dir, ".."))
 if repo_root not in sys.path:
     sys.path.insert(0, repo_root)
 
-from monitorcontrol.__main__ import get_parser  # noqa: E402
+from monitorcontrol.__main__ import get_parser
 
 # Sphinx extensions
 extensions = [
@@ -28,7 +29,7 @@ master_doc = "index"
 
 # General information about the project.
 project = pyproject["project"]["name"]
-year = datetime.datetime.now().year
+year = datetime.datetime.now(tz=datetime.timezone.utc).year
 author = pyproject["project"]["authors"][0]["name"]
 copyright = f"2019 - {year}, {author}"  # noqa: A001
 version = pyproject["project"]["version"]

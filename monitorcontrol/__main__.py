@@ -1,9 +1,9 @@
-from . import get_monitors, get_input_name, PowerMode, AudioMuteMode
-from typing import List, Optional
 import argparse
 import importlib.metadata
 import logging
 import sys
+
+from . import AudioMuteMode, PowerMode, get_input_name, get_monitors
 
 version = importlib.metadata.version("monitorcontrol")
 
@@ -99,7 +99,7 @@ def count_to_level(count: int) -> int:
     return logging.CRITICAL
 
 
-def main(argv: Optional[List[str]] = None):
+def main(argv: list[str] | None = None):
     parser = get_parser()
     args = parser.parse_args(argv)
 

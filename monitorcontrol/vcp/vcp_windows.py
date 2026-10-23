@@ -1,20 +1,20 @@
-from .vcp_abc import VCP, VCPError
-from types import TracebackType
-from typing import Iterator, List, Optional, Tuple, Type
 import ctypes
 import logging
-
+from collections.abc import Iterator
 from ctypes.wintypes import (
-    DWORD,
-    RECT,
     BOOL,
-    HMONITOR,
-    HDC,
-    LPARAM,
-    HANDLE,
     BYTE,
+    DWORD,
+    HANDLE,
+    HDC,
+    HMONITOR,
+    LPARAM,
+    RECT,
     WCHAR,
 )
+from types import TracebackType
+
+from .vcp_abc import VCP, VCPError
 
 
 # structure type for a physical monitor
@@ -48,10 +48,10 @@ class WindowsVCP(VCP):
 
     def __exit__(
         self,
-        exception_type: Optional[Type[BaseException]],
-        exception_value: Optional[BaseException],
-        exception_traceback: Optional[TracebackType],
-    ) -> Optional[bool]:
+        exception_type: type[BaseException] | None,
+        exception_value: BaseException | None,
+        exception_traceback: TracebackType | None,
+    ) -> bool | None:
         return False
 
     def set_vcp_feature(self, code: int, value: int):
@@ -67,7 +67,7 @@ class WindowsVCP(VCP):
         """
         self.logger.debug(
             "SetVCPFeature(_, {code=}, {value=})",
-            extra=dict(code=code, value=value),
+            extra={"code": code, "value": value},
         )
         try:
             if not ctypes.windll.dxva2.SetVCPFeature(
@@ -77,7 +77,7 @@ class WindowsVCP(VCP):
         except OSError as e:
             raise VCPError("failed to close handle") from e
 
-    def get_vcp_feature(self, code: int) -> Tuple[int, int]:
+    def get_vcp_feature(self, code: int) -> tuple[int, int]:
         """
         Gets the value of a feature from the virtual control panel.
 
@@ -94,7 +94,7 @@ class WindowsVCP(VCP):
         feature_max = DWORD()
         self.logger.debug(
             "GetVCPFeatureAndVCPFeatureReply(_, {code=}, None, _, _)",
-            extra=dict(code=code),
+            extra={"code": code},
         )
         try:
             if not ctypes.windll.dxva2.GetVCPFeatureAndVCPFeatureReply(
@@ -109,7 +109,7 @@ class WindowsVCP(VCP):
             raise VCPError("failed to get VCP feature") from e
         self.logger.debug(
             "GetVCPFeatureAndVCPFeatureReply -> ({feat_cur}, {feat_max})",
-            extra=dict(feat_cur=feature_current.value, feat_max=feature_max.value),
+            extra={"feat_cur": feature_current.value, "feat_max": feature_max.value},
         )
         return feature_current.value, feature_max.value
 
@@ -150,7 +150,7 @@ class WindowsVCP(VCP):
         return cap_string.value.decode("ascii")
 
     @staticmethod
-    def _get_physical_monitors() -> Iterator[Tuple[HANDLE, str]]:
+    def _get_physical_monitors() -> Iterator[tuple[HANDLE, str]]:
         """
         Returns a list of physical monitors.
         """
@@ -163,7 +163,7 @@ class WindowsVCP(VCP):
         )
 
     @staticmethod
-    def _get_hmonitors() -> List[HMONITOR]:
+    def _get_hmonitors() -> list[HMONITOR]:
         """
         Calls the Windows `EnumDisplayMonitors` API in Python-friendly form.
         """
@@ -188,7 +188,7 @@ class WindowsVCP(VCP):
     @staticmethod
     def _physical_monitors_from_hmonitor(
         hmonitor: HMONITOR,
-    ) -> Iterator[Tuple[HANDLE, str]]:
+    ) -> Iterator[tuple[HANDLE, str]]:
         """
         Calls the Windows `GetPhysicalMonitorsFromHMONITOR` API in Python-friendly form.
         """
@@ -236,7 +236,7 @@ class WindowsVCP(VCP):
             raise VCPError("failed to close handle") from e
 
 
-def get_vcps() -> List[WindowsVCP]:
+def get_vcps() -> list[WindowsVCP]:
     """
     Opens handles to all physical VCPs.
 
@@ -247,6 +247,6 @@ def get_vcps() -> List[WindowsVCP]:
         VCPError: Failed to enumerate VCPs.
     """
     physical_monitors = WindowsVCP._get_physical_monitors()
-    return list(
+    return [
         WindowsVCP(handle, description) for (handle, description) in physical_monitors
-    )
+    ]

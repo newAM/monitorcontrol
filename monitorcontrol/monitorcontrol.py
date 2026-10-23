@@ -1,8 +1,9 @@
-from . import vcp, vcp_codes
-from types import TracebackType
-from typing import List, Optional, Type, Union
 import enum
 import sys
+from types import TracebackType
+
+from . import vcp
+from .vcp import vcp_codes
 
 
 @enum.unique
@@ -99,10 +100,10 @@ class Monitor:
 
     def __exit__(
         self,
-        exception_type: Optional[Type[BaseException]],
-        exception_value: Optional[BaseException],
-        exception_traceback: Optional[TracebackType],
-    ) -> Optional[bool]:
+        exception_type: type[BaseException] | None,
+        exception_value: BaseException | None,
+        exception_traceback: TracebackType | None,
+    ) -> bool | None:
         try:
             return self.vcp.__exit__(
                 exception_type, exception_value, exception_traceback
@@ -176,7 +177,7 @@ class Monitor:
         if code.type == "wo":
             raise TypeError(f"cannot read write-only code: {code.name}")
 
-        current, maximum = self.vcp.get_vcp_feature(code.value)
+        current, _ = self.vcp.get_vcp_feature(code.value)
         return current
 
     def get_vcp_capabilities(self) -> dict:
@@ -318,7 +319,7 @@ class Monitor:
         """
         return self._get_vcp_feature(vcp_codes.image_color_preset)
 
-    def set_color_preset(self, value: Union[int, str, ColorPreset]):
+    def set_color_preset(self, value: int | str | ColorPreset):
         """
         Sets the monitors color preset.
 
@@ -419,7 +420,7 @@ class Monitor:
         value = self._get_vcp_feature(vcp_codes.display_power_mode)
         return PowerMode(value)
 
-    def set_power_mode(self, value: Union[int, str, PowerMode]):
+    def set_power_mode(self, value: int | str | PowerMode):
         """
         Set the monitor power mode.
 
@@ -478,7 +479,7 @@ class Monitor:
         value = self._get_vcp_feature(vcp_codes.display_audio_mute_mode)
         return AudioMuteMode(value)
 
-    def set_audio_mute_mode(self, value: Union[int, str, AudioMuteMode]):
+    def set_audio_mute_mode(self, value: int | str | AudioMuteMode):
         """
         Set the monitor audio mute mode.
 
@@ -535,7 +536,7 @@ class Monitor:
         """
         return self._get_vcp_feature(vcp_codes.input_select) & 0xFF
 
-    def set_input_source(self, value: Union[int, str, InputSource]):
+    def set_input_source(self, value: int | str | InputSource):
         """
         Sets the monitors input source.
 
@@ -587,7 +588,7 @@ def get_input_name(input_code: int) -> str:
     return input_name
 
 
-def get_vcps() -> List[vcp.VCP]:
+def get_vcps() -> list[vcp.VCP]:
     """
     Discovers virtual control panels.
 
@@ -607,7 +608,7 @@ def get_vcps() -> List[vcp.VCP]:
         raise NotImplementedError(f"not implemented for {sys.platform}")
 
 
-def get_monitors() -> List[Monitor]:
+def get_monitors() -> list[Monitor]:
     """
     Creates a list of all monitors.
 

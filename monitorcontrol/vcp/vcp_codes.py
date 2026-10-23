@@ -28,18 +28,12 @@ class VCPCode:
     @property
     def readable(self) -> bool:
         """Returns true if the code can be read."""
-        if self.type == "wo":
-            return False
-        else:
-            return True
+        return self.type != "wo"
 
     @property
     def writeable(self) -> bool:
         """Returns true if the code can be written."""
-        if self.type == "ro":
-            return False
-        else:
-            return True
+        return self.type != "ro"
 
 
 # incomplete list of VCP codes from the MCCS specification

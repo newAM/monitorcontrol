@@ -1,11 +1,13 @@
-from .test_monitorcontrol import UnitTestVCP
-from monitorcontrol import Monitor
-import monitorcontrol.__main__
-from monitorcontrol.__main__ import main, count_to_level
-
 from unittest import mock
-import monitorcontrol
+
 import pytest
+
+import monitorcontrol
+import monitorcontrol.__main__
+from monitorcontrol import Monitor
+from monitorcontrol.__main__ import count_to_level, main
+
+from .test_monitorcontrol import UnitTestVCP
 
 get_monitors_mock = mock.patch.object(
     monitorcontrol.__main__,

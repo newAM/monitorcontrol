@@ -1,24 +1,17 @@
 import abc
 from types import TracebackType
-from typing import Optional, Tuple, Type
 
 
 class VCPError(Exception):
     """Base class for all VCP related errors."""
 
-    pass
-
 
 class VCPIOError(VCPError):
     """Raised on VCP IO errors."""
 
-    pass
-
 
 class VCPPermissionError(VCPError):
     """Raised on VCP permission errors."""
-
-    pass
 
 
 class VCP(abc.ABC):
@@ -29,10 +22,10 @@ class VCP(abc.ABC):
     @abc.abstractmethod
     def __exit__(
         self,
-        exception_type: Optional[Type[BaseException]],
-        exception_value: Optional[BaseException],
-        exception_traceback: Optional[TracebackType],
-    ) -> Optional[bool]:
+        exception_type: type[BaseException] | None,
+        exception_value: BaseException | None,
+        exception_traceback: TracebackType | None,
+    ) -> bool | None:
         pass
 
     @abc.abstractmethod
@@ -47,10 +40,9 @@ class VCP(abc.ABC):
         Raises:
             VCPError: Failed to set VCP feature.
         """
-        pass
 
     @abc.abstractmethod
-    def get_vcp_feature(self, code: int) -> Tuple[int, int]:
+    def get_vcp_feature(self, code: int) -> tuple[int, int]:
         """
         Gets the value of a feature from the virtual control panel.
 
@@ -63,4 +55,3 @@ class VCP(abc.ABC):
         Raises:
             VCPError: Failed to get VCP feature.
         """
-        pass

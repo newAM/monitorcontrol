@@ -1,6 +1,6 @@
-import pytest
 from unittest.mock import patch
 
+import pytest
 
 from monitorcontrol.vcp.vcp_windows import WindowsVCP
 

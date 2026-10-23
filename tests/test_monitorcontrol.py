@@ -1,17 +1,18 @@
+from collections.abc import Iterable
+from types import TracebackType
+from unittest import mock
+
+import pytest
+
 from monitorcontrol import vcp, vcp_codes
 from monitorcontrol.monitorcontrol import (
     InputSource,
-    get_monitors,
-    get_input_name,
-    get_vcps,
     Monitor,
     _convert_to_dict,
+    get_input_name,
+    get_monitors,
+    get_vcps,
 )
-from types import TracebackType
-from typing import Iterable, List, Optional, Tuple, Type, Union
-import pytest
-from unittest import mock
-
 
 # set to true to run the unit test on your monitors
 USE_ATTACHED_MONITORS = False
@@ -24,7 +25,7 @@ class UnitTestVCP(vcp.VCP):
     def set_vcp_feature(self, code: int, value: int):
         self.vcp[code]["current"] = value
 
-    def get_vcp_feature(self, code: int) -> Tuple[int, int]:
+    def get_vcp_feature(self, code: int) -> tuple[int, int]:
         return self.vcp[code]["current"], self.vcp[code]["maximum"]
 
     def get_vcp_capabilities(self):
@@ -45,10 +46,10 @@ class UnitTestVCP(vcp.VCP):
 
     def __exit__(
         self,
-        exception_type: Optional[Type[BaseException]],
-        exception_value: Optional[BaseException],
-        exception_traceback: Optional[TracebackType],
-    ) -> Optional[bool]:
+        exception_type: type[BaseException] | None,
+        exception_value: BaseException | None,
+        exception_traceback: TracebackType | None,
+    ) -> bool | None:
         pass
 
 
@@ -75,7 +76,7 @@ def test_get_monitors():
     get_monitors()
 
 
-def get_test_vcps() -> List[Type[vcp.VCP]]:
+def get_test_vcps() -> list[type[vcp.VCP]]:
     if USE_ATTACHED_MONITORS:
         return get_vcps()
     else:
@@ -118,9 +119,7 @@ def test_get_vcp_feature_type_error(monitor: Monitor):
 @pytest.mark.parametrize(
     "luminance, expected", [(100, 100), (0, 0), (50, 50), (101, ValueError)]
 )
-def test_luminance(
-    monitor: Monitor, luminance: int, expected: Union[int, Type[Exception]]
-):
+def test_luminance(monitor: Monitor, luminance: int, expected: int | type[Exception]):
     original = monitor.get_luminance()
     try:
         if isinstance(expected, int):
@@ -136,7 +135,7 @@ def test_luminance(
 @pytest.mark.parametrize(
     "volume, expected", [(100, 100), (0, 0), (50, 50), (101, ValueError)]
 )
-def test_volume(monitor: Monitor, volume: int, expected: Union[int, Type[Exception]]):
+def test_volume(monitor: Monitor, volume: int, expected: int | type[Exception]):
     original = monitor.get_volume()
     try:
         if isinstance(expected, int):
@@ -178,8 +177,8 @@ def test_contrast(monitor: Monitor):
 )
 def test_power_mode(
     monitor: Monitor,
-    mode: Union[str, int],
-    expected: Union[int, Type[Exception]],
+    mode: str | int,
+    expected: int | type[Exception],
 ):
     if isinstance(expected, (int, str)):
         monitor.set_power_mode(mode)
@@ -210,8 +209,8 @@ def test_power_mode(
 )
 def test_audio_mute_mode(
     monitor: Monitor,
-    mode: Union[str, int],
-    expected: Union[int, Type[Exception]],
+    mode: str | int,
+    expected: int | type[Exception],
 ):
     if isinstance(expected, (int, str)):
         monitor.set_audio_mute_mode(mode)
@@ -255,7 +254,7 @@ def test_input_source(monitor: Monitor, mode: InputSource):
 
 @pytest.mark.skipif(USE_ATTACHED_MONITORS, reason="Real monitors may not have USB-C")
 @pytest.mark.parametrize("mode", ["27", 27])
-def test_input_source_usbc(monitor: Monitor, mode: Union[str, int]):
+def test_input_source_usbc(monitor: Monitor, mode: str | int):
     monitor.set_input_source(mode)
     assert monitor.get_input_source() == 27
 
