@@ -1,15 +1,17 @@
-from .vcp_abc import VCP, VCPIOError, VCPPermissionError
-from types import TracebackType
-from typing import List, Optional, Tuple, Type
+import logging
 import os
 import struct
 import sys
 import time
-import logging
+from types import TracebackType
+from typing import ClassVar
+
+from .vcp_abc import VCP, VCPIOError, VCPPermissionError
 
 # hide the Linux code from Windows CI coverage
 if sys.platform.startswith("linux"):
     import fcntl
+
     import pyudev
 
 
@@ -41,7 +43,7 @@ class LinuxVCP(VCP):
     HOST_ADDRESS = 0x51  # virtual I2C slave address of the host
     I2C_SLAVE = 0x0703  # I2C bus slave address
 
-    GET_VCP_RESULT_CODES = {
+    GET_VCP_RESULT_CODES: ClassVar[dict[int, str]] = {
         0: "No Error",
         1: "Unsupported VCP code",
     }
@@ -55,13 +57,13 @@ class LinuxVCP(VCP):
         """
         self.logger = logging.getLogger(__name__)
         self.bus_number = bus_number
-        self.fd: Optional[str] = None
+        self.fd: str | None = None
         self.fp: str = f"/dev/i2c-{self.bus_number}"
         # time of last feature set call
-        self.last_set: Optional[float] = None
+        self.last_set: float | None = None
 
     def __enter__(self):
-        def cleanup(fd: Optional[int]):
+        def cleanup(fd: int | None):
             if fd is not None:
                 try:
                     os.close(self.fd)
@@ -78,17 +80,17 @@ class LinuxVCP(VCP):
         except OSError as e:
             cleanup(self.fd)
             raise VCPIOError(f"unable to open VCP at {self.fp}") from e
-        except Exception as e:
+        except Exception:
             cleanup(self.fd)
-            raise e
+            raise
         return self
 
     def __exit__(
         self,
-        exception_type: Optional[Type[BaseException]],
-        exception_value: Optional[BaseException],
-        exception_traceback: Optional[TracebackType],
-    ) -> Optional[bool]:
+        exception_type: type[BaseException] | None,
+        exception_value: BaseException | None,
+        exception_traceback: TracebackType | None,
+    ) -> bool | None:
         try:
             os.close(self.fd)
         except OSError as e:
@@ -126,14 +128,14 @@ class LinuxVCP(VCP):
         # write data
         self.logger.debug(
             "data={data}",
-            extra=dict(data=" ".join([f"{x:02X}" for x in data])),
+            extra={"data": " ".join([f"{x:02X}" for x in data])},
         )
         self.write_bytes(data)
 
         # store time of last set VCP
         self.last_set = time.time()
 
-    def get_vcp_feature(self, code: int) -> Tuple[int, int]:
+    def get_vcp_feature(self, code: int) -> tuple[int, int]:
         """
         Gets the value of a feature from the virtual control panel.
 
@@ -161,7 +163,7 @@ class LinuxVCP(VCP):
         # write data
         self.logger.debug(
             "data={data}",
-            extra=dict(data=" ".join([f"{x:02X}" for x in data])),
+            extra={"data": " ".join([f"{x:02X}" for x in data])},
         )
         self.write_bytes(data)
 
@@ -171,14 +173,14 @@ class LinuxVCP(VCP):
         header = self.read_bytes(self.GET_VCP_HEADER_LENGTH)
         self.logger.debug(
             "header={header}",
-            extra=dict(header=" ".join([f"{x:02X}" for x in header])),
+            extra={"header": " ".join([f"{x:02X}" for x in header])},
         )
-        source, length = struct.unpack("=BB", header)
+        _source, length = struct.unpack("=BB", header)
         length &= ~self.PROTOCOL_FLAG  # clear protocol flag
         payload = self.read_bytes(length + 1)
         self.logger.debug(
             "payload={payload}",
-            extra=dict(payload=" ".join([f"{x:02X}" for x in payload])),
+            extra={"payload": " ".join([f"{x:02X}" for x in payload])},
         )
 
         # check checksum
@@ -198,7 +200,7 @@ class LinuxVCP(VCP):
             reply_code,
             result_code,
             vcp_opcode,
-            vcp_type_code,
+            _vcp_type_code,
             feature_max,
             feature_current,
         ) = struct.unpack(">BBBBHH", payload)
@@ -269,14 +271,14 @@ class LinuxVCP(VCP):
             header = self.read_bytes(self.GET_VCP_HEADER_LENGTH)
             self.logger.debug(
                 "header={header}",
-                extra=dict(header=" ".join([f"{x:02X}" for x in header])),
+                extra={"header": " ".join([f"{x:02X}" for x in header])},
             )
-            source, length = struct.unpack("BB", header)
+            _source, length = struct.unpack("BB", header)
             length &= ~self.PROTOCOL_FLAG  # clear protocol flag
             payload = self.read_bytes(length + 1)
             self.logger.debug(
                 "payload={payload}",
-                extra=dict(payload=" ".join([f"{x:02X}" for x in payload])),
+                extra={"payload": " ".join([f"{x:02X}" for x in payload])},
             )
 
             # check if length is valid
@@ -315,7 +317,7 @@ class LinuxVCP(VCP):
             # update the offset and go again
             offset += length
 
-        self.logger.debug("caps str={caps_str}", extra=dict(caps_str=caps_str))
+        self.logger.debug("caps str={caps_str}", extra={"caps_str": caps_str})
 
         if loop_count >= loop_count_limit:
             raise VCPIOError("Capabilities string incomplete or too long")
@@ -379,7 +381,7 @@ class LinuxVCP(VCP):
             raise VCPIOError("unable write to I2C bus") from e
 
 
-def get_vcps() -> List[LinuxVCP]:
+def get_vcps() -> list[LinuxVCP]:
     """
     Interrogates I2C buses to determine if they are DDC-CI capable.
 

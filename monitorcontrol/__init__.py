@@ -1,11 +1,11 @@
 from . import vcp  # noqa: F401
-from .vcp import vcp_codes, VCPError, VCPIOError, VCPPermissionError  # noqa: F401
 from .monitorcontrol import (  # noqa: F401
-    get_monitors,
-    get_input_name,
+    AudioMuteMode,
+    ColorPreset,
+    InputSource,
     Monitor,
     PowerMode,
-    AudioMuteMode,
-    InputSource,
-    ColorPreset,
+    get_input_name,
+    get_monitors,
 )
+from .vcp import VCPError, VCPIOError, VCPPermissionError, vcp_codes  # noqa: F401

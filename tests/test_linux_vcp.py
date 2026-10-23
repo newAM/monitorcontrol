@@ -1,4 +1,5 @@
 import pytest
+
 from monitorcontrol.vcp.vcp_linux import LinuxVCP
 
 

@@ -1,7 +1,7 @@
 import pytest
+
 from monitorcontrol.vcp import vcp_codes
 from monitorcontrol.vcp.vcp_codes import VCPCode
-
 
 VCP_CODES = [
     vcp_codes.image_factory_default,
