@@ -8,10 +8,10 @@ as of version 2.1.1.
 
 ## [Unreleased]
 ### Added
-- Added support for python version 3.14.
+- Added support for python versions 3.14 and 3.15.
 
 ### Removed
-- Removed support for end-of-life python version 3.9.
+- Removed support for end-of-life python versions 3.9 and 3.10.
 
 ## [4.2.0] - 2026-01-03
 ### Added
